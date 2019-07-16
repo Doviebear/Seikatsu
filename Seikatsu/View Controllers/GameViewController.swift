@@ -14,28 +14,21 @@ class GameViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        // Load 'GameScene.sks' as a GKScene. This provides gameplay related content
-        // including entities and graphs.
-        
+        JKGame.game.setOrientation(JKOrientation.landscape)
+    
+        let sceneNode = GameScene()
+        sceneNode.size = JKGame.size
+        sceneNode.scaleMode = .aspectFill
+                
+        // Present the scene
+        if let view = self.view as! SKView? {
+            view.presentScene(sceneNode)
             
-            // Get the SKScene from the loaded GKScene
-            let sceneNode = GameScene()
-                
-                // Copy gameplay related content over to the scene
-                
-                // Set the scale mode to scale to fit the window
-                sceneNode.scaleMode = .aspectFill
-                
-                // Present the scene
-                if let view = self.view as! SKView? {
-                    view.presentScene(sceneNode)
-                    
-                    view.ignoresSiblingOrder = true
-                    
-                    view.showsFPS = true
-                    view.showsNodeCount = true
-                }
+            view.ignoresSiblingOrder = true
+            
+            view.showsFPS = true
+            view.showsNodeCount = true
+        }
             
         
     }

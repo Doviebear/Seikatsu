@@ -11,4 +11,5 @@ import Foundation
 struct Location: Codable {
     var col: Int
     var numInCol: Int
+    var posistioningNumInCol: Int
 }

@@ -24,10 +24,13 @@ struct GameModel: Codable {
             for _ in 1...2 {
                 let token = self.grabBag.drawToken()
                 if i == 1 {
+                    token.player = 1
                     self.playerOneHand.append(token)
                 } else if i == 2 {
+                    token.player = 2
                     self.playerTwoHand.append(token)
                 } else if i == 3 {
+                    token.player = 3
                     self.playerThreeHand.append(token)
                 }
             }

@@ -17,14 +17,17 @@ class GrabBag: Codable {
     init() {
         for flower in flowers {
             for bird in birds {
-                for _ in 1...4 {
+                for _ in 1...2 {
                     tokens.append(Token(flowerType: flower, birdType: bird))
                 }
             }
         }
+        // adding Koi Ponds
+        
         for _ in 1...4 {
             tokens.append(koiPond(flowerType: "Pond", birdType: "Pond"))
         }
+        
         tokens.shuffle()
     }
     

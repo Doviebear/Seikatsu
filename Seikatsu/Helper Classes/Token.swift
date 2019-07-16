@@ -12,6 +12,7 @@ class Token: Codable {
     var flowerType: String
     var birdType: String
     var position: Location?
+    var player: Int?
     
     init(flowerType: String, birdType: String) {
         self.flowerType = flowerType
