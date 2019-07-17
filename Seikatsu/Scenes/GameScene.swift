@@ -12,6 +12,7 @@ import GameplayKit
 class GameScene: SKScene {
     var model: GameModel
     var tokensInPlay = [tokenNode]()
+    var tokenSpacesInPlay = [TokenSpace]()
     // 0 is new turn start, 1 is picked from hand
     var gameplayPhase = 0
     var selectedToken: tokenNode?
@@ -58,6 +59,7 @@ class GameScene: SKScene {
                 }
                 let tokenSpace = TokenSpace(Location: Location(col: col, numInCol: k, posistioningNumInCol: k + 1), textureName: "circleNode")
                 tokenSpace.drawNode(on: self)
+                tokenSpacesInPlay.append(tokenSpace)
             }
         }
         
@@ -69,6 +71,7 @@ class GameScene: SKScene {
                 }
                 let tokenSpace = TokenSpace(Location: Location(col: col, numInCol: k, posistioningNumInCol: k + 1), textureName: "circleNode")
                 tokenSpace.drawNode(on: self)
+                tokenSpacesInPlay.append(tokenSpace)
             }
         }
         
@@ -80,6 +83,7 @@ class GameScene: SKScene {
                 }
                 let tokenSpace = TokenSpace(Location: Location(col: col, numInCol: k, posistioningNumInCol: k ), textureName: "circleNode")
                 tokenSpace.drawNode(on: self)
+                tokenSpacesInPlay.append(tokenSpace)
             }
         }
         
@@ -88,8 +92,10 @@ class GameScene: SKScene {
             if k != 4 {
                 let tokenSpace = TokenSpace(Location: Location(col: col, numInCol: k, posistioningNumInCol: k), textureName: "circleNode")
                 tokenSpace.drawNode(on: self)
+                tokenSpacesInPlay.append(tokenSpace)
             }
         }
+        
         for (index,token) in model.playerOneHand.enumerated() {
             let nodeOfToken = tokenNode(token: token)
             nodeOfToken.placeTokenNode(in: CGPoint(x: 100 + (100 * index) ,y: Int(JKGame.rect.minY) + 200), on: self)
@@ -103,21 +109,10 @@ class GameScene: SKScene {
             nodeOfToken.placeTokenNode(in: CGPoint(x: Int(JKGame.rect.maxX) - 100 - (100 * index),y: Int(JKGame.rect.midY)), on: self)
         }
         
-        localPlayerOneScoreLabel = SKLabelNode(text: "P1 Score is: \(localPlayerOneScore)")
-        localPlayerOneScoreLabel.position = CGPoint(x: 400 , y: Int(JKGame.rect.minY) + 200)
-        localPlayerOneScoreLabel.fontName = "RussoOne-Regular"
-        addChild(localPlayerOneScoreLabel)
+        
+        makeStartingPeices()
         
         
-        localPlayerTwoScoreLabel = SKLabelNode(text: "P2 Score is: \(localPlayerTwoScore)")
-        localPlayerTwoScoreLabel.position = CGPoint(x: 400, y: Int(JKGame.rect.maxY) - 150)
-        localPlayerTwoScoreLabel.fontName = "RussoOne-Regular"
-        addChild(localPlayerTwoScoreLabel)
-        
-        localPlayerThreeScoreLabel = SKLabelNode(text: "P3 Score is: \(localPlayerThreeScore)")
-        localPlayerThreeScoreLabel.position = CGPoint(x: Int(JKGame.rect.maxX) - 400, y: Int(JKGame.rect.midY) )
-        localPlayerThreeScoreLabel.fontName = "RussoOne-Regular"
-        addChild(localPlayerThreeScoreLabel)
     }
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -264,6 +259,68 @@ class GameScene: SKScene {
         } else {
             print("error Updating score, player not found")
         }
+    }
+    
+    func getPositionOfTokenSpace(at location: Location) -> CGPoint? {
+        for tokenSpaceToCheck in tokenSpacesInPlay {
+            if tokenSpaceToCheck.Location.col == location.col && tokenSpaceToCheck.Location.numInCol == location.numInCol && tokenSpaceToCheck.Location.posistioningNumInCol == location.posistioningNumInCol {
+                return tokenSpaceToCheck.position
+            }
+        }
+        return nil
+    }
+    
+    func makeStartingPeices() {
+        let token1 = model.grabBag.drawToken(canBeKoiPond: false)
+        let nodeOfToken1 = tokenNode(token: token1)
+        let Location1 = Location(col: 3, numInCol: 3, posistioningNumInCol: 3)
+        nodeOfToken1.tokenData.Location = Location1
+        nodeOfToken1.placeTokenNode(in: getPositionOfTokenSpace(at: Location1) ?? CGPoint(x: 0, y: 0), on: self)
+       removeTokenSpace(at: Location1)
+         tokensInPlay.append(nodeOfToken1)
+        
+        let token2 = model.grabBag.drawToken(canBeKoiPond: false)
+        let nodeOfToken2 = tokenNode(token: token2)
+        let Location2 = Location(col: 5, numInCol: 3, posistioningNumInCol: 3)
+        nodeOfToken2.tokenData.Location = Location2
+        nodeOfToken2.placeTokenNode(in: getPositionOfTokenSpace(at: Location2) ?? CGPoint(x: 0, y: 0), on: self)
+        removeTokenSpace(at: Location2)
+        tokensInPlay.append(nodeOfToken2)
+        
+        let token3 = model.grabBag.drawToken(canBeKoiPond: false)
+        let nodeOfToken3 = tokenNode(token: token3)
+        let Location3 = Location(col: 4, numInCol: 5, posistioningNumInCol: 5)
+        nodeOfToken3.tokenData.Location = Location3
+        nodeOfToken3.placeTokenNode(in: getPositionOfTokenSpace(at: Location3) ?? CGPoint(x: 0, y: 0), on: self)
+        removeTokenSpace(at: Location3)
+         tokensInPlay.append(nodeOfToken3)
+        
+        localPlayerOneScoreLabel = SKLabelNode(text: "P1 Score is: \(localPlayerOneScore)")
+        localPlayerOneScoreLabel.position = CGPoint(x: 400 , y: Int(JKGame.rect.minY) + 200)
+        localPlayerOneScoreLabel.fontName = "RussoOne-Regular"
+        addChild(localPlayerOneScoreLabel)
+        
+        
+        localPlayerTwoScoreLabel = SKLabelNode(text: "P2 Score is: \(localPlayerTwoScore)")
+        localPlayerTwoScoreLabel.position = CGPoint(x: 400, y: Int(JKGame.rect.maxY) - 150)
+        localPlayerTwoScoreLabel.fontName = "RussoOne-Regular"
+        addChild(localPlayerTwoScoreLabel)
+        
+        localPlayerThreeScoreLabel = SKLabelNode(text: "P3 Score is: \(localPlayerThreeScore)")
+        localPlayerThreeScoreLabel.position = CGPoint(x: Int(JKGame.rect.maxX) - 400, y: Int(JKGame.rect.midY) )
+        localPlayerThreeScoreLabel.fontName = "RussoOne-Regular"
+        addChild(localPlayerThreeScoreLabel)
+    }
+    
+    func removeTokenSpace(at location: Location) {
+        for (index, tokenSpaceToCheck) in tokenSpacesInPlay.enumerated() {
+            if tokenSpaceToCheck.Location.col == location.col && tokenSpaceToCheck.Location.numInCol == location.numInCol && tokenSpaceToCheck.Location.posistioningNumInCol == location.posistioningNumInCol {
+                tokenSpaceToCheck.removeFromParent()
+                tokenSpacesInPlay.remove(at: index)
+                break
+            }
+        }
+        
     }
     
     

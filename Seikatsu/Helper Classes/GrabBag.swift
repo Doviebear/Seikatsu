@@ -31,9 +31,20 @@ class GrabBag: Codable {
         tokens.shuffle()
     }
     
-    func drawToken() -> Token{
-        let chosenToken = tokens[0]
-        tokens.remove(at: 0)
+    func drawToken(canBeKoiPond: Bool = true) -> Token{
+        var chosenToken = tokens[0]
+        if !canBeKoiPond {
+            for (index,token) in tokens.enumerated() {
+                if token.birdType != "pond" {
+                    chosenToken = token
+                    tokens.remove(at: index)
+                    break
+                }
+            }
+        } else {
+            chosenToken = tokens[0]
+            tokens.remove(at: 0)
+        }
         return chosenToken
     }
 }
