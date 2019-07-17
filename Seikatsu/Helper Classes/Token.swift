@@ -11,7 +11,7 @@ import Foundation
 class Token: Codable {
     var flowerType: String
     var birdType: String
-    var position: Location?
+    var Location: Location?
     var player: Int?
     
     init(flowerType: String, birdType: String) {

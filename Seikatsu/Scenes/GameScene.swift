@@ -16,6 +16,29 @@ class GameScene: SKScene {
     var gameplayPhase = 0
     var selectedToken: tokenNode?
     var selectedTokenOldPosistion: CGPoint?
+    var localPlayerOneScore = 0 {
+        didSet {
+            localPlayerOneScoreLabel.text = "P1 Score is: \(localPlayerOneScore)"
+        }
+    }
+    var localPlayerTwoScore = 0 {
+        didSet {
+            localPlayerTwoScoreLabel.text = "P2 Score is: \(localPlayerTwoScore)"
+        }
+    }
+    var localPlayerThreeScore = 0 {
+        didSet {
+            localPlayerThreeScoreLabel.text = "P3 Score is: \(localPlayerThreeScore)"
+        }
+    }
+    
+    var localPlayerOneScoreLabel: SKLabelNode!
+    var localPlayerTwoScoreLabel: SKLabelNode!
+    var localPlayerThreeScoreLabel: SKLabelNode!
+    
+    
+    
+    
     
     override init(){
         self.model = GameModel()
@@ -80,6 +103,21 @@ class GameScene: SKScene {
             nodeOfToken.placeTokenNode(in: CGPoint(x: Int(JKGame.rect.maxX) - 100 - (100 * index),y: Int(JKGame.rect.midY)), on: self)
         }
         
+        localPlayerOneScoreLabel = SKLabelNode(text: "P1 Score is: \(localPlayerOneScore)")
+        localPlayerOneScoreLabel.position = CGPoint(x: 400 , y: Int(JKGame.rect.minY) + 200)
+        localPlayerOneScoreLabel.fontName = "RussoOne-Regular"
+        addChild(localPlayerOneScoreLabel)
+        
+        
+        localPlayerTwoScoreLabel = SKLabelNode(text: "P2 Score is: \(localPlayerTwoScore)")
+        localPlayerTwoScoreLabel.position = CGPoint(x: 400, y: Int(JKGame.rect.maxY) - 150)
+        localPlayerTwoScoreLabel.fontName = "RussoOne-Regular"
+        addChild(localPlayerTwoScoreLabel)
+        
+        localPlayerThreeScoreLabel = SKLabelNode(text: "P3 Score is: \(localPlayerThreeScore)")
+        localPlayerThreeScoreLabel.position = CGPoint(x: Int(JKGame.rect.maxX) - 400, y: Int(JKGame.rect.midY) )
+        localPlayerThreeScoreLabel.fontName = "RussoOne-Regular"
+        addChild(localPlayerThreeScoreLabel)
     }
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -88,7 +126,6 @@ class GameScene: SKScene {
         if let location = touch?.location(in: self) {
             let nodesArray = self.nodes(at: location)
             for node in nodesArray {
-                print("Name of node is: \(node.name)")
                 if gameplayPhase == 0 {
                     if node.name == "tokenNode" {
                         tokenNodeTouched(node: node)
@@ -103,9 +140,13 @@ class GameScene: SKScene {
     }
     
     func tokenSpaceTouched(node: SKNode){
-        if let nodeToPlace = selectedToken{
+        if let nodeToPlace = selectedToken {
             selectedTokenOldPosistion = selectedToken?.position
             nodeToPlace.position = node.position
+            let tokenSpaceNode = node as! TokenSpace
+            nodeToPlace.tokenData.Location = tokenSpaceNode.Location
+            addScoreFromPlacing(tokenNodeToCheck: nodeToPlace)
+            tokensInPlay.append(nodeToPlace)
             nodeToPlace.tokenData.player = nil
             node.removeFromParent()
             nextTurn()
@@ -148,6 +189,9 @@ class GameScene: SKScene {
     }
     
     func drawNewToken(for player: Int, at position: CGPoint) {
+        if model.grabBag.tokens.count <= 0 {
+            return
+        }
         let token = model.grabBag.drawToken()
         let nodeOfToken = tokenNode(token: token)
         nodeOfToken.placeTokenNode(in: position, on: self)
@@ -173,6 +217,58 @@ class GameScene: SKScene {
         }
     }
    
+    
+    /// Scoring
+    
+    func addScoreFromPlacing(tokenNodeToCheck: tokenNode) {
+        var adjacentTokens = [tokenNode]()
+        for token in tokensInPlay {
+            if tokenNodeToCheck.isAdjacent(tokenNode2: token) {
+                adjacentTokens.append(token)
+            }
+        }
+        var count = 0
+        for adjacentToken in adjacentTokens {
+            if tokenNodeToCheck.tokenData.birdType == adjacentToken.tokenData.birdType && tokenNodeToCheck.tokenData.birdType != "pond" {
+                if count == 0 {
+                    count = 1
+                }
+                count += 1
+            }
+        }
+        
+        // add the score here
+        if tokenNodeToCheck.tokenData.player == 1 {
+            updateScore(player: 1, amount: count)
+        } else if tokenNodeToCheck.tokenData.player == 2 {
+            updateScore(player: 2, amount: count)
+        } else if tokenNodeToCheck.tokenData.player == 3 {
+            updateScore(player: 3, amount: count)
+        } else {
+            print("Error adding score, Player not found")
+        }
+        
+    }
+    
+    
+    func updateScore(player: Int, amount: Int) {
+        if player == 1 {
+            model.playerOneScore += amount
+            localPlayerOneScore += amount
+        } else if player == 2 {
+            model.playerOneScore += amount
+            localPlayerTwoScore += amount
+        } else if player == 3 {
+            model.playerThreeScore += amount
+            localPlayerThreeScore += amount
+        } else {
+            print("error Updating score, player not found")
+        }
+    }
+    
+    
+    
+    
     
 
 }

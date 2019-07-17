@@ -31,12 +31,19 @@ class tokenNode: SKNode {
     var birdColors = [UIColor(rgb: 0xff9966), UIColor(rgb: 0x009933), UIColor(rgb: 0x0066cc), UIColor(rgb: 0xcc0000) ]
     var isKoiPond: Bool
     var tokenData: Token
+    var pond: SKShapeNode?
     
     
     init(token: Token) {
         if token.flowerType == "pond" {
             self.isKoiPond = true
             self.tokenData = token
+            let pond = SKShapeNode(circleOfRadius: 50)
+            pond.position = CGPoint(x: 0, y: 0)
+            pond.lineWidth = 0
+            pond.fillColor = UIColor(rgb: 0x6600ff)
+            pond.zPosition = 50
+            self.pond = pond
             super.init()
             return
         }
@@ -82,15 +89,40 @@ class tokenNode: SKNode {
         if !isKoiPond {
             addChild(flowerCircle!)
             flowerCircle!.addChild(birdCircle!)
-        } else {
-            let pond = SKShapeNode(circleOfRadius: 50)
-            pond.position = CGPoint(x: 0, y: 0)
-            pond.lineWidth = 0
-            pond.fillColor = UIColor(rgb: 0x6600ff )
-            addChild(pond)
+        } else if isKoiPond {
+            addChild(pond!)
+            print("added Pond")
         }
         scene.addChild(self)
         
+    }
+    
+    func isAdjacent(tokenNode2: tokenNode) -> Bool {
+        let col = self.tokenData.Location!.col
+        let posistioningNumInCol = self.tokenData.Location!.posistioningNumInCol
+        let col2 = tokenNode2.tokenData.Location!.col
+        let posistioningNumInCol2 = tokenNode2.tokenData.Location!.posistioningNumInCol
+        
+        
+        if col == col2 && posistioningNumInCol + 1 == posistioningNumInCol2 {
+            return true
+        } else if col == col2 && posistioningNumInCol - 1 == posistioningNumInCol2 {
+            return true
+        } else if col - 1 == col2 && posistioningNumInCol == posistioningNumInCol2 {
+            return true
+        } else if col + 1 == col2 && posistioningNumInCol == posistioningNumInCol2 {
+            return true
+        } else if col - 1 == col2 && posistioningNumInCol - 1 == posistioningNumInCol2 && col % 2 == 0 {
+            return true
+        } else if col + 1 == col2 && posistioningNumInCol - 1 == posistioningNumInCol2 && col % 2 == 0 {
+            return true
+        } else if col - 1 == col2 && posistioningNumInCol + 1 == posistioningNumInCol2 && col % 2 == 1 {
+            return true
+        } else if col + 1 == col2 && posistioningNumInCol + 1 == posistioningNumInCol2 && col % 2 == 1 {
+          return true
+        } else {
+            return false
+        }
     }
     
     

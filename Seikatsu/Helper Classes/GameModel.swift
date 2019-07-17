@@ -16,6 +16,9 @@ struct GameModel: Codable {
     var playerOneHand = [Token]()
     var playerTwoHand = [Token]()
     var playerThreeHand = [Token]()
+    var playerOneScore = 0
+    var playerTwoScore = 0
+    var playerThreeScore = 0
     
     
     init(){

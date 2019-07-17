@@ -25,7 +25,7 @@ class GrabBag: Codable {
         // adding Koi Ponds
         
         for _ in 1...4 {
-            tokens.append(koiPond(flowerType: "Pond", birdType: "Pond"))
+            tokens.append(koiPond(flowerType: "pond", birdType: "pond"))
         }
         
         tokens.shuffle()
