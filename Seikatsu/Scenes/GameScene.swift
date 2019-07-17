@@ -127,6 +127,10 @@ class GameScene: SKScene {
                     }
                 } else if gameplayPhase == 1 {
                     if node.name == "tokenSpace" {
+                        let tokenNd = node as! TokenSpace
+                        print("Col is: \(tokenNd.Location.col)")
+                        print("Num in Col is: \(tokenNd.Location.numInCol)")
+                        print("Pos Num in Col is: \(tokenNd.Location.posistioningNumInCol)")
                         tokenSpaceTouched(node: node)
                     }
                 }
@@ -151,6 +155,7 @@ class GameScene: SKScene {
     }
     
     func nextTurn() {
+        model.turnNum += 1
         let oldPosition = selectedTokenOldPosistion
         if model.playerTurn == 1 {
             for (index,token) in model.playerOneHand.enumerated() {
@@ -181,6 +186,9 @@ class GameScene: SKScene {
             drawNewToken(for: 3, at: oldPosition!)
         }
         gameplayPhase = 0
+        if model.turnNum >= 33 {
+            endOfRound()
+        }
     }
     
     func drawNewToken(for player: Int, at position: CGPoint) {
@@ -223,12 +231,27 @@ class GameScene: SKScene {
             }
         }
         var count = 0
-        for adjacentToken in adjacentTokens {
-            if tokenNodeToCheck.tokenData.birdType == adjacentToken.tokenData.birdType && tokenNodeToCheck.tokenData.birdType != "pond" {
-                if count == 0 {
-                    count = 1
+        if tokenNodeToCheck.tokenData.birdType == "pond" {
+            var numOfBirds = [0,0,0,0]
+            for i in 0...3 {
+                for adjacentToken in adjacentTokens {
+                    if model.grabBag.birds[i] == adjacentToken.tokenData.birdType {
+                        if numOfBirds[i] == 0 {
+                            numOfBirds[i] = 1
+                        }
+                        numOfBirds[i] += 1
+                    }
                 }
-                count += 1
+            }
+            count = numOfBirds.max()!
+        } else {
+            for adjacentToken in adjacentTokens {
+                if tokenNodeToCheck.tokenData.birdType == adjacentToken.tokenData.birdType && tokenNodeToCheck.tokenData.birdType != "pond" {
+                    if count == 0 {
+                        count = 1
+                    }
+                    count += 1
+                }
             }
         }
         
@@ -323,8 +346,75 @@ class GameScene: SKScene {
         
     }
     
+    func endOfRound() {
+        endOfRoundScoring()
+    }
     
     
+    func endOfRoundScoring() {
+        print("Started end of round scoring")
+        
+        let player1RowsInt = [[[1,1,2],[1,2,3],[1,3,4],[1,4,5]],[[2,1,2],[2,2,3],[2,3,4],[2,4,5],[2,5,6]],[[3,1,1],[3,2,2],[3,3,3],[3,4,4],[3,5,5],[3,6,6]],[[4,1,1],[4,2,2],[4,3,3],[4,5,5],[4,6,6],[4,7,7]],[[5,1,1],[5,2,2],[5,3,3],[5,4,4],[5,5,5],[5,6,6]],[[6,1,2],[6,2,3],[6,3,4],[6,4,5],[6,5,6]],[[7,1,2],[7,2,3],[7,3,4],[7,4,5]]]
+        let player2RowsInt = [[[4,1,1],[3,1,1],[2,1,2],[1,1,2]],[[5,1,1],[4,2,2],[3,2,2],[2,2,3],[1,2,3]],[[6,1,2],[5,2,2],[4,3,3],[3,3,3],[2,3,4],[1,3,4]],[[7,1,2],[6,2,3],[5,3,3],[3,4,4],[2,4,5],[1,4,5]],[[7,2,3],[6,3,4],[5,4,4],[4,5,5],[3,5,5],[2,5,6]],[[7,3,4],[6,4,5],[5,5,5],[4,6,6],[3,6,6]],[[7,4,5],[6,5,6],[5,6,6],[4,7,7]]]
+        let player3RowsInt = [[[4,1,1],[5,1,1],[6,1,2],[7,1,2]],[[3,1,1],[4,2,2],[5,2,2],[6,2,3],[7,2,3]],[[2,1,2],[3,2,2],[4,3,3],[5,3,3],[6,3,4],[7,3,4]],[[1,1,2],[2,2,3],[3,3,3],[5,4,4],[6,4,5],[7,4,5]],[[1,2,3],[2,3,4],[3,4,4],[4,5,5],[5,5,5],[6,5,6]],[[1,3,4],[2,4,5],[3,5,5],[4,6,6],[5,6,6]],[[1,4,5],[2,5,6],[3,6,6,],[4,7,7]]]
+        
+        let player1Rows = makeLocationArray(arrayToConvert: player1RowsInt)
+        let player2Rows = makeLocationArray(arrayToConvert: player2RowsInt)
+        let player3Rows = makeLocationArray(arrayToConvert: player3RowsInt)
+        let playerRowsArray = [player1Rows,player2Rows,player3Rows]
+        
+        
+        
+        var results = [0,0,0]
+        
+        for (index,playerRows) in playerRowsArray.enumerated() {
+        for locationArray in playerRows {
+            var numOfFlowers = [0,0,0,0]
+            var tokensArray = [tokenNode]()
+            for location in locationArray {
+                for tokenToCheck in tokensInPlay {
+                    if location == tokenToCheck.tokenData.Location {
+                        tokensArray.append(tokenToCheck)
+                        break
+                    }
+                }
+            }
+            for i in 0...3 {
+                for tokenToCheck in tokensArray {
+                    if model.grabBag.flowers[i] == tokenToCheck.tokenData.flowerType {
+                        numOfFlowers[i] += 1
+                    } else if tokenToCheck.tokenData.flowerType == "pond" {
+                        numOfFlowers[i] += 1
+                    }
+                }
+            }
+            let rawNumberOfFlowers = numOfFlowers.max()!
+            print("this is raw Flowers: \(rawNumberOfFlowers)")
+            let score = (rawNumberOfFlowers * (rawNumberOfFlowers + 1)) / 2
+            print("this is the score: \(score)")
+            results[index] += score
+            print("This is the results for \(index): \(results[index])")
+            
+        }
+        }
+        print("adding results to score")
+        localPlayerOneScore += results[0]
+        localPlayerTwoScore += results[1]
+        localPlayerThreeScore += results[2]
+    }
+    
+    func makeLocationArray(arrayToConvert: [[[Int]]]) -> [[Location]]{
+        var finishedArray = [[Location]]()
+        for locationArray in arrayToConvert {
+            var createdArrayOfLocations = [Location]()
+            for location in locationArray {
+                createdArrayOfLocations.append(Location(col: location[0], numInCol: location[1], posistioningNumInCol: location[2]))
+            }
+            finishedArray.append(createdArrayOfLocations)
+        }
+        print("made location array")
+        return finishedArray
+    }
     
     
 
