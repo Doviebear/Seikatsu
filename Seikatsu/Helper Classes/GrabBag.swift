@@ -10,8 +10,8 @@ import Foundation
 
 class GrabBag: Codable {
     var tokens = [Token]()
-    var flowers = ["Yellow","Blue","Pink","Purple"]
-    var birds = ["Yellow","Green","Blue","Red"]
+    var flowers = ["Orange","Purple","Blue","Yellow"]
+    var birds = ["Pink","Grey","Green","Red"]
     
     
     init() {

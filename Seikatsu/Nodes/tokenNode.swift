@@ -23,55 +23,43 @@ import SpriteKit
 // Koi Pond: 0x6600ff
 
 class tokenNode: SKNode {
-    var birdCircle: SKShapeNode?
-    var flowerCircle: SKShapeNode?
-    var flowers = ["Yellow","Blue","Pink","Purple"]
-    var birds = ["Yellow","Green","Blue","Red"]
+    var sprite: SKSpriteNode?
+    var flowers = ["Orange","Purple","Blue","Yellow"]
+    var birds = ["Pink","Grey","Green","Red"]
+    /*
     var flowerColors = [UIColor(rgb: 0xffff00), UIColor(rgb: 0x003399), UIColor(rgb: 0xff66ff), UIColor(rgb: 0x4d004d)]
     var birdColors = [UIColor(rgb: 0xff9966), UIColor(rgb: 0x009933), UIColor(rgb: 0x0066cc), UIColor(rgb: 0xcc0000) ]
+     */
     var isKoiPond: Bool
     var tokenData: Token
-    var pond: SKShapeNode?
     
     
     init(token: Token) {
         if token.flowerType == "pond" {
             self.isKoiPond = true
             self.tokenData = token
+            
+            /*
             let pond = SKShapeNode(circleOfRadius: 50)
             pond.position = CGPoint(x: 0, y: 0)
             pond.lineWidth = 0
             pond.fillColor = UIColor(rgb: 0x6600ff)
             pond.zPosition = 50
             self.pond = pond
+            */
+            sprite = SKSpriteNode(imageNamed: "SeikatsuToken_KoiPond")
+            sprite?.size = CGSize(width: 100, height: 100)
+            sprite?.position = CGPoint(x: 0, y: 0)
+            
             super.init()
             return
         }
         
-        let flowerCircle = SKShapeNode(circleOfRadius: 50)
-        var count = 0
-        for flower in flowers {
-            if flower == token.flowerType {
-                flowerCircle.fillColor = self.flowerColors[count]
-            }
-            count += 1
-        }
-        flowerCircle.lineWidth = 0
-        flowerCircle.position = CGPoint(x: 0, y: 0)
-        self.flowerCircle = flowerCircle
-    
-        let birdCircle = SKShapeNode(circleOfRadius: 25)
-        count = 0
-        for bird in birds {
-            if bird == token.birdType{
-                birdCircle.fillColor = self.birdColors[count]
-            }
-            count += 1
-        }
-        birdCircle.lineWidth = 0
-        birdCircle.position = CGPoint(x: 0, y: 0)
-        self.birdCircle = birdCircle
+        let finalSpriteString = "SeikatsuToken_" + token.birdType + token.flowerType
+        sprite = SKSpriteNode(imageNamed: finalSpriteString)
         
+        sprite?.size = CGSize(width: 100, height: 100)
+        sprite?.position = CGPoint(x: 0, y: 0)
         self.isKoiPond = false
         self.tokenData = token
         
@@ -86,13 +74,7 @@ class tokenNode: SKNode {
         self.name = "tokenNode"
         self.position = position
         self.zPosition = 20
-        if !isKoiPond {
-            addChild(flowerCircle!)
-            flowerCircle!.addChild(birdCircle!)
-        } else if isKoiPond {
-            addChild(pond!)
-            print("added Pond")
-        }
+        addChild(sprite!)
         scene.addChild(self)
         
     }
