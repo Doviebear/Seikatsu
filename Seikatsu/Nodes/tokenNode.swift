@@ -32,12 +32,20 @@ class tokenNode: SKNode {
      */
     var isKoiPond: Bool
     var tokenData: Token
+    var TokenSize: Int!
     
     
     init(token: Token) {
+        if UIDevice.current.userInterfaceIdiom == .pad {
+            TokenSize = 100
+        } else {
+            TokenSize = 75
+        }
+        
         if token.flowerType == "pond" {
             self.isKoiPond = true
             self.tokenData = token
+            
             
             /*
             let pond = SKShapeNode(circleOfRadius: 50)
@@ -47,9 +55,12 @@ class tokenNode: SKNode {
             pond.zPosition = 50
             self.pond = pond
             */
+            
             sprite = SKSpriteNode(imageNamed: "SeikatsuToken_KoiPond")
-            sprite?.size = CGSize(width: 100, height: 100)
+            sprite?.size = CGSize(width: TokenSize, height: TokenSize)
             sprite?.position = CGPoint(x: 0, y: 0)
+            
+            
             
             super.init()
             return
@@ -58,7 +69,7 @@ class tokenNode: SKNode {
         let finalSpriteString = "SeikatsuToken_" + token.birdType + token.flowerType
         sprite = SKSpriteNode(imageNamed: finalSpriteString)
         
-        sprite?.size = CGSize(width: 100, height: 100)
+        sprite?.size = CGSize(width: TokenSize, height: TokenSize)
         sprite?.position = CGPoint(x: 0, y: 0)
         self.isKoiPond = false
         self.tokenData = token

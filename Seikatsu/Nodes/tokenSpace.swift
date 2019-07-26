@@ -11,11 +11,18 @@ import SpriteKit
 
 class TokenSpace: SKSpriteNode {
     var Location: Location
+    var TokenSize: Int!
     
     init(Location: Location, textureName: String){
         
         self.Location = Location
         let textureToPut = SKTexture(imageNamed: textureName)
+        
+        if UIDevice.current.userInterfaceIdiom == .pad {
+            TokenSize = 100
+        } else {
+            TokenSize = 75
+        }
         super.init(texture: textureToPut, color: .clear, size: CGSize(width: 100, height: 100))
     }
     
@@ -29,14 +36,15 @@ class TokenSpace: SKSpriteNode {
         self.name = "tokenSpace"
         self.zPosition = 2
         if Location.col % 2 == 0 {
-            let x = 1000 - self.Location.col * 110
-            let y = Int(JKGame.rect.maxY) - 100 - Location.posistioningNumInCol * 110
+            let x = 1000 - self.Location.col * (TokenSize + (TokenSize/10))
+            let y = Int(JKGame.rect.maxY) - 100 - Location.posistioningNumInCol * (TokenSize + (TokenSize/10))
             self.position = CGPoint(x: x, y: y)
         } else {
-            let x = 1000 - self.Location.col * 110
-            let y = Int(JKGame.rect.maxY) - 150 - Location.posistioningNumInCol * 110
+            let x = 1000 - self.Location.col * (TokenSize + (TokenSize/10))
+            let y = Int(JKGame.rect.maxY) - 150 - Location.posistioningNumInCol * (TokenSize + (TokenSize/10))
             self.position = CGPoint(x: x, y: y)
         }
         scene.addChild(self)
     }
 }
+

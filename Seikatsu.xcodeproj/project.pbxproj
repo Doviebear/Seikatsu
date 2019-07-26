@@ -20,6 +20,7 @@
 		E86F2C2522DCBBAE0069AC1A /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E86F2C2322DCBBAE0069AC1A /* Main.storyboard */; };
 		E86F2C2722DCBBB30069AC1A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E86F2C2622DCBBB30069AC1A /* Assets.xcassets */; };
 		E86F2C2A22DCBBB30069AC1A /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E86F2C2822DCBBB30069AC1A /* LaunchScreen.storyboard */; };
+		E8DB2C2E22E8D92100A6A212 /* MenuScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8DB2C2D22E8D92100A6A212 /* MenuScene.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -38,6 +39,7 @@
 		E86F2C2622DCBBB30069AC1A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		E86F2C2922DCBBB30069AC1A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		E86F2C2B22DCBBB30069AC1A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		E8DB2C2D22E8D92100A6A212 /* MenuScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuScene.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -67,6 +69,7 @@
 			isa = PBXGroup;
 			children = (
 				E86F2C1F22DCBBAE0069AC1A /* GameScene.swift */,
+				E8DB2C2D22E8D92100A6A212 /* MenuScene.swift */,
 			);
 			path = Scenes;
 			sourceTree = "<group>";
@@ -193,6 +196,7 @@
 			files = (
 				E86F2C2022DCBBAE0069AC1A /* GameScene.swift in Sources */,
 				E83FBCE722DD09F0001D8684 /* tokenNode.swift in Sources */,
+				E8DB2C2E22E8D92100A6A212 /* MenuScene.swift in Sources */,
 				E83FBCDC22DCCC0B001D8684 /* Token.swift in Sources */,
 				E83FBCE022DCCD45001D8684 /* GrabBag.swift in Sources */,
 				E86F2C2222DCBBAE0069AC1A /* GameViewController.swift in Sources */,
