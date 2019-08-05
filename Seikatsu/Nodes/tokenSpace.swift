@@ -34,14 +34,15 @@ class TokenSpace: SKSpriteNode {
     ///Dimensions: radius: 50 pts, Gap between circles: 5 pts, center to center (from col to col): 60 pts
     func drawNode(on scene: SKScene){
         self.name = "tokenSpace"
-        self.zPosition = 2
+        self.zPosition = 8
+        let colDifference = TokenSize + (TokenSize/10)
         if Location.col % 2 == 0 {
-            let x = 1000 - self.Location.col * (TokenSize + (TokenSize/10))
-            let y = Int(JKGame.rect.maxY) - 100 - Location.posistioningNumInCol * (TokenSize + (TokenSize/10))
+            let x = Int(JKGame.rect.width/2) + (4 * colDifference) - self.Location.col * colDifference
+            let y = Int(JKGame.rect.midY) + (4 * colDifference) - (Location.posistioningNumInCol * colDifference)
             self.position = CGPoint(x: x, y: y)
         } else {
-            let x = 1000 - self.Location.col * (TokenSize + (TokenSize/10))
-            let y = Int(JKGame.rect.maxY) - 150 - Location.posistioningNumInCol * (TokenSize + (TokenSize/10))
+            let x = Int(JKGame.rect.width/2) + (4 * colDifference) - self.Location.col * colDifference
+            let y = Int(JKGame.rect.midY) + (4 * colDifference) - (Location.posistioningNumInCol * colDifference) - TokenSize/2
             self.position = CGPoint(x: x, y: y)
         }
         scene.addChild(self)

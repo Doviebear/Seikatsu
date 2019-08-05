@@ -9,6 +9,8 @@
 import SpriteKit
 import GameplayKit
 
+
+
 class GameScene: SKScene {
     var model: GameModel
     var tokensInPlay = [tokenNode]()
@@ -37,7 +39,12 @@ class GameScene: SKScene {
     var localPlayerTwoScoreLabel: SKLabelNode!
     var localPlayerThreeScoreLabel: SKLabelNode!
     
+    var centerCircle: SKShapeNode!
+    var player1Box: SKShapeNode!
+    var player2Box: SKShapeNode!
+    var player3Box: SKShapeNode!
     
+    var turnIndicator: SKShapeNode!
     
     
     
@@ -51,6 +58,8 @@ class GameScene: SKScene {
     }
     
     override func sceneDidLoad() {
+        print("Screen Width: \(JKGame.rect.width)")
+        print("Screen Height: \(JKGame.rect.height)")
         for i in 1...2 {
             for k in 1...4 {
                 var col = 1
@@ -106,7 +115,7 @@ class GameScene: SKScene {
         }
         for (index,token) in model.playerThreeHand.enumerated() {
             let nodeOfToken = tokenNode(token: token)
-            nodeOfToken.placeTokenNode(in: CGPoint(x: Int(JKGame.rect.maxX) - 100 - (100 * index),y: Int(JKGame.rect.midY)), on: self)
+            nodeOfToken.placeTokenNode(in: CGPoint(x: Int(JKGame.rect.maxX) - 100 - (100 * index),y: Int(JKGame.rect.maxY) - 150), on: self)
         }
         
         
@@ -123,7 +132,7 @@ class GameScene: SKScene {
             for node in nodesArray {
                 if gameplayPhase == 0 {
                     if node.name == "tokenNode" {
-                        tokenNodeTouched(node: node)
+                        tokenNodeTouched(node: node, phase: 0)
                     }
                 } else if gameplayPhase == 1 {
                     if node.name == "tokenSpace" {
@@ -131,26 +140,33 @@ class GameScene: SKScene {
                         print("Col is: \(tokenNd.Location.col)")
                         print("Num in Col is: \(tokenNd.Location.numInCol)")
                         print("Pos Num in Col is: \(tokenNd.Location.posistioningNumInCol)")
-                        tokenSpaceTouched(node: node)
+                        tokenSpaceTouched(node: node, phase: 1)
+                    } else if node.name == "tokenNode" {
+                        tokenNodeTouched(node: node, phase: 1)
                     }
                 }
             }
         }
     }
     
-    func tokenSpaceTouched(node: SKNode){
-        if let nodeToPlace = selectedToken {
-            selectedTokenOldPosistion = selectedToken?.position
-            nodeToPlace.position = node.position
-            let tokenSpaceNode = node as! TokenSpace
-            nodeToPlace.tokenData.Location = tokenSpaceNode.Location
-            addScoreFromPlacing(tokenNodeToCheck: nodeToPlace)
-            tokensInPlay.append(nodeToPlace)
-            nodeToPlace.tokenData.player = nil
-            node.removeFromParent()
-            nextTurn()
-        } else {
-            print("Error: Selected Token Not Found")
+    func tokenSpaceTouched(node: SKNode, phase: Int){
+        if phase == 1 {
+            if let nodeToPlace = selectedToken {
+                selectedTokenOldPosistion = selectedToken?.position
+                nodeToPlace.position = node.position
+                let tokenSpaceNode = node as! TokenSpace
+                nodeToPlace.tokenData.Location = tokenSpaceNode.Location
+                addScoreFromPlacing(tokenNodeToCheck: nodeToPlace)
+                tokensInPlay.append(nodeToPlace)
+                nodeToPlace.tokenData.player = nil
+                nodeToPlace.xScale = 1.0
+                nodeToPlace.yScale = 1.0
+                nodeToPlace.zPosition = 20
+                node.removeFromParent()
+                nextTurn()
+            } else {
+                print("Error: Selected Token Not Found")
+            }
         }
     }
     
@@ -164,6 +180,7 @@ class GameScene: SKScene {
                     selectedToken = nil
                 }
             }
+            turnIndicator.position = CGPoint(x: 400, y: Int(JKGame.rect.maxY) - 150 - 25 )
             model.playerTurn = 2
             drawNewToken(for: 1, at: oldPosition!)
         } else if model.playerTurn == 2 {
@@ -173,6 +190,7 @@ class GameScene: SKScene {
                     selectedToken = nil
                 }
             }
+            turnIndicator.position = CGPoint(x: Int(JKGame.rect.maxX) - 400, y: Int(JKGame.rect.maxY) - 150 - 25 )
             model.playerTurn = 3
             drawNewToken(for: 2, at: oldPosition!)
         } else if model.playerTurn == 3 {
@@ -182,6 +200,7 @@ class GameScene: SKScene {
                     selectedToken = nil
                 }
             }
+            turnIndicator.position = CGPoint(x: 400, y: Int(JKGame.rect.minY) + 200 - 25 )
             model.playerTurn = 1
             drawNewToken(for: 3, at: oldPosition!)
         }
@@ -212,11 +231,27 @@ class GameScene: SKScene {
         
     }
     
-    func tokenNodeTouched(node: SKNode) {
-        let tokenNode = node as? tokenNode
-        if tokenNode?.tokenData.player == model.playerTurn {
-            selectedToken = tokenNode
-            gameplayPhase = 1
+    func tokenNodeTouched(node: SKNode, phase: Int) {
+        if phase == 0 {
+            let tokenNode = node as? tokenNode
+            if tokenNode?.tokenData.player == model.playerTurn {
+                selectedToken = tokenNode
+                gameplayPhase = 1
+                tokenNode?.xScale = 1.25
+                tokenNode?.yScale = 1.25
+                tokenNode?.zPosition = 21
+            }
+        } else if phase == 1 {
+            let tokenNode = node as? tokenNode
+            if tokenNode?.tokenData.player == model.playerTurn {
+                if tokenNode === selectedToken {
+                    selectedToken = nil
+                    tokenNode?.xScale = 1
+                    tokenNode?.yScale = 1
+                    tokenNode?.zPosition = 20
+                    gameplayPhase = 0
+                }
+            }
         }
     }
    
@@ -321,18 +356,56 @@ class GameScene: SKScene {
         localPlayerOneScoreLabel = SKLabelNode(text: "P1 Score is: \(localPlayerOneScore)")
         localPlayerOneScoreLabel.position = CGPoint(x: 400 , y: Int(JKGame.rect.minY) + 200)
         localPlayerOneScoreLabel.fontName = "RussoOne-Regular"
+        localPlayerOneScoreLabel.zPosition = 7
         addChild(localPlayerOneScoreLabel)
         
         
         localPlayerTwoScoreLabel = SKLabelNode(text: "P2 Score is: \(localPlayerTwoScore)")
         localPlayerTwoScoreLabel.position = CGPoint(x: 400, y: Int(JKGame.rect.maxY) - 150)
         localPlayerTwoScoreLabel.fontName = "RussoOne-Regular"
+        localPlayerTwoScoreLabel.zPosition = 7
         addChild(localPlayerTwoScoreLabel)
         
         localPlayerThreeScoreLabel = SKLabelNode(text: "P3 Score is: \(localPlayerThreeScore)")
-        localPlayerThreeScoreLabel.position = CGPoint(x: Int(JKGame.rect.maxX) - 400, y: Int(JKGame.rect.midY) )
+        localPlayerThreeScoreLabel.position = CGPoint(x: Int(JKGame.rect.maxX) - 400, y: Int(JKGame.rect.maxY) - 150)
         localPlayerThreeScoreLabel.fontName = "RussoOne-Regular"
+        localPlayerThreeScoreLabel.zPosition = 7
         addChild(localPlayerThreeScoreLabel)
+        
+        centerCircle = SKShapeNode(circleOfRadius: 425)
+        centerCircle.fillColor = UIColor(rgb: 0xffd480) //Tan
+        centerCircle.lineWidth = 0
+        centerCircle.zPosition = 5
+        centerCircle.position = CGPoint(x: JKGame.rect.midX, y: JKGame.rect.midY)
+        addChild(centerCircle)
+        
+        player1Box = SKShapeNode(rectOf: CGSize(width: JKGame.rect.width, height: JKGame.rect.height/2))
+        player1Box.fillColor = UIColor(rgb: 0xff66cc) //Pink
+        player1Box.lineWidth = 0
+        player1Box.zPosition = 3
+        player1Box.position = CGPoint(x: JKGame.rect.midX, y: JKGame.rect.midY/2)
+        addChild(player1Box)
+        
+        player2Box = SKShapeNode(rectOf: CGSize(width: JKGame.rect.width/2, height: JKGame.rect.height))
+        player2Box.fillColor = UIColor(rgb: 0x33ccff) //light blue
+        player2Box.lineWidth = 0
+        player2Box.zPosition = 2
+        player2Box.position = CGPoint(x: JKGame.rect.midX/2, y: JKGame.rect.midY)
+        addChild(player2Box)
+        
+        player3Box = SKShapeNode(rectOf: CGSize(width: JKGame.rect.width/2, height: JKGame.rect.height))
+        player3Box.fillColor = UIColor(rgb: 0x009900) //Green
+        player3Box.lineWidth = 0
+        player3Box.zPosition = 2
+        player3Box.position = CGPoint(x: JKGame.rect.midX/2 * 3, y: JKGame.rect.midY)
+        addChild(player3Box)
+        
+        turnIndicator = SKShapeNode(circleOfRadius: 12.5)
+        turnIndicator.fillColor = UIColor(rgb: 0xff5050) //red
+        turnIndicator.zPosition = 8
+        turnIndicator.lineWidth = 0
+        turnIndicator.position = CGPoint(x: 400, y: Int(JKGame.rect.minY) + 200 - 25 )
+        addChild(turnIndicator)
     }
     
     func removeTokenSpace(at location: Location) {
