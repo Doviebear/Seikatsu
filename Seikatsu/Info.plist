@@ -43,6 +43,10 @@
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
 	<key>NSAppTransportSecurity</key>
-	<dict/>
+    <dict>
+        <!--Include to allow all connections (DANGER)-->
+        <key>NSAllowsArbitraryLoads</key>
+        <true/>
+    </dict>
 </dict>
 </plist>

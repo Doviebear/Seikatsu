@@ -7,4 +7,5 @@ target 'Seikatsu' do
 
   # Pods for Seikatsu
 	pod 'Alamofire'
+  pod 'Socket.IO-Client-Swift'
 end

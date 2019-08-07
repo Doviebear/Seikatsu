@@ -10,17 +10,22 @@ import UIKit
 import SpriteKit
 import GameplayKit
 import Alamofire
+import SocketIO
 
 
 class GameViewController: UIViewController {
     
   
-    var url = URL(string: "http://127.0.0.1:2567/")
+    var url = URL(string: "http://127.0.0.1:3003/")
+    
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        Alamofire.request("http://127.0.0.1:2567/").responseJSON { response in
+        
+        /*
+        Alamofire.request(urlString!).responseJSON { response in
             print("Request: \(String(describing: response.request))")   // original url request
             print("Response: \(String(describing: response.response))") // http url response
             print("Result: \(response.result)")                         // response serialization result
@@ -33,15 +38,32 @@ class GameViewController: UIViewController {
                 print("Data: \(utf8Text)") // original server data as UTF8 string
             }
         }
+        */
         
+        /*
+        let manager = SocketManager(socketURL: URL(string: "http://127.0.0.1:3003")!, config: [.log(true), .compress])
+        let socket = manager.defaultSocket
+        
+        socket.on(clientEvent: .connect) {data, ack in
+            print("socket connected")
+        }
         
        
+        
+        socket.connect()
+        */
+        
+        SocketIOHelper.helper.createConnection()
+        
+        
+        
+
         
        
         JKGame.game.setOrientation(JKOrientation.landscape)
         
         
-        let sceneNode = GameScene()
+        let sceneNode = MenuScene()
         sceneNode.size = JKGame.size
         sceneNode.scaleMode = .aspectFill
                 

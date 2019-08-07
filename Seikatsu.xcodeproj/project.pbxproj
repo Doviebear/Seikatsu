@@ -3,10 +3,12 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 51;
 	objects = {
 
 /* Begin PBXBuildFile section */
+		E817C34C22F9DBA500A8BC16 /* SocketIOHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = E817C34B22F9DBA500A8BC16 /* SocketIOHelper.swift */; };
+		E817C34E22FB12BB00A8BC16 /* GameSceneOnline.swift in Sources */ = {isa = PBXBuildFile; fileRef = E817C34D22FB12BB00A8BC16 /* GameSceneOnline.swift */; };
 		E83FBCDA22DCCBBB001D8684 /* JKClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = E83FBCD922DCCBBB001D8684 /* JKClass.swift */; };
 		E83FBCDC22DCCC0B001D8684 /* Token.swift in Sources */ = {isa = PBXBuildFile; fileRef = E83FBCDB22DCCC0B001D8684 /* Token.swift */; };
 		E83FBCDE22DCCC84001D8684 /* Location.swift in Sources */ = {isa = PBXBuildFile; fileRef = E83FBCDD22DCCC84001D8684 /* Location.swift */; };
@@ -28,6 +30,8 @@
 		468178FF1C2B089363F5B4EB /* Pods-Seikatsu.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Seikatsu.release.xcconfig"; path = "Target Support Files/Pods-Seikatsu/Pods-Seikatsu.release.xcconfig"; sourceTree = "<group>"; };
 		9509E7E748CB1D3F0F406D7C /* Pods-Seikatsu.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Seikatsu.debug.xcconfig"; path = "Target Support Files/Pods-Seikatsu/Pods-Seikatsu.debug.xcconfig"; sourceTree = "<group>"; };
 		D9A9399E779A376C0DB6F184 /* Pods_Seikatsu.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Seikatsu.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		E817C34B22F9DBA500A8BC16 /* SocketIOHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SocketIOHelper.swift; sourceTree = "<group>"; };
+		E817C34D22FB12BB00A8BC16 /* GameSceneOnline.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameSceneOnline.swift; sourceTree = "<group>"; };
 		E83FBCD922DCCBBB001D8684 /* JKClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JKClass.swift; sourceTree = "<group>"; };
 		E83FBCDB22DCCC0B001D8684 /* Token.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Token.swift; sourceTree = "<group>"; };
 		E83FBCDD22DCCC84001D8684 /* Location.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Location.swift; sourceTree = "<group>"; };
@@ -64,7 +68,6 @@
 				9509E7E748CB1D3F0F406D7C /* Pods-Seikatsu.debug.xcconfig */,
 				468178FF1C2B089363F5B4EB /* Pods-Seikatsu.release.xcconfig */,
 			);
-			name = Pods;
 			path = Pods;
 			sourceTree = "<group>";
 		};
@@ -84,6 +87,7 @@
 				E83FBCDD22DCCC84001D8684 /* Location.swift */,
 				E83FBCDF22DCCD45001D8684 /* GrabBag.swift */,
 				E83FBCE122DCCEA8001D8684 /* GameModel.swift */,
+				E817C34B22F9DBA500A8BC16 /* SocketIOHelper.swift */,
 			);
 			path = "Helper Classes";
 			sourceTree = "<group>";
@@ -92,6 +96,7 @@
 			isa = PBXGroup;
 			children = (
 				E86F2C1F22DCBBAE0069AC1A /* GameScene.swift */,
+				E817C34D22FB12BB00A8BC16 /* GameSceneOnline.swift */,
 				E8DB2C2D22E8D92100A6A212 /* MenuScene.swift */,
 			);
 			path = Scenes;
@@ -271,8 +276,10 @@
 				E86F2C2222DCBBAE0069AC1A /* GameViewController.swift in Sources */,
 				E83FBCE522DCD96E001D8684 /* tokenSpace.swift in Sources */,
 				E86F2C1A22DCBBAE0069AC1A /* AppDelegate.swift in Sources */,
+				E817C34C22F9DBA500A8BC16 /* SocketIOHelper.swift in Sources */,
 				E83FBCE222DCCEA8001D8684 /* GameModel.swift in Sources */,
 				E83FBCDE22DCCC84001D8684 /* Location.swift in Sources */,
+				E817C34E22FB12BB00A8BC16 /* GameSceneOnline.swift in Sources */,
 				E83FBCDA22DCCBBB001D8684 /* JKClass.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
