@@ -10,11 +10,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Seikatsu/Scenes/GameScene.swift"
-            timestampString = "586128299.9008321"
+            timestampString = "587484924.956671"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "431"
-            endingLineNumber = "431"
+            startingLineNumber = "432"
+            endingLineNumber = "432"
             landmarkName = "endOfRoundScoring()"
             landmarkType = "7">
          </BreakpointContent>

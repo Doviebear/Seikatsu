@@ -23,6 +23,7 @@ class GameViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        SocketIOHelper.helper.viewController = self
         
         /*
         Alamofire.request(urlString!).responseJSON { response in

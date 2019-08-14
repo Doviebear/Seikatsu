@@ -21,7 +21,7 @@ class TokenSpace: SKSpriteNode {
         if UIDevice.current.userInterfaceIdiom == .pad {
             TokenSize = 100
         } else {
-            TokenSize = 75
+            TokenSize = 85
         }
         super.init(texture: textureToPut, color: .clear, size: CGSize(width: 100, height: 100))
     }
@@ -35,6 +35,7 @@ class TokenSpace: SKSpriteNode {
     func drawNode(on scene: SKScene){
         self.name = "tokenSpace"
         self.zPosition = 8
+        self.size = CGSize(width: TokenSize, height: TokenSize)
         let colDifference = TokenSize + (TokenSize/10)
         if Location.col % 2 == 0 {
             let x = Int(JKGame.rect.width/2) + (4 * colDifference) - self.Location.col * colDifference

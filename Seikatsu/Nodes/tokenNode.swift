@@ -39,7 +39,7 @@ class tokenNode: SKNode {
         if UIDevice.current.userInterfaceIdiom == .pad {
             TokenSize = 100
         } else {
-            TokenSize = 75
+            TokenSize = 85
         }
         
         if token.flowerType == "pond" {

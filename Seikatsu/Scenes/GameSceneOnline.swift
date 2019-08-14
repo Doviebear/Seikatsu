@@ -13,6 +13,7 @@ class GameSceneOnline: SKScene {
     var model: GameModel
     var tokensInPlay = [tokenNode]()
     var tokenSpacesInPlay = [TokenSpace]()
+    var playerTokenNodesInPlay = [tokenNode]()
     // 0 is new turn start, 1 is picked from hand
     var gameplayPhase = 0
     var selectedToken: tokenNode?
@@ -33,6 +34,8 @@ class GameSceneOnline: SKScene {
         }
     }
     
+  
+    
     var localPlayerOneScoreLabel: SKLabelNode!
     var localPlayerTwoScoreLabel: SKLabelNode!
     var localPlayerThreeScoreLabel: SKLabelNode!
@@ -43,11 +46,14 @@ class GameSceneOnline: SKScene {
     var player3Box: SKShapeNode!
     
     var turnIndicator: SKShapeNode!
+    var playerNum: Int
     
     
     
-    override init(){
-        self.model = GameModel()
+    init(gameModel: GameModel, player: Int){
+        self.model = gameModel
+        self.playerNum = player
+        print("This is playerNum when initing \(player)")
         super.init(size: JKGame.size)
     }
     
@@ -55,7 +61,109 @@ class GameSceneOnline: SKScene {
         fatalError("init(coder:) has not been implemented")
     }
     
+    
+    @objc func loadGameModel(_ notification: Notification? = nil) {
+        if let notif = notification {
+            guard let modelData = notif.object as? GameModel else {
+                return
+            }
+            self.model = modelData
+        }
+      
+        //Update All Tokens in Play
+        //Loop over all tokens in play on local and compare to tokens in play on model
+        //Look for differences and update local based on online model
+        for onlineToken in model.TokensInPlay {
+            var match = false
+            for localToken in self.tokensInPlay {
+                
+                if onlineToken == localToken.tokenData{
+                    match = true
+                    print("Found match")
+                    break
+                }
+            }
+            if match == false {
+                print("Didn't find match, creating piece")
+                let tokenToPlace = tokenNode(token: onlineToken)
+                tokensInPlay.append(tokenToPlace)
+                let positionToPut = getPositionOfTokenSpace(at: onlineToken.Location!)
+                tokenToPlace.placeTokenNode(in: positionToPut!, on: self)
+            }
+            
+        }
+        
+        //Update All Player Hands
+        //Just remove and replace all tokenNodes in the player hands
+        for tokenNode in self.playerTokenNodesInPlay {
+            tokenNode.removeFromParent()
+        }
+        self.playerTokenNodesInPlay.removeAll()
+        
+        if self.playerNum == 1 {
+            for (index,token) in model.playerOneHand.enumerated() {
+                let nodeOfToken = tokenNode(token: token)
+                nodeOfToken.placeTokenNode(in: CGPoint(x: 100 + (100 * index) ,y: Int(JKGame.rect.minY) + 200), on: self)
+                playerTokenNodesInPlay.append(nodeOfToken)
+            }
+        } else if self.playerNum == 2 {
+            for (index,token) in model.playerTwoHand.enumerated() {
+                let nodeOfToken = tokenNode(token: token)
+                nodeOfToken.placeTokenNode(in: CGPoint(x: 100 + (100 * index) ,y: Int(JKGame.rect.maxY) - 150), on: self)
+                playerTokenNodesInPlay.append(nodeOfToken)
+            }
+        } else if self.playerNum == 3 {
+            for (index,token) in model.playerThreeHand.enumerated() {
+                let nodeOfToken = tokenNode(token: token)
+                nodeOfToken.placeTokenNode(in: CGPoint(x: Int(JKGame.rect.maxX) - 100 - (100 * index),y: Int(JKGame.rect.maxY) - 150), on: self)
+                playerTokenNodesInPlay.append(nodeOfToken)
+            }
+        }
+        
+        
+        //Checks for TokenSpaces under current Tokens in play and removes them
+        for tokenSpace in self.tokenSpacesInPlay {
+            for token in self.tokensInPlay {
+                if token.tokenData.Location == tokenSpace.Location {
+                    removeTokenSpace(at: tokenSpace.Location)
+                }
+            }
+        }
+        
+        // Updates scoring of all players
+        //print("Player one score when recieved: \(model.playerOneScore)")
+        //print("Player Two score when recieved: \(model.playerTwoScore)")
+        //print("Player Three score when recieved: \(model.playerThreeScore)")
+        updateScore(player: 1, setAt: model.playerOneScore)
+        updateScore(player: 2, setAt: model.playerTwoScore)
+        updateScore(player: 3, setAt: model.playerThreeScore)
+        
+        if let notif = notification {
+            if notif.name == .roundEnd {
+                endOfRoundScoring()
+                return
+            }
+        }
+        
+        
+        
+        
+        //Moves the turn indicator to the right place
+        if model.playerTurn == 1 {
+            turnIndicator.position = CGPoint(x: 400, y: Int(JKGame.rect.minY) + 200 - 25)
+        } else if model.playerTurn == 2 {
+            turnIndicator.position = CGPoint(x: 400, y: Int(JKGame.rect.maxY) - 150 - 25 )
+        } else if model.playerTurn == 3 {
+            turnIndicator.position = CGPoint(x: Int(JKGame.rect.maxX) - 400, y: Int(JKGame.rect.maxY) - 150 - 25)
+        }
+    }
+    
+    
+    
     override func sceneDidLoad() {
+        NotificationCenter.default.addObserver(self, selector: #selector(loadGameModel(_:)), name: .turnStart, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(loadGameModel(_:)), name: .roundEnd, object: nil)
+        
         print("Screen Width: \(JKGame.rect.width)")
         print("Screen Height: \(JKGame.rect.height)")
         for i in 1...2 {
@@ -102,28 +210,45 @@ class GameSceneOnline: SKScene {
                 tokenSpacesInPlay.append(tokenSpace)
             }
         }
+        /*
+        if self.playerNum == 1 {
+            for (index,token) in model.playerOneHand.enumerated() {
+                let nodeOfToken = tokenNode(token: token)
+                nodeOfToken.placeTokenNode(in: CGPoint(x: 100 + (100 * index) ,y: Int(JKGame.rect.minY) + 200), on: self)
+                playerTokenNodesInPlay.append(nodeOfToken)
+            }
+        } else if self.playerNum == 2 {
+            
         
-        for (index,token) in model.playerOneHand.enumerated() {
-            let nodeOfToken = tokenNode(token: token)
-            nodeOfToken.placeTokenNode(in: CGPoint(x: 100 + (100 * index) ,y: Int(JKGame.rect.minY) + 200), on: self)
+            for (index,token) in model.playerTwoHand.enumerated() {
+                let nodeOfToken = tokenNode(token: token)
+                nodeOfToken.placeTokenNode(in: CGPoint(x: 100 + (100 * index) ,y: Int(JKGame.rect.maxY) - 150), on: self)
+                playerTokenNodesInPlay.append(nodeOfToken)
+            }
+        } else if self.playerNum == 3 {
+            for (index,token) in model.playerThreeHand.enumerated() {
+                let nodeOfToken = tokenNode(token: token)
+                nodeOfToken.placeTokenNode(in: CGPoint(x: Int(JKGame.rect.maxX) - 100 - (100 * index),y: Int(JKGame.rect.maxY) - 150), on: self)
+                playerTokenNodesInPlay.append(nodeOfToken)
+            }
         }
-        for (index,token) in model.playerTwoHand.enumerated() {
-            let nodeOfToken = tokenNode(token: token)
-            nodeOfToken.placeTokenNode(in: CGPoint(x: 100 + (100 * index) ,y: Int(JKGame.rect.maxY) - 150), on: self)
-        }
-        for (index,token) in model.playerThreeHand.enumerated() {
-            let nodeOfToken = tokenNode(token: token)
-            nodeOfToken.placeTokenNode(in: CGPoint(x: Int(JKGame.rect.maxX) - 100 - (100 * index),y: Int(JKGame.rect.maxY) - 150), on: self)
-        }
+ */
         
         
         makeStartingPeices()
         
         
+        loadGameModel()
+        
     }
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-        
+        guard model.playerTurn == playerNum else {
+            print("Not your turn")
+            print("Turn num is: \(model.playerTurn)")
+            print("You are num: \(playerNum)")
+            return
+        }
         let touch = touches.first
         if let location = touch?.location(in: self) {
             let nodesArray = self.nodes(at: location)
@@ -156,11 +281,12 @@ class GameSceneOnline: SKScene {
                 nodeToPlace.tokenData.Location = tokenSpaceNode.Location
                 addScoreFromPlacing(tokenNodeToCheck: nodeToPlace)
                 tokensInPlay.append(nodeToPlace)
+                model.TokensInPlay.append(nodeToPlace.tokenData)
                 nodeToPlace.tokenData.player = nil
                 nodeToPlace.xScale = 1.0
                 nodeToPlace.yScale = 1.0
                 nodeToPlace.zPosition = 20
-                node.removeFromParent()
+                removeTokenSpace(at: tokenSpaceNode.Location)
                 nextTurn()
             } else {
                 print("Error: Selected Token Not Found")
@@ -171,50 +297,63 @@ class GameSceneOnline: SKScene {
     func nextTurn() {
         model.turnNum += 1
         let oldPosition = selectedTokenOldPosistion
-        if model.playerTurn == 1 {
+        if playerNum == 1 {
             for (index,token) in model.playerOneHand.enumerated() {
-                if token === selectedToken?.tokenData {
+                if token == selectedToken?.tokenData {
                     model.playerOneHand.remove(at: index)
-                    selectedToken = nil
                 }
             }
-            turnIndicator.position = CGPoint(x: 400, y: Int(JKGame.rect.maxY) - 150 - 25 )
-            model.playerTurn = 2
-            drawNewToken(for: 1, at: oldPosition!)
-        } else if model.playerTurn == 2 {
+        } else if playerNum == 2 {
             for (index,token) in model.playerTwoHand.enumerated() {
-                if token === selectedToken?.tokenData {
+                if token == selectedToken?.tokenData {
                     model.playerTwoHand.remove(at: index)
-                    selectedToken = nil
                 }
             }
-            turnIndicator.position = CGPoint(x: Int(JKGame.rect.maxX) - 400, y: Int(JKGame.rect.maxY) - 150 - 25 )
-            model.playerTurn = 3
-            drawNewToken(for: 2, at: oldPosition!)
-        } else if model.playerTurn == 3 {
+        } else if playerNum == 3 {
             for (index,token) in model.playerThreeHand.enumerated() {
-                if token === selectedToken?.tokenData {
+                if token == selectedToken?.tokenData {
                     model.playerThreeHand.remove(at: index)
-                    selectedToken = nil
+                    
                 }
             }
-            turnIndicator.position = CGPoint(x: 400, y: Int(JKGame.rect.minY) + 200 - 25 )
-            model.playerTurn = 1
-            drawNewToken(for: 3, at: oldPosition!)
         }
+        for (index, token) in self.playerTokenNodesInPlay.enumerated() {
+            if selectedToken?.tokenData == token.tokenData {
+                self.playerTokenNodesInPlay.remove(at: index)
+            }
+        }
+        
+        selectedToken = nil
+        model.playerTurn = playerNum + 1
+        if model.playerTurn == 4 {
+            model.playerTurn = 1
+        }
+        drawNewToken(for: self.playerNum, at: oldPosition!)
         gameplayPhase = 0
+        
         if model.turnNum >= 33 {
             endOfRound()
+            return
         }
+        //Send model up to server
+        /*
+        print("Player One score in local: \(localPlayerOneScore) ")
+        print("Player One score in Online: \(model.playerOneScore) ")
+        print("Player Two score in local: \(localPlayerTwoScore)")
+        print("Player Two score in Online: \(model.playerTwoScore)")
+        print("Player Three score in local: \(localPlayerThreeScore)")
+        print("Player Three score in Online: \(model.playerThreeScore) ")
+ */
+        SocketIOHelper.helper.endTurn(model: self.model)
     }
     
+    //No graphical changes, just updates the model
     func drawNewToken(for player: Int, at position: CGPoint) {
         if model.grabBag.tokens.count <= 0 {
             return
         }
         let token = model.grabBag.drawToken()
-        let nodeOfToken = tokenNode(token: token)
-        nodeOfToken.placeTokenNode(in: position, on: self)
+        
         
         if player == 1 {
             token.player = 1
@@ -289,11 +428,11 @@ class GameSceneOnline: SKScene {
         }
         
         // add the score here
-        if tokenNodeToCheck.tokenData.player == 1 {
+        if self.playerNum == 1 {
             updateScore(player: 1, amount: count)
-        } else if tokenNodeToCheck.tokenData.player == 2 {
+        } else if self.playerNum == 2 {
             updateScore(player: 2, amount: count)
-        } else if tokenNodeToCheck.tokenData.player == 3 {
+        } else if self.playerNum == 3 {
             updateScore(player: 3, amount: count)
         } else {
             print("Error adding score, Player not found")
@@ -302,18 +441,37 @@ class GameSceneOnline: SKScene {
     }
     
     
-    func updateScore(player: Int, amount: Int) {
-        if player == 1 {
-            model.playerOneScore += amount
-            localPlayerOneScore += amount
-        } else if player == 2 {
-            model.playerOneScore += amount
-            localPlayerTwoScore += amount
-        } else if player == 3 {
-            model.playerThreeScore += amount
-            localPlayerThreeScore += amount
+    func updateScore(player: Int, amount: Int? = nil, setAt: Int? = nil) {
+        if let amount = amount {
+            if player == 1 {
+                model.playerOneScore += amount
+                localPlayerOneScore += amount
+            } else if player == 2 {
+                model.playerTwoScore += amount
+                localPlayerTwoScore += amount
+            } else if player == 3 {
+                model.playerThreeScore += amount
+                localPlayerThreeScore += amount
+            } else {
+                print("error Updating score, player not found")
+            }
+            return
+        } else if let setAt = setAt {
+            if player == 1 {
+                model.playerOneScore = setAt
+                localPlayerOneScore = setAt
+            } else if player == 2 {
+                model.playerTwoScore = setAt
+                localPlayerTwoScore = setAt
+            } else if player == 3 {
+                model.playerThreeScore = setAt
+                localPlayerThreeScore = setAt
+            } else {
+                print("error Updating score, player not found")
+            }
+            return
         } else {
-            print("error Updating score, player not found")
+            print("Errot updating score, both values are nil")
         }
     }
     
@@ -327,6 +485,8 @@ class GameSceneOnline: SKScene {
     }
     
     func makeStartingPeices() {
+        
+        /*
         let token1 = model.grabBag.drawToken(canBeKoiPond: false)
         let nodeOfToken1 = tokenNode(token: token1)
         let Location1 = Location(col: 3, numInCol: 3, posistioningNumInCol: 3)
@@ -334,6 +494,7 @@ class GameSceneOnline: SKScene {
         nodeOfToken1.placeTokenNode(in: getPositionOfTokenSpace(at: Location1) ?? CGPoint(x: 0, y: 0), on: self)
         removeTokenSpace(at: Location1)
         tokensInPlay.append(nodeOfToken1)
+        model.TokensInPlay.append(nodeOfToken1.tokenData)
         
         let token2 = model.grabBag.drawToken(canBeKoiPond: false)
         let nodeOfToken2 = tokenNode(token: token2)
@@ -342,6 +503,7 @@ class GameSceneOnline: SKScene {
         nodeOfToken2.placeTokenNode(in: getPositionOfTokenSpace(at: Location2) ?? CGPoint(x: 0, y: 0), on: self)
         removeTokenSpace(at: Location2)
         tokensInPlay.append(nodeOfToken2)
+        model.TokensInPlay.append(nodeOfToken2.tokenData)
         
         let token3 = model.grabBag.drawToken(canBeKoiPond: false)
         let nodeOfToken3 = tokenNode(token: token3)
@@ -350,7 +512,9 @@ class GameSceneOnline: SKScene {
         nodeOfToken3.placeTokenNode(in: getPositionOfTokenSpace(at: Location3) ?? CGPoint(x: 0, y: 0), on: self)
         removeTokenSpace(at: Location3)
         tokensInPlay.append(nodeOfToken3)
-        
+        model.TokensInPlay.append(nodeOfToken3.tokenData)
+ 
+         */
         localPlayerOneScoreLabel = SKLabelNode(text: "P1 Score is: \(localPlayerOneScore)")
         localPlayerOneScoreLabel.position = CGPoint(x: 400 , y: Int(JKGame.rect.minY) + 200)
         localPlayerOneScoreLabel.fontName = "RussoOne-Regular"
@@ -418,8 +582,11 @@ class GameSceneOnline: SKScene {
     }
     
     func endOfRound() {
-        endOfRoundScoring()
+        model.playerTurn = 4
+        SocketIOHelper.helper.endRound(model: self.model)
     }
+    
+ 
     
     
     func endOfRoundScoring() {
