@@ -12,21 +12,45 @@ import SpriteKit
 
 class MenuScene: SKScene {
     
+    var title: SKLabelNode!
     var onlinePlayButton: SKShapeNode!
-    var localPlayButton: SKShapeNode!
+    var onlinePlayLabel: SKLabelNode!
+    
+    //var localPlayButton: SKShapeNode!
+    
+    
+    var howToPlayButton: SKShapeNode!
+    var howToPlayLabel: SKLabelNode!
     
     override func sceneDidLoad() {
+        
+        title = SKLabelNode(text: "Seikatsu")
+        title.color = UIColor(rgb: 0xffffff)
+        title.position = CGPoint(x: JKGame.rect.midX , y: JKGame.rect.maxY - 200)
+        title.fontSize = 76
+        title.fontName = "Courier"
+        addChild(title)
+        
+        
         onlinePlayButton = SKShapeNode(rectOf: CGSize(width: 300, height: 200))
-        onlinePlayButton.fillColor = .blue
+        onlinePlayButton.fillColor = UIColor(rgb: 0x00cc00 )
         onlinePlayButton.name = "OnlineButton"
         onlinePlayButton.position = CGPoint(x: JKGame.rect.midX, y: JKGame.rect.midY + 150)
         addChild(onlinePlayButton)
         
+        /*
         localPlayButton = SKShapeNode(rectOf: CGSize(width: 300, height: 200))
         localPlayButton.fillColor = .green
         localPlayButton.name = "LocalButton"
         localPlayButton.position = CGPoint(x: JKGame.rect.midX, y: JKGame.rect.midY - 150)
         addChild(localPlayButton)
+         */
+        
+        howToPlayButton = SKShapeNode(rectOf: CGSize(width: 300, height: 200))
+        howToPlayButton.fillColor = UIColor(rgb: 0x3399ff)
+        howToPlayButton.name = "howToPlayButton"
+        howToPlayButton.position = CGPoint(x: JKGame.rect.midX, y: JKGame.rect.midY - 400)
+        addChild(howToPlayButton)
         
 
         
@@ -40,11 +64,21 @@ class MenuScene: SKScene {
                     SocketIOHelper.helper.sendData()
                     return
                 } else if node.name == "LocalButton" {
+                    /*
                     let transition = SKTransition.flipVertical(withDuration: 0.5)
-                    let gameScene = GameScene()
-                    gameScene.scaleMode = .aspectFill
-                    self.view?.presentScene(gameScene, transition: transition)
-                    return
+                    if let gameScene = GameScene(fileNamed: "GameSceneOnlinePhonePortrait") {
+                        gameScene.scaleMode = .aspectFill
+                        //gameScene.size = JKGame.size
+                        self.view?.presentScene(gameScene, transition: transition)
+                        if let currentViewController = self.view?.findViewController() as? GameViewController {
+                            currentViewController.currentScene = gameScene
+                        }
+                        
+                        return
+                    }
+                     */
+                } else if node.name == "howToPlayButton" {
+                   
                 }
             }
         }
@@ -53,3 +87,4 @@ class MenuScene: SKScene {
     
    
 }
+

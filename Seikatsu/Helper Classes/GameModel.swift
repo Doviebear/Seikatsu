@@ -39,23 +39,20 @@ struct GameModel: Codable {
             }
         }
         let token1 = self.grabBag.drawToken(canBeKoiPond: false)
-        let nodeOfToken1 = tokenNode(token: token1)
         let Location1 = Location(col: 3, numInCol: 3, posistioningNumInCol: 3)
-        nodeOfToken1.tokenData.Location = Location1
-        self.TokensInPlay.append(nodeOfToken1.tokenData)
+        token1.Location = Location1
+        self.TokensInPlay.append(token1)
        
         
         let token2 = self.grabBag.drawToken(canBeKoiPond: false)
-        let nodeOfToken2 = tokenNode(token: token2)
         let Location2 = Location(col: 5, numInCol: 3, posistioningNumInCol: 3)
-        nodeOfToken2.tokenData.Location = Location2
-        self.TokensInPlay.append(nodeOfToken2.tokenData)
+        token2.Location = Location2
+        self.TokensInPlay.append(token2)
         
         let token3 = self.grabBag.drawToken(canBeKoiPond: false)
-        let nodeOfToken3 = tokenNode(token: token3)
         let Location3 = Location(col: 4, numInCol: 5, posistioningNumInCol: 5)
-        nodeOfToken3.tokenData.Location = Location3
-        self.TokensInPlay.append(nodeOfToken3.tokenData)
+        token3.Location = Location3
+        self.TokensInPlay.append(token3)
         
     }
     

@@ -35,11 +35,11 @@ class tokenNode: SKNode {
     var TokenSize: Int!
     
     
-    init(token: Token) {
-        if UIDevice.current.userInterfaceIdiom == .pad {
-            TokenSize = 100
+    init(token: Token, sizingHexagon hexagon: SKSpriteNode? = nil) {
+        if let hexagon = hexagon {
+            TokenSize = Int(hexagon.size.height/8)
         } else {
-            TokenSize = 85
+            TokenSize = 100
         }
         
         if token.flowerType == "pond" {

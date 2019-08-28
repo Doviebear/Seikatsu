@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		E80DC654230B4C9000D72E53 /* GameSceneOnlinePadLand.sks in Resources */ = {isa = PBXBuildFile; fileRef = E80DC653230B4C9000D72E53 /* GameSceneOnlinePadLand.sks */; };
+		E80DC656230C69E500D72E53 /* GameSceneOnlinePhoneLand.sks in Resources */ = {isa = PBXBuildFile; fileRef = E80DC655230C69E500D72E53 /* GameSceneOnlinePhoneLand.sks */; };
+		E80DC658230C69F600D72E53 /* GameSceneOnlinePadPortrait.sks in Resources */ = {isa = PBXBuildFile; fileRef = E80DC657230C69F600D72E53 /* GameSceneOnlinePadPortrait.sks */; };
 		E817C34C22F9DBA500A8BC16 /* SocketIOHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = E817C34B22F9DBA500A8BC16 /* SocketIOHelper.swift */; };
 		E817C34E22FB12BB00A8BC16 /* GameSceneOnline.swift in Sources */ = {isa = PBXBuildFile; fileRef = E817C34D22FB12BB00A8BC16 /* GameSceneOnline.swift */; };
 		E83FBCDA22DCCBBB001D8684 /* JKClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = E83FBCD922DCCBBB001D8684 /* JKClass.swift */; };
@@ -22,6 +25,7 @@
 		E86F2C2522DCBBAE0069AC1A /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E86F2C2322DCBBAE0069AC1A /* Main.storyboard */; };
 		E86F2C2722DCBBB30069AC1A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E86F2C2622DCBBB30069AC1A /* Assets.xcassets */; };
 		E86F2C2A22DCBBB30069AC1A /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E86F2C2822DCBBB30069AC1A /* LaunchScreen.storyboard */; };
+		E877B62C2304509600DA2AA6 /* GameSceneOnlinePhonePortrait.sks in Resources */ = {isa = PBXBuildFile; fileRef = E877B62B2304509600DA2AA6 /* GameSceneOnlinePhonePortrait.sks */; };
 		E8DB2C2E22E8D92100A6A212 /* MenuScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8DB2C2D22E8D92100A6A212 /* MenuScene.swift */; };
 		FFB926427AC41A8E1C01A580 /* Pods_Seikatsu.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D9A9399E779A376C0DB6F184 /* Pods_Seikatsu.framework */; };
 /* End PBXBuildFile section */
@@ -30,6 +34,9 @@
 		468178FF1C2B089363F5B4EB /* Pods-Seikatsu.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Seikatsu.release.xcconfig"; path = "Target Support Files/Pods-Seikatsu/Pods-Seikatsu.release.xcconfig"; sourceTree = "<group>"; };
 		9509E7E748CB1D3F0F406D7C /* Pods-Seikatsu.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Seikatsu.debug.xcconfig"; path = "Target Support Files/Pods-Seikatsu/Pods-Seikatsu.debug.xcconfig"; sourceTree = "<group>"; };
 		D9A9399E779A376C0DB6F184 /* Pods_Seikatsu.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Seikatsu.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		E80DC653230B4C9000D72E53 /* GameSceneOnlinePadLand.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = GameSceneOnlinePadLand.sks; sourceTree = "<group>"; };
+		E80DC655230C69E500D72E53 /* GameSceneOnlinePhoneLand.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = GameSceneOnlinePhoneLand.sks; sourceTree = "<group>"; };
+		E80DC657230C69F600D72E53 /* GameSceneOnlinePadPortrait.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = GameSceneOnlinePadPortrait.sks; sourceTree = "<group>"; };
 		E817C34B22F9DBA500A8BC16 /* SocketIOHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SocketIOHelper.swift; sourceTree = "<group>"; };
 		E817C34D22FB12BB00A8BC16 /* GameSceneOnline.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameSceneOnline.swift; sourceTree = "<group>"; };
 		E83FBCD922DCCBBB001D8684 /* JKClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JKClass.swift; sourceTree = "<group>"; };
@@ -47,6 +54,7 @@
 		E86F2C2622DCBBB30069AC1A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		E86F2C2922DCBBB30069AC1A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		E86F2C2B22DCBBB30069AC1A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		E877B62B2304509600DA2AA6 /* GameSceneOnlinePhonePortrait.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = GameSceneOnlinePhonePortrait.sks; sourceTree = "<group>"; };
 		E8DB2C2D22E8D92100A6A212 /* MenuScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuScene.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -77,6 +85,17 @@
 				D9A9399E779A376C0DB6F184 /* Pods_Seikatsu.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		E80DC652230B4C3E00D72E53 /* Scene Files */ = {
+			isa = PBXGroup;
+			children = (
+				E877B62B2304509600DA2AA6 /* GameSceneOnlinePhonePortrait.sks */,
+				E80DC655230C69E500D72E53 /* GameSceneOnlinePhoneLand.sks */,
+				E80DC653230B4C9000D72E53 /* GameSceneOnlinePadLand.sks */,
+				E80DC657230C69F600D72E53 /* GameSceneOnlinePadPortrait.sks */,
+			);
+			path = "Scene Files";
 			sourceTree = "<group>";
 		};
 		E83FBCD422DCCB63001D8684 /* Helper Classes */ = {
@@ -146,6 +165,7 @@
 				E86F2C2822DCBBB30069AC1A /* LaunchScreen.storyboard */,
 				E86F2C2B22DCBBB30069AC1A /* Info.plist */,
 				E83FBCD822DCCB91001D8684 /* View Controllers */,
+				E80DC652230B4C3E00D72E53 /* Scene Files */,
 				E83FBCE322DCD909001D8684 /* Nodes */,
 				E83FBCD622DCCB78001D8684 /* Scenes */,
 				E83FBCD422DCCB63001D8684 /* Helper Classes */,
@@ -213,6 +233,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E877B62C2304509600DA2AA6 /* GameSceneOnlinePhonePortrait.sks in Resources */,
+				E80DC656230C69E500D72E53 /* GameSceneOnlinePhoneLand.sks in Resources */,
+				E80DC658230C69F600D72E53 /* GameSceneOnlinePadPortrait.sks in Resources */,
+				E80DC654230B4C9000D72E53 /* GameSceneOnlinePadLand.sks in Resources */,
 				E86F2C2522DCBBAE0069AC1A /* Main.storyboard in Resources */,
 				E86F2C2722DCBBB30069AC1A /* Assets.xcassets in Resources */,
 				E86F2C2A22DCBBB30069AC1A /* LaunchScreen.storyboard in Resources */,

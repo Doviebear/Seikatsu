@@ -13,7 +13,7 @@ import SpriteKit
 class SocketIOHelper {
     static let helper = SocketIOHelper()
     
-    let manager = SocketManager(socketURL: URL(string: "http://192.168.1.187:3003")!, config: [.log(true), .compress])
+    let manager = SocketManager(socketURL: URL(string: "http://3.218.33.203")!, config: [.log(true), .compress])
     var socket: SocketIOClient!
     var viewController: UIViewController?
     
@@ -109,11 +109,19 @@ class SocketIOHelper {
             
             if let view = self.viewController!.view as! SKView? {
                 print("chaning view")
-                let gameScene = GameSceneOnline(gameModel: model, player: playerNum)
-                gameScene.scaleMode = .aspectFill
-                view.showsFPS = true
-                view.showsNodeCount = true
-                view.presentScene(gameScene, transition: .flipHorizontal(withDuration: 0.5))
+                if let fileName = self.getFileName() {
+                    if let gameScene = GameSceneOnline(fileNamed: fileName, gameModel: model, player: playerNum) {
+                        view.showsFPS = true
+                        view.showsNodeCount = true
+                        view.presentScene(gameScene, transition: .flipHorizontal(withDuration: 0.5))
+                        
+                        if let gameViewController = self.viewController as? GameViewController {
+                            gameViewController.currentScene = gameScene
+                        }
+                    }
+                } else {
+                    print("Couldn't get File name")
+                }
             } else {
                 print("couldn't typecast view as SKView")
             }
@@ -178,6 +186,103 @@ class SocketIOHelper {
             }
         }
     }
+    
+    
+    func getFileName() -> String? {
+        //We call this function with a baseSKSName passed in, and return either a
+        //modified name or the same name if no other device specific SKS files are found.
+        //For example, if baseSKSName = Level1 and Level1TV.sks exists in the project,
+        //then the string returned is Level1TV
+        let baseSKSName = "GameSceneOnline"
+        var fullSKSNameToLoad:String
+        if ( UIDevice.current.userInterfaceIdiom == .pad) {
+            if UIDevice.current.orientation.isLandscape {
+                if let _ = GameSceneOnline(fileNamed:  baseSKSName + "PadLand"){
+                    
+                    // this if statement would NOT be true if the iPad file did not exist
+                    
+                    fullSKSNameToLoad = baseSKSName + "PadLand"
+                } else {
+                    return nil
+                }
+            } else if UIDevice.current.orientation.isPortrait {
+                if let _ = GameSceneOnline(fileNamed:  baseSKSName + "PadPortrait"){
+                    
+                    // this if statement would NOT be true if the iPad file did not exist
+                    
+                    fullSKSNameToLoad = baseSKSName + "PadPortrait"
+                } else {
+                    return nil
+                }
+            } else if UIDevice.current.orientation.isFlat {
+                if let _ = GameSceneOnline(fileNamed:  baseSKSName + "PadPortrait"){
+                    
+                    // this if statement would NOT be true if the iPad file did not exist
+                    
+                    fullSKSNameToLoad = baseSKSName + "PadPortrait"
+                } else {
+                    return nil
+                }
+            } else {
+                return nil
+            }
+        } else if ( UIDevice.current.userInterfaceIdiom == .phone) {
+            if UIDevice.current.orientation.isLandscape {
+                if let _ = GameSceneOnline(fileNamed:  baseSKSName + "PhoneLand"){
+                    // this if statement would NOT be true if the Phone file did not exist
+                    fullSKSNameToLoad = baseSKSName + "PhoneLand"
+                } else {
+                    return nil
+                }
+            } else if UIDevice.current.orientation.isPortrait {
+                if let _ = GameSceneOnline(fileNamed:  baseSKSName + "PhonePortrait"){
+                    // this if statement would NOT be true if the Phone file did not exist
+                    fullSKSNameToLoad = baseSKSName + "PhonePortrait"
+                } else {
+                    return nil
+                }
+            } else if UIDevice.current.orientation.isFlat {
+                if let _ = GameSceneOnline(fileNamed:  baseSKSName + "PhonePortrait"){
+                    // this if statement would NOT be true if the Phone file did not exist
+                    fullSKSNameToLoad = baseSKSName + "PhonePortrait"
+                } else {
+                    return nil
+                }
+            } else {
+                 return nil
+            }
+            //worry about TV later
+        } else {
+            return nil
+        }
+        return fullSKSNameToLoad
+    }
+    
+    func inspectDeviceOrientation() {
+        let orientation = UIDevice.current.orientation
+        switch UIDevice.current.orientation {
+        case .portrait:
+            print("portrait")
+        case .landscapeLeft:
+            print("landscapeLeft")
+        case .landscapeRight:
+            print("landscapeRight")
+        case .portraitUpsideDown:
+            print("portraitUpsideDown")
+        case .faceUp:
+            print("faceUp")
+        case .faceDown:
+            print("faceDown")
+        default: // .unknown
+            print("unknown")
+        }
+        if orientation.isPortrait { print("isPortrait") }
+        if orientation.isLandscape { print("isLandscape") }
+        if orientation.isFlat { print("isFlat") }
+    }
+    
+    
+    
     
 }
 

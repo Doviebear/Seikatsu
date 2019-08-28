@@ -12,7 +12,7 @@ import GameplayKit
 
 
 class GameScene: SKScene {
-    var model: GameModel
+    var model = GameModel()
     var tokensInPlay = [tokenNode]()
     var tokenSpacesInPlay = [TokenSpace]()
     // 0 is new turn start, 1 is picked from hand
@@ -38,6 +38,8 @@ class GameScene: SKScene {
     var localPlayerOneScoreLabel: SKLabelNode!
     var localPlayerTwoScoreLabel: SKLabelNode!
     var localPlayerThreeScoreLabel: SKLabelNode!
+    var centerHexagon: SKSpriteNode?
+    
     
     var centerCircle: SKShapeNode!
     var player1Box: SKShapeNode!
@@ -47,19 +49,19 @@ class GameScene: SKScene {
     var turnIndicator: SKShapeNode!
     
     
-    
-    override init(){
-        self.model = GameModel()
-        super.init(size: JKGame.size)
-    }
-    
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
+
     
     override func sceneDidLoad() {
+       
+        
         print("Screen Width: \(JKGame.rect.width)")
         print("Screen Height: \(JKGame.rect.height)")
+        
+        self.centerHexagon = self.childNode(withName: "//centerHexagon") as? SKSpriteNode
+        
+        
+        
+        
         for i in 1...2 {
             for k in 1...4 {
                 var col = 1
@@ -67,7 +69,7 @@ class GameScene: SKScene {
                      col = 7
                 }
                 let tokenSpace = TokenSpace(Location: Location(col: col, numInCol: k, posistioningNumInCol: k + 1), textureName: "circleNode")
-                tokenSpace.drawNode(on: self)
+                tokenSpace.drawNode(on: self, in: centerHexagon!)
                 tokenSpacesInPlay.append(tokenSpace)
             }
         }
@@ -79,7 +81,7 @@ class GameScene: SKScene {
                     col = 6
                 }
                 let tokenSpace = TokenSpace(Location: Location(col: col, numInCol: k, posistioningNumInCol: k + 1), textureName: "circleNode")
-                tokenSpace.drawNode(on: self)
+                tokenSpace.drawNode(on: self, in: centerHexagon!)
                 tokenSpacesInPlay.append(tokenSpace)
             }
         }
@@ -91,7 +93,7 @@ class GameScene: SKScene {
                     col = 5
                 }
                 let tokenSpace = TokenSpace(Location: Location(col: col, numInCol: k, posistioningNumInCol: k ), textureName: "circleNode")
-                tokenSpace.drawNode(on: self)
+                tokenSpace.drawNode(on: self, in: centerHexagon!)
                 tokenSpacesInPlay.append(tokenSpace)
             }
         }
@@ -100,23 +102,25 @@ class GameScene: SKScene {
             let col = 4
             if k != 4 {
                 let tokenSpace = TokenSpace(Location: Location(col: col, numInCol: k, posistioningNumInCol: k), textureName: "circleNode")
-                tokenSpace.drawNode(on: self)
+                tokenSpace.drawNode(on: self, in: centerHexagon!)
                 tokenSpacesInPlay.append(tokenSpace)
             }
         }
         
+        /*
         for (index,token) in model.playerOneHand.enumerated() {
-            let nodeOfToken = tokenNode(token: token)
+            let nodeOfToken = tokenNode(token: token, in: centerHexagon)
             nodeOfToken.placeTokenNode(in: CGPoint(x: 100 + (100 * index) ,y: Int(JKGame.rect.minY) + 200), on: self)
         }
         for (index,token) in model.playerTwoHand.enumerated() {
-            let nodeOfToken = tokenNode(token: token)
+            let nodeOfToken = tokenNode(token: token, in: centerHexagon)
             nodeOfToken.placeTokenNode(in: CGPoint(x: 100 + (100 * index) ,y: Int(JKGame.rect.maxY) - 150), on: self)
         }
         for (index,token) in model.playerThreeHand.enumerated() {
-            let nodeOfToken = tokenNode(token: token)
+            let nodeOfToken = tokenNode(token: token, in: centerHexagon)
             nodeOfToken.placeTokenNode(in: CGPoint(x: Int(JKGame.rect.maxX) - 100 - (100 * index),y: Int(JKGame.rect.maxY) - 150), on: self)
         }
+ */
         
         
         makeStartingPeices()
@@ -215,7 +219,7 @@ class GameScene: SKScene {
             return
         }
         let token = model.grabBag.drawToken()
-        let nodeOfToken = tokenNode(token: token)
+        let nodeOfToken = tokenNode(token: token, sizingHexagon: centerHexagon)
         nodeOfToken.placeTokenNode(in: position, on: self)
         
         if player == 1 {
@@ -330,7 +334,7 @@ class GameScene: SKScene {
     
     func makeStartingPeices() {
         let token1 = model.grabBag.drawToken(canBeKoiPond: false)
-        let nodeOfToken1 = tokenNode(token: token1)
+        let nodeOfToken1 = tokenNode(token: token1, sizingHexagon: centerHexagon)
         let Location1 = Location(col: 3, numInCol: 3, posistioningNumInCol: 3)
         nodeOfToken1.tokenData.Location = Location1
         nodeOfToken1.placeTokenNode(in: getPositionOfTokenSpace(at: Location1) ?? CGPoint(x: 0, y: 0), on: self)
@@ -338,7 +342,7 @@ class GameScene: SKScene {
          tokensInPlay.append(nodeOfToken1)
         
         let token2 = model.grabBag.drawToken(canBeKoiPond: false)
-        let nodeOfToken2 = tokenNode(token: token2)
+        let nodeOfToken2 = tokenNode(token: token2, sizingHexagon: centerHexagon)
         let Location2 = Location(col: 5, numInCol: 3, posistioningNumInCol: 3)
         nodeOfToken2.tokenData.Location = Location2
         nodeOfToken2.placeTokenNode(in: getPositionOfTokenSpace(at: Location2) ?? CGPoint(x: 0, y: 0), on: self)
@@ -346,13 +350,15 @@ class GameScene: SKScene {
         tokensInPlay.append(nodeOfToken2)
         
         let token3 = model.grabBag.drawToken(canBeKoiPond: false)
-        let nodeOfToken3 = tokenNode(token: token3)
+        let nodeOfToken3 = tokenNode(token: token3, sizingHexagon: centerHexagon)
         let Location3 = Location(col: 4, numInCol: 5, posistioningNumInCol: 5)
         nodeOfToken3.tokenData.Location = Location3
         nodeOfToken3.placeTokenNode(in: getPositionOfTokenSpace(at: Location3) ?? CGPoint(x: 0, y: 0), on: self)
         removeTokenSpace(at: Location3)
          tokensInPlay.append(nodeOfToken3)
         
+        
+        /*
         localPlayerOneScoreLabel = SKLabelNode(text: "P1 Score is: \(localPlayerOneScore)")
         localPlayerOneScoreLabel.position = CGPoint(x: 400 , y: Int(JKGame.rect.minY) + 200)
         localPlayerOneScoreLabel.fontName = "RussoOne-Regular"
@@ -406,6 +412,8 @@ class GameScene: SKScene {
         turnIndicator.lineWidth = 0
         turnIndicator.position = CGPoint(x: 400, y: Int(JKGame.rect.minY) + 200 - 25 )
         addChild(turnIndicator)
+ 
+         */
     }
     
     func removeTokenSpace(at location: Location) {

@@ -18,11 +18,7 @@ class TokenSpace: SKSpriteNode {
         self.Location = Location
         let textureToPut = SKTexture(imageNamed: textureName)
         
-        if UIDevice.current.userInterfaceIdiom == .pad {
-            TokenSize = 100
-        } else {
-            TokenSize = 85
-        }
+       
         super.init(texture: textureToPut, color: .clear, size: CGSize(width: 100, height: 100))
     }
     
@@ -32,18 +28,24 @@ class TokenSpace: SKSpriteNode {
     
     
     ///Dimensions: radius: 50 pts, Gap between circles: 5 pts, center to center (from col to col): 60 pts
-    func drawNode(on scene: SKScene){
+    func drawNode(on scene: SKScene, in hexagon: SKSpriteNode){
+        self.TokenSize = Int(hexagon.size.height/8)
         self.name = "tokenSpace"
         self.zPosition = 8
         self.size = CGSize(width: TokenSize, height: TokenSize)
-        let colDifference = TokenSize + (TokenSize/10)
+        let differenceBetweenCol = hexagon.size.width/8
+        let inColDifference = hexagon.size.height/8
+        let top = hexagon.position.y + hexagon.size.height/2
+        //let bottom = hexagon.position.y - hexagon.size.height/2
+        //let left = hexagon.position.x - hexagon.size.width/2
+        let right = hexagon.position.x + hexagon.size.width/2
         if Location.col % 2 == 0 {
-            let x = Int(JKGame.rect.width/2) + (4 * colDifference) - self.Location.col * colDifference
-            let y = Int(JKGame.rect.midY) + (4 * colDifference) - (Location.posistioningNumInCol * colDifference)
+            let x = Int(right) - (Location.col * Int(differenceBetweenCol))
+            let y = Int(top) - (Location.posistioningNumInCol * Int(inColDifference))
             self.position = CGPoint(x: x, y: y)
         } else {
-            let x = Int(JKGame.rect.width/2) + (4 * colDifference) - self.Location.col * colDifference
-            let y = Int(JKGame.rect.midY) + (4 * colDifference) - (Location.posistioningNumInCol * colDifference) - TokenSize/2
+            let x = Int(right) - (Location.col * Int(differenceBetweenCol))
+            let y = Int(top) - (Location.posistioningNumInCol * Int(inColDifference)) - TokenSize/2
             self.position = CGPoint(x: x, y: y)
         }
         scene.addChild(self)

@@ -15,8 +15,9 @@ import SocketIO
 
 class GameViewController: UIViewController {
     
-  
-    var url = URL(string: "http://127.0.0.1:3003/")
+    //AWS Server: http://3.218.33.203
+    var url = URL(string: "http://3.218.33.203")
+    var currentScene: SKScene? = nil
     
     
     
@@ -24,6 +25,7 @@ class GameViewController: UIViewController {
         super.viewDidLoad()
         
         SocketIOHelper.helper.viewController = self
+        
         
         /*
         Alamofire.request(urlString!).responseJSON { response in
@@ -55,27 +57,28 @@ class GameViewController: UIViewController {
         */
         
         SocketIOHelper.helper.createConnection()
-        
-        
-        
-
-        
        
-        JKGame.game.setOrientation(JKOrientation.landscape)
+        JKGame.game.setOrientation(JKOrientation.portrait)
         
-        
-        let sceneNode = MenuScene()
-        sceneNode.size = JKGame.size
-        sceneNode.scaleMode = .aspectFill
-                
+       // let fullSKSName = checkIfSKSExists(baseSKSName: "MenuScene")
         // Present the scene
         if let view = self.view as! SKView? {
-            view.presentScene(sceneNode)
+            
+            let scene = MenuScene()
+            scene.scaleMode = .aspectFill
+            scene.size = JKGame.size
+                
+            view.presentScene(scene)
+            
+            
+           
             
             view.ignoresSiblingOrder = true
             
             view.showsFPS = true
             view.showsNodeCount = true
+            self.currentScene = scene
+            
         }
             
         
@@ -97,6 +100,73 @@ class GameViewController: UIViewController {
         return true
     }
    
+    func checkIfSKSExists( baseSKSName:String) -> String {
+        //We call this function with a baseSKSName passed in, and return either a
+        //modified name or the same name if no other device specific SKS files are found.
+        //For example, if baseSKSName = Level1 and Level1TV.sks exists in the project,
+        //then the string returned is Level1TV
+        
+        var fullSKSNameToLoad:String = baseSKSName
+            
+        if ( UIDevice.current.userInterfaceIdiom == .pad) {
+            
+            if let _ = GameSceneOnline(fileNamed:  baseSKSName + "PadLand"){
+                
+                // this if statement would NOT be true if the iPad file did not exist
+                
+                fullSKSNameToLoad = baseSKSName + "PadLand"
+            }
+        } else if ( UIDevice.current.userInterfaceIdiom == .phone) {
+            if let _ = GameSceneOnline(fileNamed:  baseSKSName + "PhonePortrait"){
+                // this if statement would NOT be true if the Phone file did not exist
+                fullSKSNameToLoad = baseSKSName + "PhonePortrait"
+            }
+        }
+        //worry about TV later
+        
+        return fullSKSNameToLoad
+    }
+    
+    override func willTransition(to newCollection: UITraitCollection, with coordinator: UIViewControllerTransitionCoordinator) {
+       
+        if let scene = self.currentScene as? GameSceneOnline {
+            if UIDevice.current.orientation.isLandscape {
+                print("GameSceneOnline is now in Landscape")
+                scene.switchToLandscape()
+            } else if UIDevice.current.orientation.isPortrait {
+                print("GameSceneOnline is now in Portrait")
+                scene.switchToPortrait()
+            }
+        } else if let scene = self.currentScene as? GameScene {
+            if UIDevice.current.orientation.isLandscape {
+                print("GameScene is now in landscape")
+            } else if UIDevice.current.orientation.isPortrait {
+                print("GameScene is now in Portrait")
+            }
+        } else if let scene = self.currentScene as? MenuScene {
+            if UIDevice.current.orientation.isLandscape {
+                print("MenuScene is now in Landscape")
+            } else if UIDevice.current.orientation.isPortrait {
+                print("MenuSceen is now in Portrait")
+            }
+        } else {
+            return
+        }
+        
+        
+    }
+}
+
+extension UIView {
+    func findViewController() -> UIViewController? {
+        if let nextResponder = self.next as? UIViewController {
+            return nextResponder
+        } else if let nextResponder = self.next as? UIView {
+            return nextResponder.findViewController()
+        } else {
+            return nil
+        }
+    }
 }
 
 
