@@ -107,7 +107,7 @@ class GameViewController: UIViewController {
    
     
     
-    override func willTransition(to newCollection: UITraitCollection, with coordinator: UIViewControllerTransitionCoordinator) {
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
        
         if let scene = self.currentScene as? GameSceneOnline {
             if UIDevice.current.orientation.isLandscape {
@@ -116,12 +116,6 @@ class GameViewController: UIViewController {
             } else if UIDevice.current.orientation.isPortrait {
                 print("GameSceneOnline is now in Portrait")
                 scene.switchToPortrait()
-            }
-        } else if let scene = self.currentScene as? GameScene {
-            if UIDevice.current.orientation.isLandscape {
-                print("GameScene is now in landscape")
-            } else if UIDevice.current.orientation.isPortrait {
-                print("GameScene is now in Portrait")
             }
         } else if let scene = self.currentScene as? MenuScene {
             if UIDevice.current.orientation.isLandscape {
