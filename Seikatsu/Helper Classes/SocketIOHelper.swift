@@ -31,18 +31,25 @@ class SocketIOHelper {
     }
     
     func searchForMatch() {
-        
+        socket.emitWithAck("joinQueue").timingOut(after: 3) { data in
+            guard let statusNum = data[0] as? Int else {
+                print("Couldn't typecast callback as Int")
+                return
+            }
+            //All good, entered into queue
+            if statusNum == 0 {
+                NotificationCenter.default.post(name: .joinedQueue, object: nil)
+                //You are already in the queue
+            } else if statusNum == 3 {
+                NotificationCenter.default.post(name: .alreadyInQueue, object: nil)
+            }
+        }
+        print("emitted message to Join Queue")
     }
     
     func disconnect() {
         socket.disconnect()
     }
-    
-    func sendData() {
-        socket.emit("joinQueue")
-        print("emitted message")
-    }
-    
     
     func endTurn(model: GameModel) {
         do {
@@ -224,7 +231,8 @@ class SocketIOHelper {
                     return nil
                 }
             } else {
-                return nil
+                fullSKSNameToLoad = baseSKSName + "PadPortrait"
+                
             }
         } else if ( UIDevice.current.userInterfaceIdiom == .phone) {
             if UIDevice.current.orientation.isLandscape {
@@ -249,7 +257,7 @@ class SocketIOHelper {
                     return nil
                 }
             } else {
-                 return nil
+                 fullSKSNameToLoad = baseSKSName + "PhonePortrait"
             }
             //worry about TV later
         } else {
@@ -289,4 +297,6 @@ class SocketIOHelper {
 extension Notification.Name {
     static let turnStart = Notification.Name(rawValue: "turnStart")
     static let roundEnd = Notification.Name(rawValue: "roundEnd")
+    static let joinedQueue = Notification.Name(rawValue: "joinedQueue")
+    static let alreadyInQueue = Notification.Name(rawValue: "alreadyInQueue")
 }

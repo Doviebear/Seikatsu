@@ -19,6 +19,10 @@
 		E83FBCE222DCCEA8001D8684 /* GameModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E83FBCE122DCCEA8001D8684 /* GameModel.swift */; };
 		E83FBCE522DCD96E001D8684 /* tokenSpace.swift in Sources */ = {isa = PBXBuildFile; fileRef = E83FBCE422DCD96E001D8684 /* tokenSpace.swift */; };
 		E83FBCE722DD09F0001D8684 /* tokenNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = E83FBCE622DD09F0001D8684 /* tokenNode.swift */; };
+		E84E2C5E23171C5F004EF2DF /* MenuScenePhoneLand.sks in Resources */ = {isa = PBXBuildFile; fileRef = E84E2C5D23171C5F004EF2DF /* MenuScenePhoneLand.sks */; };
+		E84E2C6023171D1D004EF2DF /* MenuScenePhonePortrait.sks in Resources */ = {isa = PBXBuildFile; fileRef = E84E2C5F23171D1D004EF2DF /* MenuScenePhonePortrait.sks */; };
+		E84E2C6223171E34004EF2DF /* MenuScenePadPortrait.sks in Resources */ = {isa = PBXBuildFile; fileRef = E84E2C6123171E34004EF2DF /* MenuScenePadPortrait.sks */; };
+		E84E2C6423171F1F004EF2DF /* MenuScenePadLand.sks in Resources */ = {isa = PBXBuildFile; fileRef = E84E2C6323171F1F004EF2DF /* MenuScenePadLand.sks */; };
 		E86F2C1A22DCBBAE0069AC1A /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E86F2C1922DCBBAE0069AC1A /* AppDelegate.swift */; };
 		E86F2C2022DCBBAE0069AC1A /* GameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = E86F2C1F22DCBBAE0069AC1A /* GameScene.swift */; };
 		E86F2C2222DCBBAE0069AC1A /* GameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E86F2C2122DCBBAE0069AC1A /* GameViewController.swift */; };
@@ -46,6 +50,10 @@
 		E83FBCE122DCCEA8001D8684 /* GameModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameModel.swift; sourceTree = "<group>"; };
 		E83FBCE422DCD96E001D8684 /* tokenSpace.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = tokenSpace.swift; sourceTree = "<group>"; };
 		E83FBCE622DD09F0001D8684 /* tokenNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = tokenNode.swift; sourceTree = "<group>"; };
+		E84E2C5D23171C5F004EF2DF /* MenuScenePhoneLand.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = MenuScenePhoneLand.sks; sourceTree = "<group>"; };
+		E84E2C5F23171D1D004EF2DF /* MenuScenePhonePortrait.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = MenuScenePhonePortrait.sks; sourceTree = "<group>"; };
+		E84E2C6123171E34004EF2DF /* MenuScenePadPortrait.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = MenuScenePadPortrait.sks; sourceTree = "<group>"; };
+		E84E2C6323171F1F004EF2DF /* MenuScenePadLand.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = MenuScenePadLand.sks; sourceTree = "<group>"; };
 		E86F2C1622DCBBAE0069AC1A /* Seikatsu.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Seikatsu.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E86F2C1922DCBBAE0069AC1A /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		E86F2C1F22DCBBAE0069AC1A /* GameScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameScene.swift; sourceTree = "<group>"; };
@@ -92,8 +100,12 @@
 			children = (
 				E877B62B2304509600DA2AA6 /* GameSceneOnlinePhonePortrait.sks */,
 				E80DC655230C69E500D72E53 /* GameSceneOnlinePhoneLand.sks */,
-				E80DC653230B4C9000D72E53 /* GameSceneOnlinePadLand.sks */,
 				E80DC657230C69F600D72E53 /* GameSceneOnlinePadPortrait.sks */,
+				E80DC653230B4C9000D72E53 /* GameSceneOnlinePadLand.sks */,
+				E84E2C5F23171D1D004EF2DF /* MenuScenePhonePortrait.sks */,
+				E84E2C5D23171C5F004EF2DF /* MenuScenePhoneLand.sks */,
+				E84E2C6123171E34004EF2DF /* MenuScenePadPortrait.sks */,
+				E84E2C6323171F1F004EF2DF /* MenuScenePadLand.sks */,
 			);
 			path = "Scene Files";
 			sourceTree = "<group>";
@@ -233,7 +245,11 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E84E2C6023171D1D004EF2DF /* MenuScenePhonePortrait.sks in Resources */,
 				E877B62C2304509600DA2AA6 /* GameSceneOnlinePhonePortrait.sks in Resources */,
+				E84E2C6223171E34004EF2DF /* MenuScenePadPortrait.sks in Resources */,
+				E84E2C5E23171C5F004EF2DF /* MenuScenePhoneLand.sks in Resources */,
+				E84E2C6423171F1F004EF2DF /* MenuScenePadLand.sks in Resources */,
 				E80DC656230C69E500D72E53 /* GameSceneOnlinePhoneLand.sks in Resources */,
 				E80DC658230C69F600D72E53 /* GameSceneOnlinePadPortrait.sks in Resources */,
 				E80DC654230B4C9000D72E53 /* GameSceneOnlinePadLand.sks in Resources */,

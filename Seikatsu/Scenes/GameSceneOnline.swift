@@ -49,6 +49,7 @@ import GameplayKit
     var centerHexagon: SKSpriteNode!
     var playerNum: Int!
     var sksPlayerTokenNodes = [SKSpriteNode]()
+    var playerColorSprites = [SKSpriteNode]()
     
     //Player One: Pink
     //Player Two: Blue
@@ -189,9 +190,13 @@ import GameplayKit
             }
         }
         
+        for (index,scoreToken) in scoreTokens.enumerated() {
+            if model.playerTurn - 1 == index {
+                addTouchableEffectSprite(in: scoreToken.position, with: scoreToken.size)
+            }
+        }
         
-        
-        
+       
         
          print("Function LoadGameModel Ended")
     }
@@ -210,6 +215,26 @@ import GameplayKit
                 scoreTokens.append(scoreToken)
             }
         }
+        
+        for num in 1...2 {
+            let playerColorSpriteString = "playerColorSprite" + String(num)
+            if let playerColorSprite = self.childNode(withName: playerColorSpriteString) as? SKSpriteNode {
+                if self.playerNum == 1 {
+                    playerColorSprite.texture = SKTexture(imageNamed: "PinkRectangle")
+                } else if self.playerNum == 2 {
+                    playerColorSprite.texture = SKTexture(imageNamed: "BlueRectangle")
+                } else if self.playerNum == 3 {
+                    playerColorSprite.texture = SKTexture(imageNamed: "GreenRectangle")
+                } else {
+                    print("Couldn't change player Color Sprites, couldn't get player Num")
+                }
+                playerColorSprites.append(playerColorSprite)
+            }
+        }
+        
+        
+        
+        
         
         
         
@@ -808,18 +833,18 @@ import GameplayKit
             //Score Bar, Labels, and Markers
             scoreBar.position = CGPoint(x: 1800, y: 888)
             
-            localPlayerOneScoreLabel.position = CGPoint(x: 1600, y: 808)
+            localPlayerOneScoreLabel.position = CGPoint(x: 1500, y: 808)
             localPlayerTwoScoreLabel.position = CGPoint(x: 1800, y: 808)
-            localPlayerThreeScoreLabel.position = CGPoint(x: 2000, y: 808)
+            localPlayerThreeScoreLabel.position = CGPoint(x: 2100, y: 808)
             
             for (index,scoreToken) in scoreTokens.enumerated() {
                 let x: Int
                 if index == 0 {
-                    x = 1600
+                    x = 1500
                 } else if index == 1 {
                     x = 1800
                 } else {
-                    x = 2000
+                    x = 2100
                 }
                 scoreToken.position = CGPoint(x: x, y: 888)
             }
@@ -858,18 +883,18 @@ import GameplayKit
             //Score Bar, Labels, and Markers
             scoreBar.position = CGPoint(x: 1525, y: 1300)
             
-            localPlayerOneScoreLabel.position = CGPoint(x: 1600, y: 1220)
-            localPlayerTwoScoreLabel.position = CGPoint(x: 1800, y: 1220)
-            localPlayerThreeScoreLabel.position = CGPoint(x: 2000, y: 1220)
+            localPlayerOneScoreLabel.position = CGPoint(x: 1220, y: 1220)
+            localPlayerTwoScoreLabel.position = CGPoint(x: 1520, y: 1220)
+            localPlayerThreeScoreLabel.position = CGPoint(x: 1820, y: 1220)
             
             for (index,scoreToken) in scoreTokens.enumerated() {
                 let x: Int
                 if index == 0 {
-                    x = 1600
+                    x = 1220
                 } else if index == 1 {
-                    x = 1800
+                    x = 1520
                 } else {
-                    x = 2000
+                    x = 1820
                 }
                 scoreToken.position = CGPoint(x: x, y: 1300)
             }
@@ -909,18 +934,18 @@ import GameplayKit
             //Score Bar, Labels, and Markers
             scoreBar.position = CGPoint(x: 575, y: 325)
             
-            localPlayerOneScoreLabel.position = CGPoint(x: 225, y: 245)
-            localPlayerTwoScoreLabel.position = CGPoint(x: 400, y: 245)
-            localPlayerThreeScoreLabel.position = CGPoint(x: 640, y: 245)
+            localPlayerOneScoreLabel.position = CGPoint(x: 275, y: 245)
+            localPlayerTwoScoreLabel.position = CGPoint(x: 575, y: 245)
+            localPlayerThreeScoreLabel.position = CGPoint(x: 875, y: 245)
             
             for (index,scoreToken) in scoreTokens.enumerated() {
                 let x: Int
                 if index == 0 {
-                    x = 225
+                    x = 275
                 } else if index == 1 {
-                    x = 400
+                    x = 575
                 } else {
-                    x = 640
+                    x = 875
                 }
                 scoreToken.position = CGPoint(x: x, y: 325)
             }
@@ -956,18 +981,18 @@ import GameplayKit
             //Score Bar, Labels, and Markers
             scoreBar.position = CGPoint(x: 768, y: 120)
             
-            localPlayerOneScoreLabel.position = CGPoint(x: 500, y: 40)
-            localPlayerTwoScoreLabel.position = CGPoint(x: 700, y: 40)
-            localPlayerThreeScoreLabel.position = CGPoint(x: 900, y: 40)
+            localPlayerOneScoreLabel.position = CGPoint(x: 468, y: 40)
+            localPlayerTwoScoreLabel.position = CGPoint(x: 768, y: 40)
+            localPlayerThreeScoreLabel.position = CGPoint(x: 1068, y: 40)
             
             for (index,scoreToken) in scoreTokens.enumerated() {
                 let x: Int
                 if index == 0 {
-                    x = 500
+                    x = 468
                 } else if index == 1 {
-                    x = 700
+                    x = 768
                 } else {
-                    x = 900
+                    x = 1068
                 }
                 scoreToken.position = CGPoint(x: x, y: 120)
             }
