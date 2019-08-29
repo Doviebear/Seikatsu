@@ -34,6 +34,7 @@ import GameplayKit
             localPlayerThreeScoreLabel.text = "\(localPlayerThreeScore)"
         }
     }
+  
     
 
     var localPlayerOneScoreLabel: SKLabelNode!
@@ -186,6 +187,10 @@ import GameplayKit
         if let notif = notification {
             if notif.name == .roundEnd {
                 endOfRoundScoring()
+                if let winnerLabel = self.childNode(withName: "winnerLabel") as? SKLabelNode {
+                    winnerLabel.text = "Player \(checkForWinner()) Wins!"
+                    winnerLabel.isHidden = false
+                }
                 return
             }
         }
@@ -231,6 +236,7 @@ import GameplayKit
                 playerColorSprites.append(playerColorSprite)
             }
         }
+        
         
         
         
@@ -780,6 +786,21 @@ import GameplayKit
     }
     
     
+    func checkForWinner() -> Int{
+        let winner: Int
+        let winnerScore = max(max(localPlayerOneScore,localPlayerTwoScore), localPlayerThreeScore)
+        if winnerScore == localPlayerOneScore {
+            winner = 1
+        } else if winnerScore == localPlayerTwoScore {
+            winner = 2
+        } else if winnerScore == localPlayerThreeScore {
+            winner = 3
+        } else {
+            winner = 4
+        }
+        return winner
+    }
+    
     
     
     
@@ -851,7 +872,6 @@ import GameplayKit
             
             //background
             ///Dont have one yet
-            
             
             //Nodes Inside Hexagon, this is haaaaaaaard. Fine. Ill do it.
             for tokenSpace in tokenSpacesInPlay {
@@ -930,6 +950,7 @@ import GameplayKit
                     x = 827.5
                 }
                 playerToken.position = CGPoint(x: x, y: 772.5)
+                sksPlayerTokenNodes[index].position = CGPoint(x: x, y: 772.5)
             }
             //Score Bar, Labels, and Markers
             scoreBar.position = CGPoint(x: 575, y: 325)
@@ -977,6 +998,7 @@ import GameplayKit
                     x = 1218
                 }
                 playerToken.position = CGPoint(x: x, y: 520)
+                 sksPlayerTokenNodes[index].position = CGPoint(x: x, y: 520)
             }
             //Score Bar, Labels, and Markers
             scoreBar.position = CGPoint(x: 768, y: 120)
@@ -998,6 +1020,8 @@ import GameplayKit
             }
             
             //background
+            
+            
             ///Dont have one yet
             
             

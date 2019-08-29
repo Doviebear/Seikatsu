@@ -19,6 +19,8 @@ class MenuScene: SKScene {
     
     var searchingForGameSprite: SKSpriteNode!
     
+    var testingSprite: SKSpriteNode!
+    
     
     override func sceneDidLoad() {
         NotificationCenter.default.addObserver(self, selector: #selector(joinedQueue(_:)), name: .joinedQueue, object: nil)
@@ -30,7 +32,8 @@ class MenuScene: SKScene {
         howToPlayButton = self.childNode(withName: "howToPlayButton") as? SKSpriteNode
         settingsButton = self.childNode(withName: "settingsButton") as? SKSpriteNode
         searchingForGameSprite = self.childNode(withName: "searchingForGameSprite") as? SKSpriteNode
-        
+        //testingSprite = self.childNode(withName: "testingSprite") as? SKSpriteNode
+        //testingSprite.removeFromParent()
 
         
     }
@@ -61,6 +64,7 @@ class MenuScene: SKScene {
                     SocketIOHelper.helper.searchForMatch()
                     return
                 } else if node.name == "howToPlayButton" {
+                    //addChild(testingSprite)
                    return
                 } else if node.name == "settingsButton" {
                     return
@@ -73,12 +77,15 @@ class MenuScene: SKScene {
     
     func switchToLandscape() {
         if UIDevice.current.userInterfaceIdiom == .phone {
+            self.size = CGSize(width: 2436, height: 1125 )
+            
             title.position = CGPoint(x: 1218, y: 795)
             playButton.position = CGPoint(x: 1218, y: 570)
             howToPlayButton.position = CGPoint(x: 958, y: 265)
             settingsButton.position = CGPoint(x: 1478, y: 265)
             searchingForGameSprite.position = CGPoint(x: 2780, y: 105)
         } else if UIDevice.current.userInterfaceIdiom == .pad {
+            self.size = CGSize(width: 2048, height: 1536 )
             
             title.position = CGPoint(x: 1024, y: 1172)
             playButton.position = CGPoint(x: 1024, y: 835)
@@ -92,12 +99,16 @@ class MenuScene: SKScene {
     
     func switchToPortrait() {
         if UIDevice.current.userInterfaceIdiom == .phone {
+            self.size = CGSize(width: 1125, height: 2436 )
+            
             title.position = CGPoint(x: 562.5, y: 1750)
             playButton.position = CGPoint(x: 562.5, y: 1400)
             howToPlayButton.position = CGPoint(x: 302.5, y: 1085)
             settingsButton.position = CGPoint(x: 822.5, y: 1085)
             searchingForGameSprite.position = CGPoint(x: 1469, y: 180)
         } else if UIDevice.current.userInterfaceIdiom == .pad {
+             self.size = CGSize(width: 1536, height: 2048 )
+            
             title.position = CGPoint(x: 768, y: 1500)
             playButton.position = CGPoint(x: 768, y: 1060)
             howToPlayButton.position = CGPoint(x: 508, y: 765)

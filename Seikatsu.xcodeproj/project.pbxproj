@@ -61,6 +61,7 @@
 		E86F2C2922DCBBB30069AC1A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		E86F2C2B22DCBBB30069AC1A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		E877B62B2304509600DA2AA6 /* GameSceneOnlinePhonePortrait.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = GameSceneOnlinePhonePortrait.sks; sourceTree = "<group>"; };
+		E8CFCF81231865600014A254 /* Seikatsu.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Seikatsu.entitlements; sourceTree = "<group>"; };
 		E8DB2C2D22E8D92100A6A212 /* MenuScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuScene.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -168,6 +169,7 @@
 		E86F2C1822DCBBAE0069AC1A /* Seikatsu */ = {
 			isa = PBXGroup;
 			children = (
+				E8CFCF81231865600014A254 /* Seikatsu.entitlements */,
 				E86F2C1922DCBBAE0069AC1A /* AppDelegate.swift */,
 				E86F2C2322DCBBAE0069AC1A /* Main.storyboard */,
 				E86F2C2622DCBBB30069AC1A /* Assets.xcassets */,
@@ -216,6 +218,11 @@
 				TargetAttributes = {
 					E86F2C1522DCBBAE0069AC1A = {
 						CreatedOnToolsVersion = 10.2.1;
+						SystemCapabilities = {
+							com.apple.Push = {
+								enabled = 1;
+							};
+						};
 					};
 				};
 			};
@@ -463,6 +470,7 @@
 			baseConfigurationReference = 9509E7E748CB1D3F0F406D7C /* Pods-Seikatsu.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Seikatsu/Seikatsu.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 85HTDRNFLR;
 				INFOPLIST_FILE = Seikatsu/Info.plist;
@@ -482,6 +490,7 @@
 			baseConfigurationReference = 468178FF1C2B089363F5B4EB /* Pods-Seikatsu.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Seikatsu/Seikatsu.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 85HTDRNFLR;
 				INFOPLIST_FILE = Seikatsu/Info.plist;
