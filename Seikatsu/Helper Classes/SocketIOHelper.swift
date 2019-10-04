@@ -13,9 +13,12 @@ import SpriteKit
 class SocketIOHelper {
     static let helper = SocketIOHelper()
     
-    let manager = SocketManager(socketURL: URL(string: "http://3.218.33.203")!, config: [.log(true), .compress])
+    //AWS Server: http://3.218.33.203/
+    //Local Server: http://192.168.1.187:3003/
+    let manager = SocketManager(socketURL: URL(string: "http://3.218.33.203/")!, config: [.log(true), .compress])
     var socket: SocketIOClient!
     var viewController: UIViewController?
+    var uniqueID: String?
     
     
    
@@ -23,32 +26,48 @@ class SocketIOHelper {
     
     
     func createConnection() {
+        manager.reconnects = true
         socket = manager.defaultSocket
         socket.connect()
         self.setSocketEvents()
         
-        
+       // NotificationCenter.default.addObserver(self, selector: #selector(tryToReconnect(_:)), name: UIApplication.didBecomeActiveNotification, object: nil)
+    }
+    
+    @objc func tryToReconnect(_ notification: Notification) {
+        manager.reconnect()
     }
     
     func searchForMatch() {
         socket.emitWithAck("joinQueue").timingOut(after: 3) { data in
-            guard let statusNum = data[0] as? Int else {
-                print("Couldn't typecast callback as Int")
+            
+            if let statusNum = data[0] as? Int {
+                if statusNum == 0 {
+                    NotificationCenter.default.post(name: .joinedQueue, object: nil)
+                    //You are already in the queue
+                } else if statusNum == 3 {
+                    NotificationCenter.default.post(name: .alreadyInQueue, object: nil)
+                }
+            } else if let statusNum = data[0] as? String {
+                if statusNum == SocketAckStatus.noAck.rawValue {
+                    print("Emit for searchForMatch Timed out")
+                    return
+                }
+            
+                
+            } else {
+                print("Couldn't typecast callback")
                 return
             }
             //All good, entered into queue
-            if statusNum == 0 {
-                NotificationCenter.default.post(name: .joinedQueue, object: nil)
-                //You are already in the queue
-            } else if statusNum == 3 {
-                NotificationCenter.default.post(name: .alreadyInQueue, object: nil)
-            }
+            
         }
         print("emitted message to Join Queue")
     }
     
     func disconnect() {
         socket.disconnect()
+       
     }
     
     func endTurn(model: GameModel) {
@@ -76,17 +95,68 @@ class SocketIOHelper {
         }
     }
     
-    func giveRandomizedModel() {
+    func quitMatch() {
         
+    }
+    
+    func createGame(gameID: String) {
+        var arrayToSend = [Any]()
+        arrayToSend.append(gameID)
+        socket.emitWithAck("createGame", with: arrayToSend).timingOut(after: 3) { data in
+            /*
+            if data[0] == SocketAckStatus.noAck.rawValue {
+                
+            }
+            print("The data 0 is: \(data[0])") //If timed out, data[0] == "NO ACK"
+            print("The data 1 is: \(data[1])")
+            print("SocketAckStatus: \(SocketAckStatus.noAck.rawValue)")
+            print("Got Ack for game creation")
+             */
+        }
+    }
+    
+    func startFriendGame() {
+        socket.emit("startFriendGame")
     }
     
     func setSocketEvents(){
         socket.on(clientEvent: .connect) {data, ack in
             print("socket connected")
+            if let id = self.uniqueID {
+                var arrayToSend = [Any]()
+                arrayToSend.append(id)
+                self.socket.emit("reconnectionPing", with: arrayToSend)
+            }
+            NotificationCenter.default.post(name: .connectedToServer, object: nil)
+            
         }
         socket.on(clientEvent: .disconnect) {data, ack in
             print("socket Disconnected")
         }
+        socket.on(clientEvent: .statusChange) {data, ack in
+            // Some status changing logging
+        }
+        socket.on(clientEvent: .reconnect) {data, ack in
+            print("Socket reconnected")
+            /*
+            if let id = self.uniqueID {
+                var arrayToSend = [Any]()
+                arrayToSend.append(id)
+                self.socket.emit("reconnection", with: arrayToSend)
+            }
+ */
+        }
+        socket.on("hereIsUniqueId") { data, ack in
+            if self.uniqueID != nil {
+                return
+            }
+            guard let id = data[0] as? String else {
+                print("couldn't get String from data")
+                return
+            }
+            self.uniqueID = id
+        }
+        
         socket.on("startGame") {data, ack in
             print("message recieved to start game")
             let model: GameModel
@@ -117,6 +187,7 @@ class SocketIOHelper {
             if let view = self.viewController!.view as! SKView? {
                 print("chaning view")
                 if let fileName = self.getFileName() {
+                    print("The file name gotten is \(fileName)")
                     if let gameScene = GameSceneOnline(fileNamed: fileName, gameModel: model, player: playerNum) {
                         view.showsFPS = true
                         view.showsNodeCount = true
@@ -192,6 +263,7 @@ class SocketIOHelper {
                 print("Unexpected error: \(error).")
             }
         }
+        
     }
     
     
@@ -217,7 +289,9 @@ class SocketIOHelper {
                     
                     // this if statement would NOT be true if the iPad file did not exist
                     
+                    
                     fullSKSNameToLoad = baseSKSName + "PadPortrait"
+                   
                 } else {
                     return nil
                 }
@@ -299,4 +373,5 @@ extension Notification.Name {
     static let roundEnd = Notification.Name(rawValue: "roundEnd")
     static let joinedQueue = Notification.Name(rawValue: "joinedQueue")
     static let alreadyInQueue = Notification.Name(rawValue: "alreadyInQueue")
+    static let connectedToServer = Notification.Name(rawValue: "connectedToServer")
 }

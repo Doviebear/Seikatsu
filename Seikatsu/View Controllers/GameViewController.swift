@@ -16,7 +16,6 @@ import SocketIO
 class GameViewController: UIViewController {
     
     //AWS Server: http://3.218.33.203
-    var url = URL(string: "http://3.218.33.203")
     var currentScene: SKScene? = nil
     
     

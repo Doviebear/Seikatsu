@@ -18,6 +18,7 @@ class MenuScene: SKScene {
     var settingsButton: SKSpriteNode!
     
     var searchingForGameSprite: SKSpriteNode!
+    var notConnectedToServerSprite: SKSpriteNode!
     
     var testingSprite: SKSpriteNode!
     
@@ -25,17 +26,22 @@ class MenuScene: SKScene {
     override func sceneDidLoad() {
         NotificationCenter.default.addObserver(self, selector: #selector(joinedQueue(_:)), name: .joinedQueue, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(alreadyInQueue(_:)), name: .alreadyInQueue, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(connectedToServer(_:)), name: .connectedToServer, object: nil)
         
         
         title = self.childNode(withName: "title") as? SKLabelNode
-        playButton = self.childNode(withName: "playButton") as? SKSpriteNode
+        playButton = self.childNode(withName: "playgameButton") as? SKSpriteNode
         howToPlayButton = self.childNode(withName: "howToPlayButton") as? SKSpriteNode
         settingsButton = self.childNode(withName: "settingsButton") as? SKSpriteNode
         searchingForGameSprite = self.childNode(withName: "searchingForGameSprite") as? SKSpriteNode
+        notConnectedToServerSprite = self.childNode(withName: "notConnectedToServer") as? SKSpriteNode
         //testingSprite = self.childNode(withName: "testingSprite") as? SKSpriteNode
         //testingSprite.removeFromParent()
 
-        
+        //print("status is: \(SocketIOHelper.helper.socket.status)")
+        if SocketIOHelper.helper.socket.status != .connected {
+            notConnectedToServerSprite.run(SKAction.moveBy(x: -(notConnectedToServerSprite.size.width), y: 0, duration: 0.3))
+        }
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -65,8 +71,10 @@ class MenuScene: SKScene {
                     return
                 } else if node.name == "howToPlayButton" {
                     //addChild(testingSprite)
+                    SocketIOHelper.helper.createGame(gameID: "Boo")
                    return
                 } else if node.name == "settingsButton" {
+                    //SocketIOHelper.helper.startFriendGame()
                     return
                 }
             }
@@ -76,6 +84,7 @@ class MenuScene: SKScene {
     
     
     func switchToLandscape() {
+        /*
         if UIDevice.current.userInterfaceIdiom == .phone {
             self.size = CGSize(width: 2436, height: 1125 )
             
@@ -94,10 +103,11 @@ class MenuScene: SKScene {
             searchingForGameSprite.position = CGPoint(x: 2392, y: 165)
             
         }
-        
+        */
     }
     
     func switchToPortrait() {
+        /*
         if UIDevice.current.userInterfaceIdiom == .phone {
             self.size = CGSize(width: 1125, height: 2436 )
             
@@ -115,6 +125,7 @@ class MenuScene: SKScene {
             settingsButton.position = CGPoint(x: 1028, y: 765)
             searchingForGameSprite.position = CGPoint(x: 1880, y: 160)
         }
+         */
     }
    
     
@@ -125,6 +136,9 @@ class MenuScene: SKScene {
     
     @objc func alreadyInQueue(_ notification: Notification) {
         
+    }
+    @objc func connectedToServer( _ notification: Notification) {
+        notConnectedToServerSprite.run(SKAction.moveBy(x: notConnectedToServerSprite.size.width, y: 0, duration: 0.3))
     }
 }
 

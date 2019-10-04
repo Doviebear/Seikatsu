@@ -41,16 +41,24 @@ import GameplayKit
     var localPlayerTwoScoreLabel: SKLabelNode!
     var localPlayerThreeScoreLabel: SKLabelNode!
     
-    
-    var scoreBar: SKSpriteNode!
-    var scoreTokens = [SKSpriteNode]()
+    var scoreBoard: SKSpriteNode!
+    var scoreBarContainerTemplate: SKSpriteNode!
+    var scoreBars = [SKSpriteNode]()
     
     
     
     var centerHexagon: SKSpriteNode!
     var playerNum: Int!
     var sksPlayerTokenNodes = [SKSpriteNode]()
-    var playerColorSprites = [SKSpriteNode]()
+    var yourTurnIndicator: SKSpriteNode!
+    
+    var hamburgerButton: SKSpriteNode!
+    
+    var menuContainer: SKSpriteNode!
+    var quitButton: SKSpriteNode!
+    var howToPlayButton: SKSpriteNode!
+    var settingsButton: SKSpriteNode!
+    var resumeButton: SKSpriteNode!
     
     //Player One: Pink
     //Player Two: Blue
@@ -194,13 +202,19 @@ import GameplayKit
                 return
             }
         }
+        if model.playerTurn == playerNum {
+            yourTurnIndicator.isHidden = false
+        } else {
+            yourTurnIndicator.isHidden = true
+        }
         
+        /*
         for (index,scoreToken) in scoreTokens.enumerated() {
             if model.playerTurn - 1 == index {
                 addTouchableEffectSprite(in: scoreToken.position, with: scoreToken.size)
             }
         }
-        
+        */
        
         
          print("Function LoadGameModel Ended")
@@ -210,123 +224,28 @@ import GameplayKit
     func makeStartingPeices() {
         print("Function makeStartingPeices started")
         
-        self.localPlayerOneScoreLabel = self.childNode(withName: "localPlayerOneScoreLabel") as? SKLabelNode
-        self.localPlayerTwoScoreLabel = self.childNode(withName: "localPlayerTwoScoreLabel") as? SKLabelNode
-        self.localPlayerThreeScoreLabel = self.childNode(withName: "localPlayerThreeScoreLabel") as? SKLabelNode
-        self.scoreBar = self.childNode(withName: "scoreBar") as? SKSpriteNode
+        self.scoreBoard = self.childNode(withName: "scoreBoard") as? SKSpriteNode
+        self.localPlayerOneScoreLabel = scoreBoard.childNode(withName: "localPlayerOneScoreLabel") as? SKLabelNode
+        self.localPlayerTwoScoreLabel = scoreBoard.childNode(withName: "localPlayerTwoScoreLabel") as? SKLabelNode
+        self.localPlayerThreeScoreLabel = scoreBoard.childNode(withName: "localPlayerThreeScoreLabel") as? SKLabelNode
+        self.scoreBarContainerTemplate = scoreBoard.childNode(withName: "scoreBarContainerTemplate") as? SKSpriteNode
         for num in 1...3 {
-            let scoreTokenString = "scoreToken" + String(num)
-            if let scoreToken = self.childNode(withName: scoreTokenString) as? SKSpriteNode {
-                scoreTokens.append(scoreToken)
+            let scoreBarString = "scoreBar" + String(num)
+            if let scoreBar = scoreBoard.childNode(withName: scoreBarString) as? SKSpriteNode {
+                scoreBars.append(scoreBar)
             }
         }
         
-        for num in 1...2 {
-            let playerColorSpriteString = "playerColorSprite" + String(num)
-            if let playerColorSprite = self.childNode(withName: playerColorSpriteString) as? SKSpriteNode {
-                if self.playerNum == 1 {
-                    playerColorSprite.texture = SKTexture(imageNamed: "PinkRectangle")
-                } else if self.playerNum == 2 {
-                    playerColorSprite.texture = SKTexture(imageNamed: "BlueRectangle")
-                } else if self.playerNum == 3 {
-                    playerColorSprite.texture = SKTexture(imageNamed: "GreenRectangle")
-                } else {
-                    print("Couldn't change player Color Sprites, couldn't get player Num")
-                }
-                playerColorSprites.append(playerColorSprite)
-            }
-        }
+        self.yourTurnIndicator = self.childNode(withName: "yourTurnIndicator") as? SKSpriteNode
+        self.hamburgerButton = self.childNode(withName: "hamburgerButton") as? SKSpriteNode
+        
+        self.menuContainer = self.childNode(withName: "menuContainer") as? SKSpriteNode
+        self.resumeButton = menuContainer.childNode(withName: "resumeButton") as? SKSpriteNode
+        self.quitButton = menuContainer.childNode(withName: "quitButton") as? SKSpriteNode
+        self.howToPlayButton = menuContainer.childNode(withName: "howToPlayButton") as? SKSpriteNode
+        self.settingsButton = menuContainer.childNode(withName: "settingsButton") as? SKSpriteNode
         
         
-        
-        
-        
-        
-        
-        
-        /*
-         let token1 = model.grabBag.drawToken(canBeKoiPond: false)
-         let nodeOfToken1 = tokenNode(token: token1)
-         let Location1 = Location(col: 3, numInCol: 3, posistioningNumInCol: 3)
-         nodeOfToken1.tokenData.Location = Location1
-         nodeOfToken1.placeTokenNode(in: getPositionOfTokenSpace(at: Location1) ?? CGPoint(x: 0, y: 0), on: self)
-         removeTokenSpace(at: Location1)
-         tokensInPlay.append(nodeOfToken1)
-         model.TokensInPlay.append(nodeOfToken1.tokenData)
-         
-         let token2 = model.grabBag.drawToken(canBeKoiPond: false)
-         let nodeOfToken2 = tokenNode(token: token2)
-         let Location2 = Location(col: 5, numInCol: 3, posistioningNumInCol: 3)
-         nodeOfToken2.tokenData.Location = Location2
-         nodeOfToken2.placeTokenNode(in: getPositionOfTokenSpace(at: Location2) ?? CGPoint(x: 0, y: 0), on: self)
-         removeTokenSpace(at: Location2)
-         tokensInPlay.append(nodeOfToken2)
-         model.TokensInPlay.append(nodeOfToken2.tokenData)
-         
-         let token3 = model.grabBag.drawToken(canBeKoiPond: false)
-         let nodeOfToken3 = tokenNode(token: token3)
-         let Location3 = Location(col: 4, numInCol: 5, posistioningNumInCol: 5)
-         nodeOfToken3.tokenData.Location = Location3
-         nodeOfToken3.placeTokenNode(in: getPositionOfTokenSpace(at: Location3) ?? CGPoint(x: 0, y: 0), on: self)
-         removeTokenSpace(at: Location3)
-         tokensInPlay.append(nodeOfToken3)
-         model.TokensInPlay.append(nodeOfToken3.tokenData)
-         
-         
-         localPlayerOneScoreLabel = SKLabelNode(text: "P1 Score is: \(localPlayerOneScore)")
-         localPlayerOneScoreLabel.position = CGPoint(x: 400 , y: Int(JKGame.rect.minY) + 200)
-         localPlayerOneScoreLabel.fontName = "RussoOne-Regular"
-         localPlayerOneScoreLabel.zPosition = 7
-         addChild(localPlayerOneScoreLabel)
-         
-         
-         localPlayerTwoScoreLabel = SKLabelNode(text: "P2 Score is: \(localPlayerTwoScore)")
-         localPlayerTwoScoreLabel.position = CGPoint(x: 400, y: Int(JKGame.rect.maxY) - 150)
-         localPlayerTwoScoreLabel.fontName = "RussoOne-Regular"
-         localPlayerTwoScoreLabel.zPosition = 7
-         addChild(localPlayerTwoScoreLabel)
-         
-         localPlayerThreeScoreLabel = SKLabelNode(text: "P3 Score is: \(localPlayerThreeScore)")
-         localPlayerThreeScoreLabel.position = CGPoint(x: Int(JKGame.rect.maxX) - 400, y: Int(JKGame.rect.maxY) - 150)
-         localPlayerThreeScoreLabel.fontName = "RussoOne-Regular"
-         localPlayerThreeScoreLabel.zPosition = 7
-         addChild(localPlayerThreeScoreLabel)
-         
-         centerCircle = SKShapeNode(circleOfRadius: 425)
-         centerCircle.fillColor = UIColor(rgb: 0xffd480) //Tan
-         centerCircle.lineWidth = 0
-         centerCircle.zPosition = 5
-         centerCircle.position = CGPoint(x: JKGame.rect.midX, y: JKGame.rect.midY)
-         addChild(centerCircle)
-         
-         player1Box = SKShapeNode(rectOf: CGSize(width: JKGame.rect.width, height: JKGame.rect.height/2))
-         player1Box.fillColor = UIColor(rgb: 0xff66cc) //Pink
-         player1Box.lineWidth = 0
-         player1Box.zPosition = 3
-         player1Box.position = CGPoint(x: JKGame.rect.midX, y: JKGame.rect.midY/2)
-         addChild(player1Box)
-         
-         player2Box = SKShapeNode(rectOf: CGSize(width: JKGame.rect.width/2, height: JKGame.rect.height))
-         player2Box.fillColor = UIColor(rgb: 0x33ccff) //light blue
-         player2Box.lineWidth = 0
-         player2Box.zPosition = 2
-         player2Box.position = CGPoint(x: JKGame.rect.midX/2, y: JKGame.rect.midY)
-         addChild(player2Box)
-         
-         player3Box = SKShapeNode(rectOf: CGSize(width: JKGame.rect.width/2, height: JKGame.rect.height))
-         player3Box.fillColor = UIColor(rgb: 0x009900) //Green
-         player3Box.lineWidth = 0
-         player3Box.zPosition = 2
-         player3Box.position = CGPoint(x: JKGame.rect.midX/2 * 3, y: JKGame.rect.midY)
-         addChild(player3Box)
-         
-         turnIndicator = SKShapeNode(circleOfRadius: 12.5)
-         turnIndicator.fillColor = UIColor(rgb: 0xff5050) //red
-         turnIndicator.zPosition = 8
-         turnIndicator.lineWidth = 0
-         turnIndicator.position = CGPoint(x: 400, y: Int(JKGame.rect.minY) + 200 - 25 )
-         addChild(turnIndicator)
-         */
         print("Function MakeStartingPieces Ended")
     }
     
@@ -421,18 +340,77 @@ import GameplayKit
         
          print("Function SceneDidLoad Ended")
     }
-    
-    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-        guard model.playerTurn == playerNum else {
-            print("Not your turn")
-            print("Turn num is: \(model.playerTurn)")
-            print("You are num: \(String(describing: playerNum))")
-            return
-        }
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         let touch = touches.first
         if let location = touch?.location(in: self) {
             let nodesArray = self.nodes(at: location)
             for node in nodesArray {
+                if node.name == "hamburgerButton" {
+                    hamburgerButton.texture = SKTexture(imageNamed: "hamburgerButtonPressed")
+                } else if node.name == "settingsButton" {
+                    settingsButton.texture = SKTexture(imageNamed: "settingsButtonPressed")
+                } else if node.name == "quitButton" {
+                    //quitButton.texture = SKTexture(imageNamed: "quitButtonPressed")
+                } else if node.name == "howToPlayButton" {
+                    howToPlayButton.texture = SKTexture(imageNamed: "howToPlayButtonPressed")
+                } else if node.name == "resumeButton" {
+                    resumeButton.texture = SKTexture(imageNamed: "resumeButtonPressed")
+                }
+            }
+        }
+    }
+    
+    
+    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        let touch = touches.first
+        if let location = touch?.location(in: self) {
+            let nodesArray = self.nodes(at: location)
+            for node in nodesArray {
+                
+                
+                
+                if menuContainer.isHidden == false {
+                    if node.name == "settingsButton" {
+                        print("Settings button Pressed")
+                        settingsButton.texture = SKTexture(imageNamed: "settingsButton")
+                        menuContainer.isHidden = true
+                        return
+                    } else if node.name == "quitButton" {
+                        //quitButton.texture = SKTexture(imageNamed: "quitButton")
+                        print("Quit button Pressed")
+                        SocketIOHelper.helper.quitMatch()
+                        backToMainMenuScene()
+                        return
+                    } else if node.name == "howToPlayButton" {
+                        print("HowToPlay button Pressed")
+                        howToPlayButton.texture = SKTexture(imageNamed: "howToPlayButton")
+                         menuContainer.isHidden = true
+                        return
+                    } else if node.name == "resumeButton" {
+                        print("Resume button Pressed")
+                        resumeButton.texture = SKTexture(imageNamed: "resumeButton")
+                        menuContainer.isHidden = true
+                        return
+                    }
+                }
+                
+                guard menuContainer.isHidden == true else {
+                    return
+                }
+                
+                if node.name == "hamburgerButton" {
+                    hamburgerButton.texture = SKTexture(imageNamed: "hamburgerButton")
+                    bringUpMenu()
+                    return
+                }
+                
+                guard model.playerTurn == playerNum else {
+                    print("Not your turn")
+                    print("Turn num is: \(model.playerTurn)")
+                    print("You are num: \(String(describing: playerNum))")
+                    return
+                }
+                
                 if gameplayPhase == 0 {
                     if node.name == "tokenNode" {
                         tokenNodeTouched(node: node, phase: 0)
@@ -559,7 +537,103 @@ import GameplayKit
         SocketIOHelper.helper.endRound(model: self.model)
     }
     
+    func bringUpMenu() {
+        menuContainer.isHidden = false
+    }
     
+    func backToMainMenuScene() {
+        if let fileName = getFileName() {
+            if let scene = MenuScene(fileNamed: fileName) {
+                scene.scaleMode = .aspectFill
+                
+                
+                self.view?.presentScene(scene)
+                
+                
+                self.view?.ignoresSiblingOrder = true
+                self.view?.showsFPS = true
+                self.view?.showsNodeCount = true
+                
+                
+            } else {
+                print("Couldn't create Menu Scene")
+            }
+            
+        } else {
+            print("Couldn't get File Name for Menu Scene")
+        }
+        return
+    }
+    
+    func getFileName() -> String? {
+        //We call this function with a baseSKSName passed in, and return either a
+        //modified name or the same name if no other device specific SKS files are found.
+        //For example, if baseSKSName = Level1 and Level1TV.sks exists in the project,
+        //then the string returned is Level1TV
+        let baseSKSName = "MenuScene"
+        var fullSKSNameToLoad:String
+        if ( UIDevice.current.userInterfaceIdiom == .pad) {
+            if UIDevice.current.orientation.isLandscape {
+                if let _ = MenuScene(fileNamed:  baseSKSName + "PadLand"){
+                    
+                    // this if statement would NOT be true if the iPad file did not exist
+                    
+                    fullSKSNameToLoad = baseSKSName + "PadLand"
+                } else {
+                    return nil
+                }
+            } else if UIDevice.current.orientation.isPortrait {
+                if let _ = MenuScene(fileNamed:  baseSKSName + "PadPortrait"){
+                    
+                    // this if statement would NOT be true if the iPad file did not exist
+                    
+                    fullSKSNameToLoad = baseSKSName + "PadPortrait"
+                } else {
+                    return nil
+                }
+            } else if UIDevice.current.orientation.isFlat {
+                if let _ = MenuScene(fileNamed:  baseSKSName + "PadPortrait"){
+                    
+                    // this if statement would NOT be true if the iPad file did not exist
+                    
+                    fullSKSNameToLoad = baseSKSName + "PadPortrait"
+                } else {
+                    return nil
+                }
+            } else {
+                fullSKSNameToLoad = baseSKSName + "PadPortrait"
+            }
+        } else if ( UIDevice.current.userInterfaceIdiom == .phone) {
+            if UIDevice.current.orientation.isLandscape {
+                if let _ = MenuScene(fileNamed:  baseSKSName + "PhoneLand"){
+                    // this if statement would NOT be true if the Phone file did not exist
+                    fullSKSNameToLoad = baseSKSName + "PhoneLand"
+                } else {
+                    return nil
+                }
+            } else if UIDevice.current.orientation.isPortrait {
+                if let _ = MenuScene(fileNamed:  baseSKSName + "PhonePortrait"){
+                    // this if statement would NOT be true if the Phone file did not exist
+                    fullSKSNameToLoad = baseSKSName + "PhonePortrait"
+                } else {
+                    return nil
+                }
+            } else if UIDevice.current.orientation.isFlat {
+                if let _ = MenuScene(fileNamed:  baseSKSName + "PhonePortrait"){
+                    // this if statement would NOT be true if the Phone file did not exist
+                    fullSKSNameToLoad = baseSKSName + "PhonePortrait"
+                } else {
+                    return nil
+                }
+            } else  {
+                fullSKSNameToLoad = baseSKSName + "PhonePortrait"
+            }
+            //worry about TV later
+        } else {
+            return nil
+        }
+        return fullSKSNameToLoad
+    }
     
     
     
@@ -674,26 +748,33 @@ import GameplayKit
             if player == 1 {
                 model.playerOneScore += amount
                 localPlayerOneScore += amount
+                moveScoreBars(player: player, score: model.playerOneScore)
             } else if player == 2 {
                 model.playerTwoScore += amount
                 localPlayerTwoScore += amount
+                moveScoreBars(player: player, score: model.playerTwoScore)
             } else if player == 3 {
                 model.playerThreeScore += amount
                 localPlayerThreeScore += amount
+                moveScoreBars(player: player, score: model.playerThreeScore)
             } else {
                 print("error Updating score, player not found")
             }
+            
             return
         } else if let setAt = setAt {
             if player == 1 {
                 model.playerOneScore = setAt
                 localPlayerOneScore = setAt
+                moveScoreBars(player: player, score: setAt)
             } else if player == 2 {
                 model.playerTwoScore = setAt
                 localPlayerTwoScore = setAt
+                moveScoreBars(player: player, score: setAt)
             } else if player == 3 {
                 model.playerThreeScore = setAt
                 localPlayerThreeScore = setAt
+                moveScoreBars(player: player, score: setAt)
             } else {
                 print("error Updating score, player not found")
             }
@@ -704,11 +785,15 @@ import GameplayKit
     }
     
     
-    func moveScoreTokens(player: Int, score: Int) {
-      
+    func moveScoreBars(player: Int, score: Int) {
+        let amountToMoveTo = ((scoreBarContainerTemplate.size.width * CGFloat(0.95)) / CGFloat(80)) * CGFloat(score)
         
-        
-        
+        for (index, scoreBar) in scoreBars.enumerated() {
+            if index == player - 1 {
+                scoreBar.size.width = amountToMoveTo
+                break
+            }
+        }
         
     }
     
@@ -835,6 +920,7 @@ import GameplayKit
     
     
     func switchToLandscape() {
+        /*
         if UIDevice.current.userInterfaceIdiom == .phone {
             self.size = CGSize(width: 2436, height: 1125)
             //Things to change: Hexagon
@@ -852,13 +938,13 @@ import GameplayKit
             }
             
             //Score Bar, Labels, and Markers
-            scoreBar.position = CGPoint(x: 1800, y: 888)
+            //scoreBar.position = CGPoint(x: 1800, y: 888)
             
             localPlayerOneScoreLabel.position = CGPoint(x: 1500, y: 808)
             localPlayerTwoScoreLabel.position = CGPoint(x: 1800, y: 808)
             localPlayerThreeScoreLabel.position = CGPoint(x: 2100, y: 808)
             
-            for (index,scoreToken) in scoreTokens.enumerated() {
+            for (index,scoreToken) in scoreBars.enumerated() {
                 let x: Int
                 if index == 0 {
                     x = 1500
@@ -901,13 +987,13 @@ import GameplayKit
             }
             
             //Score Bar, Labels, and Markers
-            scoreBar.position = CGPoint(x: 1525, y: 1300)
+            //scoreBar.position = CGPoint(x: 1525, y: 1300)
             
             localPlayerOneScoreLabel.position = CGPoint(x: 1220, y: 1220)
             localPlayerTwoScoreLabel.position = CGPoint(x: 1520, y: 1220)
             localPlayerThreeScoreLabel.position = CGPoint(x: 1820, y: 1220)
             
-            for (index,scoreToken) in scoreTokens.enumerated() {
+            for (index,scoreToken) in scoreBars.enumerated() {
                 let x: Int
                 if index == 0 {
                     x = 1220
@@ -933,9 +1019,11 @@ import GameplayKit
                 tokenNode.position = newPosition
             }
         }
+        */
     }
     
     func switchToPortrait() {
+        /*
         if UIDevice.current.userInterfaceIdiom == .phone {
             self.size = CGSize(width: 1125, height: 2436)
             
@@ -953,13 +1041,13 @@ import GameplayKit
                 sksPlayerTokenNodes[index].position = CGPoint(x: x, y: 772.5)
             }
             //Score Bar, Labels, and Markers
-            scoreBar.position = CGPoint(x: 575, y: 325)
+            //scoreBar.position = CGPoint(x: 575, y: 325)
             
             localPlayerOneScoreLabel.position = CGPoint(x: 275, y: 245)
             localPlayerTwoScoreLabel.position = CGPoint(x: 575, y: 245)
             localPlayerThreeScoreLabel.position = CGPoint(x: 875, y: 245)
             
-            for (index,scoreToken) in scoreTokens.enumerated() {
+            for (index,scoreToken) in scoreBars.enumerated() {
                 let x: Int
                 if index == 0 {
                     x = 275
@@ -1001,13 +1089,13 @@ import GameplayKit
                  sksPlayerTokenNodes[index].position = CGPoint(x: x, y: 520)
             }
             //Score Bar, Labels, and Markers
-            scoreBar.position = CGPoint(x: 768, y: 120)
+            //scoreBar.position = CGPoint(x: 768, y: 120)
             
             localPlayerOneScoreLabel.position = CGPoint(x: 468, y: 40)
             localPlayerTwoScoreLabel.position = CGPoint(x: 768, y: 40)
             localPlayerThreeScoreLabel.position = CGPoint(x: 1068, y: 40)
             
-            for (index,scoreToken) in scoreTokens.enumerated() {
+            for (index,scoreToken) in scoreBars.enumerated() {
                 let x: Int
                 if index == 0 {
                     x = 468
@@ -1035,6 +1123,7 @@ import GameplayKit
                 tokenNode.position = newPosition
             }
         }
+ */
     }
     
     

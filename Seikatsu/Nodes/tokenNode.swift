@@ -24,12 +24,15 @@ import SpriteKit
 
 class tokenNode: SKNode {
     var sprite: SKSpriteNode?
+    //Flowers are background colors
+    //Birds are : Pink = Squirrel, Grey = Rabbit, Green = Turtle , Red = Dog1
     var flowers = ["Orange","Purple","Blue","Yellow"]
     var birds = ["Pink","Grey","Green","Red"]
     /*
     var flowerColors = [UIColor(rgb: 0xffff00), UIColor(rgb: 0x003399), UIColor(rgb: 0xff66ff), UIColor(rgb: 0x4d004d)]
     var birdColors = [UIColor(rgb: 0xff9966), UIColor(rgb: 0x009933), UIColor(rgb: 0x0066cc), UIColor(rgb: 0xcc0000) ]
      */
+    
     var isKoiPond: Bool
     var tokenData: Token
     var TokenSize: Int!
