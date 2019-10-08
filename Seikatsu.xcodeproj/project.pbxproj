@@ -29,6 +29,7 @@
 		E86F2C2722DCBBB30069AC1A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E86F2C2622DCBBB30069AC1A /* Assets.xcassets */; };
 		E86F2C2A22DCBBB30069AC1A /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E86F2C2822DCBBB30069AC1A /* LaunchScreen.storyboard */; };
 		E877B62C2304509600DA2AA6 /* GameSceneOnlinePhonePortrait.sks in Resources */ = {isa = PBXBuildFile; fileRef = E877B62B2304509600DA2AA6 /* GameSceneOnlinePhonePortrait.sks */; };
+		E8A8A513234D074400C355DC /* playWithFriendsScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8A8A512234D074400C355DC /* playWithFriendsScene.swift */; };
 		E8DB2C2E22E8D92100A6A212 /* MenuScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8DB2C2D22E8D92100A6A212 /* MenuScene.swift */; };
 		FFB926427AC41A8E1C01A580 /* Pods_Seikatsu.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D9A9399E779A376C0DB6F184 /* Pods_Seikatsu.framework */; };
 /* End PBXBuildFile section */
@@ -61,6 +62,7 @@
 		E86F2C2922DCBBB30069AC1A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		E86F2C2B22DCBBB30069AC1A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		E877B62B2304509600DA2AA6 /* GameSceneOnlinePhonePortrait.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = GameSceneOnlinePhonePortrait.sks; sourceTree = "<group>"; };
+		E8A8A512234D074400C355DC /* playWithFriendsScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = playWithFriendsScene.swift; sourceTree = "<group>"; };
 		E8CFCF81231865600014A254 /* Seikatsu.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Seikatsu.entitlements; sourceTree = "<group>"; };
 		E8DB2C2D22E8D92100A6A212 /* MenuScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuScene.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -97,14 +99,9 @@
 		E80DC652230B4C3E00D72E53 /* Scene Files */ = {
 			isa = PBXGroup;
 			children = (
-				E877B62B2304509600DA2AA6 /* GameSceneOnlinePhonePortrait.sks */,
-				E80DC655230C69E500D72E53 /* GameSceneOnlinePhoneLand.sks */,
-				E80DC657230C69F600D72E53 /* GameSceneOnlinePadPortrait.sks */,
-				E80DC653230B4C9000D72E53 /* GameSceneOnlinePadLand.sks */,
-				E84E2C5F23171D1D004EF2DF /* MenuScenePhonePortrait.sks */,
-				E84E2C5D23171C5F004EF2DF /* MenuScenePhoneLand.sks */,
-				E84E2C6123171E34004EF2DF /* MenuScenePadPortrait.sks */,
-				E84E2C6323171F1F004EF2DF /* MenuScenePadLand.sks */,
+				E86190CB234D082700EAE462 /* playWithFriendsScene */,
+				E86190CA234D081000EAE462 /* MenuScene */,
+				E8A8A514234D07CF00C355DC /* GameScene */,
 			);
 			path = "Scene Files";
 			sourceTree = "<group>";
@@ -127,6 +124,7 @@
 			children = (
 				E817C34D22FB12BB00A8BC16 /* GameSceneOnline.swift */,
 				E8DB2C2D22E8D92100A6A212 /* MenuScene.swift */,
+				E8A8A512234D074400C355DC /* playWithFriendsScene.swift */,
 			);
 			path = Scenes;
 			sourceTree = "<group>";
@@ -146,6 +144,24 @@
 				E83FBCE622DD09F0001D8684 /* tokenNode.swift */,
 			);
 			path = Nodes;
+			sourceTree = "<group>";
+		};
+		E86190CA234D081000EAE462 /* MenuScene */ = {
+			isa = PBXGroup;
+			children = (
+				E84E2C5F23171D1D004EF2DF /* MenuScenePhonePortrait.sks */,
+				E84E2C5D23171C5F004EF2DF /* MenuScenePhoneLand.sks */,
+				E84E2C6123171E34004EF2DF /* MenuScenePadPortrait.sks */,
+				E84E2C6323171F1F004EF2DF /* MenuScenePadLand.sks */,
+			);
+			path = MenuScene;
+			sourceTree = "<group>";
+		};
+		E86190CB234D082700EAE462 /* playWithFriendsScene */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = playWithFriendsScene;
 			sourceTree = "<group>";
 		};
 		E86F2C0D22DCBBAE0069AC1A = {
@@ -182,6 +198,17 @@
 				E83FBCD422DCCB63001D8684 /* Helper Classes */,
 			);
 			path = Seikatsu;
+			sourceTree = "<group>";
+		};
+		E8A8A514234D07CF00C355DC /* GameScene */ = {
+			isa = PBXGroup;
+			children = (
+				E877B62B2304509600DA2AA6 /* GameSceneOnlinePhonePortrait.sks */,
+				E80DC655230C69E500D72E53 /* GameSceneOnlinePhoneLand.sks */,
+				E80DC657230C69F600D72E53 /* GameSceneOnlinePadPortrait.sks */,
+				E80DC653230B4C9000D72E53 /* GameSceneOnlinePadLand.sks */,
+			);
+			path = GameScene;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -321,6 +348,7 @@
 				E86F2C1A22DCBBAE0069AC1A /* AppDelegate.swift in Sources */,
 				E817C34C22F9DBA500A8BC16 /* SocketIOHelper.swift in Sources */,
 				E83FBCE222DCCEA8001D8684 /* GameModel.swift in Sources */,
+				E8A8A513234D074400C355DC /* playWithFriendsScene.swift in Sources */,
 				E83FBCDE22DCCC84001D8684 /* Location.swift in Sources */,
 				E817C34E22FB12BB00A8BC16 /* GameSceneOnline.swift in Sources */,
 				E83FBCDA22DCCBBB001D8684 /* JKClass.swift in Sources */,
