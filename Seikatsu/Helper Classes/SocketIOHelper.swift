@@ -15,7 +15,7 @@ class SocketIOHelper {
     
     //AWS Server: http://3.218.33.203/
     //Local Server: http://192.168.1.187:3003/
-    let manager = SocketManager(socketURL: URL(string: "http://3.218.33.203/")!, config: [.log(true), .compress])
+    let manager = SocketManager(socketURL: URL(string: "http://192.168.1.187:3003/")!, config: [.log(true), .compress])
     var socket: SocketIOClient!
     var viewController: UIViewController?
     var uniqueID: String?

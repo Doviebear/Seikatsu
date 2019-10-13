@@ -22,6 +22,9 @@ class MenuScene: SKScene {
     
     var testingSprite: SKSpriteNode!
     
+    var playMenu: SKSpriteNode!
+    var touchBufferNode: SKSpriteNode!
+    
     
     override func sceneDidLoad() {
         NotificationCenter.default.addObserver(self, selector: #selector(joinedQueue(_:)), name: .joinedQueue, object: nil)
@@ -42,6 +45,12 @@ class MenuScene: SKScene {
         if SocketIOHelper.helper.socket.status != .connected {
             notConnectedToServerSprite.run(SKAction.moveBy(x: -(notConnectedToServerSprite.size.width), y: 0, duration: 0.3))
         }
+        
+        touchBufferNode = SKSpriteNode(color:SKColor(red:0.0,green:0.0,blue:0.0,alpha:0.5),size:self.size)
+        touchBufferNode.position = CGPoint(x: self.size.width/2, y:  self.size.height/2)
+        touchBufferNode.zPosition = 100
+        touchBufferNode.isHidden = true
+        addChild(touchBufferNode)
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -49,7 +58,10 @@ class MenuScene: SKScene {
         if let location = touch?.location(in: self) {
             let nodesArray = self.nodes(at: location)
             for node in nodesArray {
-                if node.name == "playButton" {
+                if node.name == "touchBufferNode" {
+                    resetScene()
+                    return
+                } else if node.name == "playButton" {
                   
                     return
                 } else if node.name == "howToPlayButton" {
@@ -67,21 +79,44 @@ class MenuScene: SKScene {
             let nodesArray = self.nodes(at: location)
             for node in nodesArray {
                 if node.name == "playButton" {
-                    SocketIOHelper.helper.searchForMatch()
+                    touchBufferNode.isHidden = false
+                    createPlayButtonPopup()
+                    
+                    
+                    //SocketIOHelper.helper.searchForMatch()
                     return
                 } else if node.name == "howToPlayButton" {
                     //addChild(testingSprite)
-                    SocketIOHelper.helper.createGame(gameID: "Boo")
+                    //SocketIOHelper.helper.createGame(gameID: "Boo")
                    return
                 } else if node.name == "settingsButton" {
                     //SocketIOHelper.helper.startFriendGame()
+                    return
+                }
+                if node.name == "playOnlineButton" {
+                    SocketIOHelper.helper.searchForMatch()
+                    resetScene()
+                    return
+                } else if node.name == "playWithFriendsButton" {
+                    let transition = SKTransition.flipVertical(withDuration: 0.5)
+                    let scene = playWithFriendsScene()
+                    self.view?.presentScene(scene, transition: transition)
                     return
                 }
             }
         }
     }
     
+    func createPlayButtonPopup(){
+        playMenu.isHidden = false
+    }
     
+   
+    
+    func resetScene(){
+        touchBufferNode.isHidden = true
+        playMenu.isHidden = true
+    }
     
     func switchToLandscape() {
         /*
