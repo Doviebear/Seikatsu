@@ -38,6 +38,8 @@ class MenuScene: SKScene {
         settingsButton = self.childNode(withName: "settingsButton") as? SKSpriteNode
         searchingForGameSprite = self.childNode(withName: "searchingForGameSprite") as? SKSpriteNode
         notConnectedToServerSprite = self.childNode(withName: "notConnectedToServer") as? SKSpriteNode
+        playMenu = self.childNode(withName: "playMenu") as? SKSpriteNode
+        
         //testingSprite = self.childNode(withName: "testingSprite") as? SKSpriteNode
         //testingSprite.removeFromParent()
 
@@ -58,10 +60,7 @@ class MenuScene: SKScene {
         if let location = touch?.location(in: self) {
             let nodesArray = self.nodes(at: location)
             for node in nodesArray {
-                if node.name == "touchBufferNode" {
-                    resetScene()
-                    return
-                } else if node.name == "playButton" {
+                if node.name == "playButton" {
                   
                     return
                 } else if node.name == "howToPlayButton" {
@@ -78,7 +77,13 @@ class MenuScene: SKScene {
         if let location = touch?.location(in: self) {
             let nodesArray = self.nodes(at: location)
             for node in nodesArray {
-                if node.name == "playButton" {
+                if node.name == "touchBufferNode" {
+                    resetScene()
+                    return
+                }
+                
+                
+                if node.name == "playButton" && SocketIOHelper.helper.socket.status == .connected{
                     touchBufferNode.isHidden = false
                     createPlayButtonPopup()
                     
@@ -93,14 +98,25 @@ class MenuScene: SKScene {
                     //SocketIOHelper.helper.startFriendGame()
                     return
                 }
+                
                 if node.name == "playOnlineButton" {
                     SocketIOHelper.helper.searchForMatch()
                     resetScene()
                     return
                 } else if node.name == "playWithFriendsButton" {
                     let transition = SKTransition.flipVertical(withDuration: 0.5)
-                    let scene = playWithFriendsScene()
-                    self.view?.presentScene(scene, transition: transition)
+                    if let fileName = getFriendsSceneFileName() {
+                        if let scene = playWithFriendsScene(fileNamed: fileName) {
+                            scene.scaleMode = .aspectFill
+                            
+                           
+                            self.view?.presentScene(scene, transition: transition)
+                        } else {
+                            print("Couldn't create playWithFriendsScene")
+                        }
+                    } else {
+                        print("Couldn't get File Name for playWithFriendsScene")
+                    }
                     return
                 }
             }
@@ -163,7 +179,67 @@ class MenuScene: SKScene {
          */
     }
    
-    
+     func getFriendsSceneFileName() -> String? {
+            let baseSKSName = "friendsScene"
+            var fullSKSNameToLoad:String
+            if ( UIDevice.current.userInterfaceIdiom == .pad) {
+                if UIDevice.current.orientation.isLandscape {
+                    if let _ = MenuScene(fileNamed:  baseSKSName + "PadLand"){
+                        // this if statement would NOT be true if the iPad file did not exist
+                        fullSKSNameToLoad = baseSKSName + "PadLand"
+                    } else {
+                        return nil
+                    }
+                } else if UIDevice.current.orientation.isPortrait {
+                    if let _ = MenuScene(fileNamed:  baseSKSName + "PadPortrait"){
+                        // this if statement would NOT be true if the iPad file did not exist
+                        fullSKSNameToLoad = baseSKSName + "PadPortrait"
+                    } else {
+                        return nil
+                    }
+                } else if UIDevice.current.orientation.isFlat {
+                    if let _ = MenuScene(fileNamed:  baseSKSName + "PadPortrait"){
+                        // this if statement would NOT be true if the iPad file did not exist
+                        fullSKSNameToLoad = baseSKSName + "PadPortrait"
+                    } else {
+                        return nil
+                    }
+                } else {
+                   fullSKSNameToLoad = baseSKSName + "PadPortrait"
+                }
+            } else if ( UIDevice.current.userInterfaceIdiom == .phone) {
+                if UIDevice.current.orientation.isLandscape {
+                    if let _ = MenuScene(fileNamed:  baseSKSName + "PhoneLand"){
+                        // this if statement would NOT be true if the Phone file did not exist
+                        fullSKSNameToLoad = baseSKSName + "PhoneLand"
+                    } else {
+                        return nil
+                    }
+                } else if UIDevice.current.orientation.isPortrait {
+                    if let _ = MenuScene(fileNamed:  baseSKSName + "PhonePortrait"){
+                        // this if statement would NOT be true if the Phone file did not exist
+                        fullSKSNameToLoad = baseSKSName + "PhonePortrait"
+                    } else {
+                        return nil
+                    }
+                } else if UIDevice.current.orientation.isFlat {
+                    if let _ = MenuScene(fileNamed:  baseSKSName + "PhonePortrait"){
+                        // this if statement would NOT be true if the Phone file did not exist
+                        fullSKSNameToLoad = baseSKSName + "PhonePortrait"
+                    } else {
+                        return nil
+                    }
+                } else  {
+                     fullSKSNameToLoad = baseSKSName + "PhonePortrait"
+                }
+                //worry about TV later
+            } else {
+                return nil
+            }
+            return fullSKSNameToLoad
+        }
+        
+        
     
     @objc func joinedQueue(_ notification: Notification) {
         searchingForGameSprite.run(SKAction.moveBy(x: -(searchingForGameSprite.size.width), y: 0, duration: 0.3))

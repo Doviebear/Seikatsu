@@ -95,6 +95,27 @@ class SocketIOHelper {
         }
     }
     
+    func getNumInRoom() -> Int? {
+        var numToReturn: Int?
+        socket.emitWithAck("getNumInRoom").timingOut(after: 3) { data in
+            if let numInRoom = data[0] as? Int {
+                numToReturn = numInRoom
+            } else if let statusNum = data[0] as? String {
+                if statusNum == SocketAckStatus.noAck.rawValue {
+                    print("Emit for searchForMatch Timed out")
+                    numToReturn = nil
+                }
+                
+                
+            } else {
+                print("Couldn't typecast callback")
+                numToReturn = nil
+            }
+            
+        }
+        return numToReturn
+    }
+    
     func quitMatch() {
         
     }
@@ -103,15 +124,51 @@ class SocketIOHelper {
         var arrayToSend = [Any]()
         arrayToSend.append(gameID)
         socket.emitWithAck("createGame", with: arrayToSend).timingOut(after: 3) { data in
-            /*
-            if data[0] == SocketAckStatus.noAck.rawValue {
+           if let statusNum = data[0] as? Int {
+                if statusNum == 0 {
+                    //All good, game joined
+                    NotificationCenter.default.post(name: .returnText, object: gameID )
+                } else if statusNum == 3 {
+                    //Game Name Already Exists
+                    NotificationCenter.default.post(name: .gameNameTaken, object: gameID )
+                }
+            } else if let statusNum = data[0] as? String {
+                if statusNum == SocketAckStatus.noAck.rawValue {
+                    print("Couldn't create Game")
+                    return
+                }
+            
                 
+            } else {
+                print("Couldn't typecast callback")
+                return
             }
-            print("The data 0 is: \(data[0])") //If timed out, data[0] == "NO ACK"
-            print("The data 1 is: \(data[1])")
-            print("SocketAckStatus: \(SocketAckStatus.noAck.rawValue)")
-            print("Got Ack for game creation")
-             */
+        }
+    }
+    
+    func joinFriendGame(gameID: String) {
+        var arrayToSend = [Any]()
+        arrayToSend.append(gameID)
+        socket.emitWithAck("joinRoom", with: arrayToSend).timingOut(after: 3) { data in
+            if let statusNum = data[0] as? Int {
+                if statusNum == 0 {
+                    //All good, game joined
+                    NotificationCenter.default.post(name: .returnText, object: gameID )
+                } else if statusNum == 10 {
+                    //Game Name Not Found
+                    NotificationCenter.default.post(name: .gameNameTaken, object: gameID )
+                }
+            } else if let statusNum = data[0] as? String {
+                if statusNum == SocketAckStatus.noAck.rawValue {
+                    print("Couldn't Join Game")
+                    return
+                }
+                
+                
+            } else {
+                print("Couldn't typecast callback")
+                return
+            }
         }
     }
     
@@ -263,6 +320,14 @@ class SocketIOHelper {
                 print("Unexpected error: \(error).")
             }
         }
+        socket.on("updateFriendRoom") {data, ack in
+            print("Message Recieved to Update Friend Room")
+            guard let numInRoom = data[0] as? Int else {
+                return
+            }
+            NotificationCenter.default.post(name: .updateFriendRoom, object: numInRoom)
+            
+        }
         
     }
     
@@ -374,4 +439,9 @@ extension Notification.Name {
     static let joinedQueue = Notification.Name(rawValue: "joinedQueue")
     static let alreadyInQueue = Notification.Name(rawValue: "alreadyInQueue")
     static let connectedToServer = Notification.Name(rawValue: "connectedToServer")
+    static let showTextField = Notification.Name(rawValue: "showTextField")
+    static let hideTextField = Notification.Name(rawValue: "hideTextField")
+    static let returnText =  Notification.Name(rawValue: "returnText")
+    static let gameNameTaken = Notification.Name(rawValue: "gameNameTaken")
+    static let updateFriendRoom = Notification.Name(rawValue: "updateFriendRoom")
 }

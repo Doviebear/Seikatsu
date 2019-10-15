@@ -13,11 +13,12 @@ import Alamofire
 import SocketIO
 
 
-class GameViewController: UIViewController {
+class GameViewController: UIViewController, UITextFieldDelegate {
     
     //AWS Server: http://3.218.33.203
     var currentScene: SKScene? = nil
-    
+    var playWithFriendsTextField : UITextField!
+    var joiningOrCreatingGame: String!
     
     
     override func viewDidLoad() {
@@ -25,6 +26,16 @@ class GameViewController: UIViewController {
         
         SocketIOHelper.helper.viewController = self
         
+        let textRect = CGRect(x: view.center.x, y: view.center.y, width: 300, height: 100)
+        playWithFriendsTextField = UITextField(frame: textRect )
+        playWithFriendsTextField.isHidden = true
+        
+        view.addSubview(playWithFriendsTextField)
+        playWithFriendsTextField.delegate = self
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(showTextField(_:)), name: .showTextField, object: nil)
+         NotificationCenter.default.addObserver(self, selector: #selector(hideTextField(_:)), name: .hideTextField, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(gameNameTaken(_:)), name: .gameNameTaken, object: nil)
         
         /*
         Alamofire.request(urlString!).responseJSON { response in
@@ -129,6 +140,64 @@ class GameViewController: UIViewController {
         }
         
         
+    }
+    
+    @objc func showTextField(_ notification: Notification){
+        
+        guard let ArrayOfStuff = notification.object as? [Any] else {
+            return
+        }
+        
+        guard let positionOfField = ArrayOfStuff[0] as? CGPoint else {
+            return
+        }
+        
+        guard let typeOfTextField = ArrayOfStuff[1] as? String else {
+            return
+        }
+        
+        joiningOrCreatingGame = typeOfTextField
+        
+        
+        playWithFriendsTextField.placeholder = "Game Code"
+        playWithFriendsTextField.textColor = .gray
+        playWithFriendsTextField.backgroundColor = .white
+        var frame = self.playWithFriendsTextField.frame
+        frame.origin.x = positionOfField.x
+        frame.origin.y = positionOfField.y
+        frame.size = CGSize(width : 300, height: 25)
+        playWithFriendsTextField.frame = frame
+        
+        
+        playWithFriendsTextField.isHidden = false
+        print("text Field Shown")
+    }
+    
+    @objc func hideTextField(_ notification: Notification) {
+        playWithFriendsTextField.isHidden = true
+        
+    }
+    
+    @objc func gameNameTaken(_ notification: Notification) {
+        
+    }
+    
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        if let gameString = textField.text {
+            print(joiningOrCreatingGame!)
+            if joiningOrCreatingGame == "joining" {
+                SocketIOHelper.helper.joinFriendGame(gameID: gameString)
+            } else {
+                SocketIOHelper.helper.createGame(gameID: gameString)
+            }
+            
+            
+            //Loading animation TODO
+            return true
+        } else {
+            return false
+        }
     }
     
     func getFileName() -> String? {
