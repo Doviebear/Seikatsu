@@ -179,65 +179,68 @@ class MenuScene: SKScene {
          */
     }
    
-     func getFriendsSceneFileName() -> String? {
-            let baseSKSName = "friendsScene"
-            var fullSKSNameToLoad:String
-            if ( UIDevice.current.userInterfaceIdiom == .pad) {
-                if UIDevice.current.orientation.isLandscape {
-                    if let _ = MenuScene(fileNamed:  baseSKSName + "PadLand"){
-                        // this if statement would NOT be true if the iPad file did not exist
-                        fullSKSNameToLoad = baseSKSName + "PadLand"
-                    } else {
-                        return nil
-                    }
-                } else if UIDevice.current.orientation.isPortrait {
-                    if let _ = MenuScene(fileNamed:  baseSKSName + "PadPortrait"){
-                        // this if statement would NOT be true if the iPad file did not exist
-                        fullSKSNameToLoad = baseSKSName + "PadPortrait"
-                    } else {
-                        return nil
-                    }
-                } else if UIDevice.current.orientation.isFlat {
-                    if let _ = MenuScene(fileNamed:  baseSKSName + "PadPortrait"){
-                        // this if statement would NOT be true if the iPad file did not exist
-                        fullSKSNameToLoad = baseSKSName + "PadPortrait"
-                    } else {
-                        return nil
-                    }
+    func getFriendsSceneFileName() -> String? {
+//        let baseSKSName = "friendsScene"
+        var fullSKSNameToLoad:String
+        fullSKSNameToLoad = "friendsScenePhonePortrait"
+        /*
+        if ( UIDevice.current.userInterfaceIdiom == .pad) {
+            if UIDevice.current.orientation.isLandscape {
+                if let _ = MenuScene(fileNamed:  baseSKSName + "PadLand"){
+                    // this if statement would NOT be true if the iPad file did not exist
+                    fullSKSNameToLoad = baseSKSName + "PadLand"
                 } else {
-                   fullSKSNameToLoad = baseSKSName + "PadPortrait"
+                    return nil
                 }
-            } else if ( UIDevice.current.userInterfaceIdiom == .phone) {
-                if UIDevice.current.orientation.isLandscape {
-                    if let _ = MenuScene(fileNamed:  baseSKSName + "PhoneLand"){
-                        // this if statement would NOT be true if the Phone file did not exist
-                        fullSKSNameToLoad = baseSKSName + "PhoneLand"
-                    } else {
-                        return nil
-                    }
-                } else if UIDevice.current.orientation.isPortrait {
-                    if let _ = MenuScene(fileNamed:  baseSKSName + "PhonePortrait"){
-                        // this if statement would NOT be true if the Phone file did not exist
-                        fullSKSNameToLoad = baseSKSName + "PhonePortrait"
-                    } else {
-                        return nil
-                    }
-                } else if UIDevice.current.orientation.isFlat {
-                    if let _ = MenuScene(fileNamed:  baseSKSName + "PhonePortrait"){
-                        // this if statement would NOT be true if the Phone file did not exist
-                        fullSKSNameToLoad = baseSKSName + "PhonePortrait"
-                    } else {
-                        return nil
-                    }
-                } else  {
-                     fullSKSNameToLoad = baseSKSName + "PhonePortrait"
+            } else if UIDevice.current.orientation.isPortrait {
+                if let _ = MenuScene(fileNamed:  baseSKSName + "PadPortrait"){
+                    // this if statement would NOT be true if the iPad file did not exist
+                    fullSKSNameToLoad = baseSKSName + "PadPortrait"
+                } else {
+                    return nil
                 }
-                //worry about TV later
+            } else if UIDevice.current.orientation.isFlat {
+                if let _ = MenuScene(fileNamed:  baseSKSName + "PadPortrait"){
+                    // this if statement would NOT be true if the iPad file did not exist
+                    fullSKSNameToLoad = baseSKSName + "PadPortrait"
+                } else {
+                    return nil
+                }
             } else {
-                return nil
+                fullSKSNameToLoad = baseSKSName + "PadPortrait"
             }
-            return fullSKSNameToLoad
+        } else if ( UIDevice.current.userInterfaceIdiom == .phone) {
+            if UIDevice.current.orientation.isLandscape {
+                if let _ = MenuScene(fileNamed:  baseSKSName + "PhoneLand"){
+                    // this if statement would NOT be true if the Phone file did not exist
+                    fullSKSNameToLoad = baseSKSName + "PhoneLand"
+                } else {
+                    return nil
+                }
+            } else if UIDevice.current.orientation.isPortrait {
+                if let _ = MenuScene(fileNamed:  baseSKSName + "PhonePortrait"){
+                    // this if statement would NOT be true if the Phone file did not exist
+                    fullSKSNameToLoad = baseSKSName + "PhonePortrait"
+                } else {
+                    return nil
+                }
+            } else if UIDevice.current.orientation.isFlat {
+                if let _ = MenuScene(fileNamed:  baseSKSName + "PhonePortrait"){
+                    // this if statement would NOT be true if the Phone file did not exist
+                    fullSKSNameToLoad = baseSKSName + "PhonePortrait"
+                } else {
+                    return nil
+                }
+            } else  {
+                fullSKSNameToLoad = baseSKSName + "PhonePortrait"
+            }
+            //worry about TV later
+        } else {
+            return nil
         }
+        */
+        return fullSKSNameToLoad
+    }
         
         
     
@@ -253,3 +256,8 @@ class MenuScene: SKScene {
     }
 }
 
+/*
+extension SKScene {
+    
+}
+*/
