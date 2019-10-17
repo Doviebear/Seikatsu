@@ -25,6 +25,10 @@ class MenuScene: SKScene {
     var playMenu: SKSpriteNode!
     var touchBufferNode: SKSpriteNode!
     
+    var difficultyMenu: SKSpriteNode!
+    var easyButton: SKSpriteNode!
+    var mediumButton: SKSpriteNode!
+    var hardButton: SKSpriteNode!
     
     override func sceneDidLoad() {
         NotificationCenter.default.addObserver(self, selector: #selector(joinedQueue(_:)), name: .joinedQueue, object: nil)
@@ -41,7 +45,10 @@ class MenuScene: SKScene {
         searchingForGameSprite = self.childNode(withName: "searchingForGameSprite") as? SKSpriteNode
         notConnectedToServerSprite = self.childNode(withName: "notConnectedToServer") as? SKSpriteNode
         playMenu = self.childNode(withName: "playMenu") as? SKSpriteNode
-        
+        difficultyMenu = self.childNode(withName: "difficultyContainer") as? SKSpriteNode
+        easyButton = self.childNode(withName: "easyButton") as? SKSpriteNode
+        mediumButton = self.childNode(withName: "mediumButton") as? SKSpriteNode
+        hardButton = self.childNode(withName: "hardButton") as? SKSpriteNode
         //testingSprite = self.childNode(withName: "testingSprite") as? SKSpriteNode
         //testingSprite.removeFromParent()
 
@@ -63,11 +70,13 @@ class MenuScene: SKScene {
             let nodesArray = self.nodes(at: location)
             for node in nodesArray {
                 if node.name == "playButton" {
-                  
+//                    playButton.texture = SKTexture(imageNamed: "playgameButtonPressed")
                     return
                 } else if node.name == "howToPlayButton" {
+//                    howToPlayButton.texture = SKTexture(imageNamed: "howToPlayButtonPressed")
                     return
                 } else if node.name == "settingsButton" {
+//                    settingsButton.texture = SKTexture(imageNamed: "settingsButtonPressed")
                     return
                 }
             }
@@ -91,13 +100,16 @@ class MenuScene: SKScene {
                     
                     
                     //SocketIOHelper.helper.searchForMatch()
+//                    playButton.texture = SKTexture(imageNamed: "playgameButton")
                     return
                 } else if node.name == "howToPlayButton" {
                     //addChild(testingSprite)
                     //SocketIOHelper.helper.createGame(gameID: "Boo")
+//                    howToPlayButton.texture = SKTexture(imageNamed: "howToPlayButtonPressed")
                    return
                 } else if node.name == "settingsButton" {
                     //SocketIOHelper.helper.startFriendGame()
+//                    settingsButton.texture = SKTexture(imageNamed: "settingsButtonPressed")
                     return
                 }
                 
@@ -106,7 +118,7 @@ class MenuScene: SKScene {
                     resetScene()
                     return
                 } else if node.name == "playWithFriendsButton" {
-                    let transition = SKTransition.flipVertical(withDuration: 0.5)
+                   let transition = SKTransition.flipVertical(withDuration: 0.5)
                     if let fileName = getFriendsSceneFileName() {
                         if let scene = playWithFriendsScene(fileNamed: fileName) {
                             scene.scaleMode = .aspectFill
@@ -120,11 +132,39 @@ class MenuScene: SKScene {
                         print("Couldn't get File Name for playWithFriendsScene")
                     }
                     return
+                } else if node.name == "playSoloButton" {
+                    difficultyMenu.isHidden = false
+                    playMenu.isHidden = true
+                    return
+                    
+                } else if node.name == "easyButton" {
+                    startSingleplayerGame(with: "easy")
+                } else if node.name == "mediumButton" {
+                    startSingleplayerGame(with: "medium")
+                } else if node.name == "hardButton" {
+                    startSingleplayerGame(with: "hard")
                 }
+                
             }
         }
     }
     
+    func startSingleplayerGame(with difficulty: String) {
+        let transition = SKTransition.flipVertical(withDuration: 0.5)
+        if let fileName = getFileName(baseSKSName: "singleplayer") {
+            let gameModel = GameModel()
+            if let scene = singleplayerGameScene(fileNamed: fileName, gameModel: gameModel, difficulty: difficulty ) {
+                scene.scaleMode = .aspectFill
+                
+                
+                self.view?.presentScene(scene, transition: transition)
+            } else {
+                print("Couldn't create playWithFriendsScene")
+            }
+        } else {
+            print("Couldn't get File Name for playWithFriendsScene")
+        }
+    }
     func createPlayButtonPopup(){
         playMenu.isHidden = false
     }
@@ -245,6 +285,78 @@ class MenuScene: SKScene {
             return nil
         }
         */
+        return fullSKSNameToLoad
+    }
+    
+    func getFileName(baseSKSName: String) -> String? {
+        //We call this function with a baseSKSName passed in, and return either a
+        //modified name or the same name if no other device specific SKS files are found.
+        //For example, if baseSKSName = Level1 and Level1TV.sks exists in the project,
+        //then the string returned is Level1TV
+        var fullSKSNameToLoad:String
+        if ( UIDevice.current.userInterfaceIdiom == .pad) {
+            if UIDevice.current.orientation.isLandscape {
+                if let _ = GameSceneOnline(fileNamed:  baseSKSName + "PadLand"){
+                    
+                    // this if statement would NOT be true if the iPad file did not exist
+                    
+                    fullSKSNameToLoad = baseSKSName + "PadLand"
+                } else {
+                    return nil
+                }
+            } else if UIDevice.current.orientation.isPortrait {
+                if let _ = GameSceneOnline(fileNamed:  baseSKSName + "PadPortrait"){
+                    
+                    // this if statement would NOT be true if the iPad file did not exist
+                    
+                    
+                    fullSKSNameToLoad = baseSKSName + "PadPortrait"
+                   
+                } else {
+                    return nil
+                }
+            } else if UIDevice.current.orientation.isFlat {
+                if let _ = GameSceneOnline(fileNamed:  baseSKSName + "PadPortrait"){
+                    
+                    // this if statement would NOT be true if the iPad file did not exist
+                    
+                    fullSKSNameToLoad = baseSKSName + "PadPortrait"
+                } else {
+                    return nil
+                }
+            } else {
+                fullSKSNameToLoad = baseSKSName + "PadPortrait"
+                
+            }
+        } else if ( UIDevice.current.userInterfaceIdiom == .phone) {
+            if UIDevice.current.orientation.isLandscape {
+                if let _ = GameSceneOnline(fileNamed:  baseSKSName + "PhoneLand"){
+                    // this if statement would NOT be true if the Phone file did not exist
+                    fullSKSNameToLoad = baseSKSName + "PhoneLand"
+                } else {
+                    return nil
+                }
+            } else if UIDevice.current.orientation.isPortrait {
+                if let _ = GameSceneOnline(fileNamed:  baseSKSName + "PhonePortrait"){
+                    // this if statement would NOT be true if the Phone file did not exist
+                    fullSKSNameToLoad = baseSKSName + "PhonePortrait"
+                } else {
+                    return nil
+                }
+            } else if UIDevice.current.orientation.isFlat {
+                if let _ = GameSceneOnline(fileNamed:  baseSKSName + "PhonePortrait"){
+                    // this if statement would NOT be true if the Phone file did not exist
+                    fullSKSNameToLoad = baseSKSName + "PhonePortrait"
+                } else {
+                    return nil
+                }
+            } else {
+                 fullSKSNameToLoad = baseSKSName + "PhonePortrait"
+            }
+            //worry about TV later
+        } else {
+            return nil
+        }
         return fullSKSNameToLoad
     }
         

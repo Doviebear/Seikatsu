@@ -34,6 +34,11 @@
 		E86F2C2722DCBBB30069AC1A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E86F2C2622DCBBB30069AC1A /* Assets.xcassets */; };
 		E86F2C2A22DCBBB30069AC1A /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E86F2C2822DCBBB30069AC1A /* LaunchScreen.storyboard */; };
 		E877B62C2304509600DA2AA6 /* GameSceneOnlinePhonePortrait.sks in Resources */ = {isa = PBXBuildFile; fileRef = E877B62B2304509600DA2AA6 /* GameSceneOnlinePhonePortrait.sks */; };
+		E881B65B2358D35D0041A519 /* singleplayerGameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = E881B65A2358D35D0041A519 /* singleplayerGameScene.swift */; };
+		E881B65E2358ED5A0041A519 /* singleplayerPhonePortrait.sks in Resources */ = {isa = PBXBuildFile; fileRef = E881B65D2358ED5A0041A519 /* singleplayerPhonePortrait.sks */; };
+		E881B6602358EE1C0041A519 /* singleplayerPhoneLand.sks in Resources */ = {isa = PBXBuildFile; fileRef = E881B65F2358EE1C0041A519 /* singleplayerPhoneLand.sks */; };
+		E881B6622358EE2D0041A519 /* singleplayerPadPortrait.sks in Resources */ = {isa = PBXBuildFile; fileRef = E881B6612358EE2D0041A519 /* singleplayerPadPortrait.sks */; };
+		E881B6642358EE460041A519 /* singleplayerPadLand.sks in Resources */ = {isa = PBXBuildFile; fileRef = E881B6632358EE460041A519 /* singleplayerPadLand.sks */; };
 		E8A8A513234D074400C355DC /* playWithFriendsScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8A8A512234D074400C355DC /* playWithFriendsScene.swift */; };
 		E8DB2C2E22E8D92100A6A212 /* MenuScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8DB2C2D22E8D92100A6A212 /* MenuScene.swift */; };
 		FFB926427AC41A8E1C01A580 /* Pods_Seikatsu.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D9A9399E779A376C0DB6F184 /* Pods_Seikatsu.framework */; };
@@ -72,6 +77,11 @@
 		E86F2C2922DCBBB30069AC1A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		E86F2C2B22DCBBB30069AC1A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		E877B62B2304509600DA2AA6 /* GameSceneOnlinePhonePortrait.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = GameSceneOnlinePhonePortrait.sks; sourceTree = "<group>"; };
+		E881B65A2358D35D0041A519 /* singleplayerGameScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = singleplayerGameScene.swift; sourceTree = "<group>"; };
+		E881B65D2358ED5A0041A519 /* singleplayerPhonePortrait.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = singleplayerPhonePortrait.sks; sourceTree = "<group>"; };
+		E881B65F2358EE1C0041A519 /* singleplayerPhoneLand.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = singleplayerPhoneLand.sks; sourceTree = "<group>"; };
+		E881B6612358EE2D0041A519 /* singleplayerPadPortrait.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = singleplayerPadPortrait.sks; sourceTree = "<group>"; };
+		E881B6632358EE460041A519 /* singleplayerPadLand.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = singleplayerPadLand.sks; sourceTree = "<group>"; };
 		E8A8A512234D074400C355DC /* playWithFriendsScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = playWithFriendsScene.swift; sourceTree = "<group>"; };
 		E8CFCF81231865600014A254 /* Seikatsu.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Seikatsu.entitlements; sourceTree = "<group>"; };
 		E8DB2C2D22E8D92100A6A212 /* MenuScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuScene.swift; sourceTree = "<group>"; };
@@ -109,6 +119,7 @@
 		E80DC652230B4C3E00D72E53 /* Scene Files */ = {
 			isa = PBXGroup;
 			children = (
+				E881B65C2358ED1A0041A519 /* GameSceneOnlinePhonePortrait */,
 				E86190CB234D082700EAE462 /* playWithFriendsScene */,
 				E86190CA234D081000EAE462 /* MenuScene */,
 				E8A8A514234D07CF00C355DC /* GameScene */,
@@ -143,6 +154,7 @@
 				E817C34D22FB12BB00A8BC16 /* GameSceneOnline.swift */,
 				E8DB2C2D22E8D92100A6A212 /* MenuScene.swift */,
 				E8A8A512234D074400C355DC /* playWithFriendsScene.swift */,
+				E881B65A2358D35D0041A519 /* singleplayerGameScene.swift */,
 			);
 			path = Scenes;
 			sourceTree = "<group>";
@@ -221,6 +233,17 @@
 				E83FBCD422DCCB63001D8684 /* Helper Classes */,
 			);
 			path = Seikatsu;
+			sourceTree = "<group>";
+		};
+		E881B65C2358ED1A0041A519 /* GameSceneOnlinePhonePortrait */ = {
+			isa = PBXGroup;
+			children = (
+				E881B65D2358ED5A0041A519 /* singleplayerPhonePortrait.sks */,
+				E881B65F2358EE1C0041A519 /* singleplayerPhoneLand.sks */,
+				E881B6612358EE2D0041A519 /* singleplayerPadPortrait.sks */,
+				E881B6632358EE460041A519 /* singleplayerPadLand.sks */,
+			);
+			path = GameSceneOnlinePhonePortrait;
 			sourceTree = "<group>";
 		};
 		E8A8A514234D07CF00C355DC /* GameScene */ = {
@@ -304,14 +327,18 @@
 				E877B62C2304509600DA2AA6 /* GameSceneOnlinePhonePortrait.sks in Resources */,
 				E84E2C6223171E34004EF2DF /* MenuScenePadPortrait.sks in Resources */,
 				E84E2C5E23171C5F004EF2DF /* MenuScenePhoneLand.sks in Resources */,
+				E881B6642358EE460041A519 /* singleplayerPadLand.sks in Resources */,
 				E84E2C6423171F1F004EF2DF /* MenuScenePadLand.sks in Resources */,
 				E80DC656230C69E500D72E53 /* GameSceneOnlinePhoneLand.sks in Resources */,
 				E80DC658230C69F600D72E53 /* GameSceneOnlinePadPortrait.sks in Resources */,
 				E80DC654230B4C9000D72E53 /* GameSceneOnlinePadLand.sks in Resources */,
 				E86190D1234D089C00EAE462 /* friendsScenePadPortrait.sks in Resources */,
+				E881B6602358EE1C0041A519 /* singleplayerPhoneLand.sks in Resources */,
 				E86F2C2522DCBBAE0069AC1A /* Main.storyboard in Resources */,
 				E827B6AD2357721600B151F6 /* MyriadPro-Black.otf in Resources */,
 				E86190CF234D088D00EAE462 /* friendsScenePhoneLand.sks in Resources */,
+				E881B65E2358ED5A0041A519 /* singleplayerPhonePortrait.sks in Resources */,
+				E881B6622358EE2D0041A519 /* singleplayerPadPortrait.sks in Resources */,
 				E86F2C2722DCBBB30069AC1A /* Assets.xcassets in Resources */,
 				E86F2C2A22DCBBB30069AC1A /* LaunchScreen.storyboard in Resources */,
 				E86190D3234D08AA00EAE462 /* friendsScenePadLand.sks in Resources */,
@@ -370,6 +397,7 @@
 				E83FBCE722DD09F0001D8684 /* tokenNode.swift in Sources */,
 				E8DB2C2E22E8D92100A6A212 /* MenuScene.swift in Sources */,
 				E83FBCDC22DCCC0B001D8684 /* Token.swift in Sources */,
+				E881B65B2358D35D0041A519 /* singleplayerGameScene.swift in Sources */,
 				E83FBCE022DCCD45001D8684 /* GrabBag.swift in Sources */,
 				E86F2C2222DCBBAE0069AC1A /* GameViewController.swift in Sources */,
 				E83FBCE522DCD96E001D8684 /* tokenSpace.swift in Sources */,

@@ -1,4 +1,15 @@
 //
+//  singleplayerGameScene.swift
+//  Seikatsu
+//
+//  Created by Dovie Shalev on 10/17/19.
+//  Copyright © 2019 Dovie Shalev. All rights reserved.
+//
+
+import Foundation
+import GameplayKit
+
+//
 //  GameSceneOnline.swift
 //  Seikatsu
 //
@@ -10,7 +21,7 @@
 import UIKit
 import GameplayKit
 
- class GameSceneOnline: SKScene {
+ class singleplayerGameScene: SKScene {
     var model: GameModel!
     var tokensInPlay = [tokenNode]()
     var tokenSpacesInPlay = [TokenSpace]()
@@ -31,19 +42,15 @@ import GameplayKit
             localPlayerTwoScoreLabel.text = "\(localPlayerTwoScore)"
         }
     }
-    var localPlayerThreeScore = 0 {
-        didSet {
-            localPlayerThreeScoreLabel.text = "\(localPlayerThreeScore)"
-        }
-    }
     
+    var koiPonds = [Token]()
     var rowScores = [[Int]]()
   
     
 
     var localPlayerOneScoreLabel: SKLabelNode!
     var localPlayerTwoScoreLabel: SKLabelNode!
-    var localPlayerThreeScoreLabel: SKLabelNode!
+   
     
     var scoreBoard: SKSpriteNode!
     var scoreBarContainerTemplate: SKSpriteNode!
@@ -75,21 +82,27 @@ import GameplayKit
     var finalScoreLabel: SKLabelNode!
     var winnerLabel: SKLabelNode!
     
+    var locationOfLastTile: Location!
+    var lastPlayedTokenNode: tokenNode!
+    
+    var difficulty: String!
+    
     //Player One: Pink
     //Player Two: Blue
     //Player Three: Green
     
-    convenience init?(fileNamed: String, gameModel: GameModel, player: Int){
+    convenience init?(fileNamed: String, gameModel: GameModel, difficulty: String){
       
         self.init(fileNamed: fileNamed)
-        print("This is playerNum when initing \(player)")
+       
         self.scaleMode = .aspectFill
         self.model = gameModel
-        self.playerNum = player
+        self.playerNum = 1
+        self.difficulty = difficulty
        
         
         makeStartingPeices()
-        loadGameModel()
+        startTurn()
     }
     
     
@@ -99,46 +112,8 @@ import GameplayKit
     
     ///Gameplay Functions
     
-    
-    
-    
-    
-    
-    
-    @objc func loadGameModel(_ notification: Notification? = nil) {
-        print("Function LoadGameModel started")
-        if let notif = notification {
-            guard let modelData = notif.object as? GameModel else {
-                return
-            }
-            self.model = modelData
-        }
-      
-        //Update All Tokens in Play
-        //Loop over all tokens in play on local and compare to tokens in play on model
-        //Look for differences and update local based on online model
-        for onlineToken in model.TokensInPlay {
-            var match = false
-            for localToken in self.tokensInPlay {
-                
-                if onlineToken == localToken.tokenData{
-                    match = true
-                    print("Found match")
-                    break
-                }
-            }
-            if match == false {
-                print("Didn't find match, creating piece")
-                let tokenToPlace = tokenNode(token: onlineToken, sizingHexagon: centerHexagon)
-                tokensInPlay.append(tokenToPlace)
-                let positionToPut = getPositionOfTokenSpace(at: onlineToken.Location!)
-                tokenToPlace.placeTokenNode(in: positionToPut!, on: self)
-            }
-            
-        }
+    func startTurn() {
         
-        //Update All Player Hands
-        //Just remove and replace all tokenNodes in the player hands
         for tokenNode in self.playerTokenNodesInPlay {
             tokenNode.removeFromParent()
         }
@@ -148,108 +123,50 @@ import GameplayKit
         }
         self.effectNodesInPlay.removeAll()
         
-        if self.playerNum == 1 {
-            for (index,token) in model.playerOneHand.enumerated() {
-                let nodeOfToken = tokenNode(token: token)
-                let posistionOfNode = sksPlayerTokenNodes[index].position
-                let sizeOfToken = sksPlayerTokenNodes[index].size
-                nodeOfToken.sprite!.size = sizeOfToken
-                nodeOfToken.placeTokenNode(in: posistionOfNode, on: self)
-                playerTokenNodesInPlay.append(nodeOfToken)
-                if model.playerTurn == playerNum {
-                    addTouchableEffectSprite(in: posistionOfNode, with: sizeOfToken)
-                }
-                
+        
+        
+        for (index,token) in model.playerOneHand.enumerated() {
+            let nodeOfToken = tokenNode(token: token)
+            let posistionOfNode = sksPlayerTokenNodes[index].position
+            let sizeOfToken = sksPlayerTokenNodes[index].size
+            nodeOfToken.sprite!.size = sizeOfToken
+            nodeOfToken.placeTokenNode(in: posistionOfNode, on: self)
+            playerTokenNodesInPlay.append(nodeOfToken)
+            if model.playerTurn == playerNum {
+                addTouchableEffectSprite(in: posistionOfNode, with: sizeOfToken)
             }
-        } else if self.playerNum == 2 {
-            for (index,token) in model.playerTwoHand.enumerated() {
-                let nodeOfToken = tokenNode(token: token)
-                let posistionOfNode = sksPlayerTokenNodes[index].position
-                let sizeOfToken = sksPlayerTokenNodes[index].size
-                nodeOfToken.sprite!.size = sizeOfToken
-                nodeOfToken.placeTokenNode(in: posistionOfNode, on: self)
-                playerTokenNodesInPlay.append(nodeOfToken)
-                
-                if model.playerTurn == playerNum {
-                    addTouchableEffectSprite(in: posistionOfNode, with: sizeOfToken)
-                }
-            }
-        } else if self.playerNum == 3 {
-            for (index,token) in model.playerThreeHand.enumerated() {
-                let nodeOfToken = tokenNode(token: token)
-                let posistionOfNode = sksPlayerTokenNodes[index].position
-                let sizeOfToken = sksPlayerTokenNodes[index].size
-                nodeOfToken.sprite!.size = sizeOfToken
-                nodeOfToken.placeTokenNode(in: posistionOfNode, on: self)
-                playerTokenNodesInPlay.append(nodeOfToken)
-                
-                if model.playerTurn == playerNum {
-                    addTouchableEffectSprite(in: posistionOfNode, with: sizeOfToken)
-                }
-            }
+            
         }
         
-        
-        //Checks for TokenSpaces under current Tokens in play and removes them
-        for tokenSpace in self.tokenSpacesInPlay {
-            for token in self.tokensInPlay {
-                if token.tokenData.Location == tokenSpace.Location {
-                    removeTokenSpace(at: tokenSpace.Location)
-                }
-            }
-        }
-        
-        // Updates scoring of all players
-        //print("Player one score when recieved: \(model.playerOneScore)")
-        //print("Player Two score when recieved: \(model.playerTwoScore)")
-        //print("Player Three score when recieved: \(model.playerThreeScore)")
         updateScore(player: 1, setAt: model.playerOneScore)
         updateScore(player: 2, setAt: model.playerTwoScore)
-        updateScore(player: 3, setAt: model.playerThreeScore)
-        
-        if let notif = notification {
-            if notif.name == .roundEnd {
-//                endOfRoundScoring()
-                winnerLabel.fontName = "MyriadPro-Black"
-                let winningPlayer = checkForWinner()
-                if winningPlayer == playerNum {
-                    winnerLabel.text = "You Win!"
-                } else {
-                    winnerLabel.text = "Player \(winningPlayer) Wins!"
-                }
-                
-                finalScoreLabel.fontName = "MyriadPro-Black"
-                if playerNum == 1 {
-                    finalScoreLabel.text = "You Score is: \(localPlayerOneScore)"
-                } else if playerNum == 2 {
-                    finalScoreLabel.text = "You Score is: \(localPlayerTwoScore)"
-                } else {
-                    finalScoreLabel.text = "You Score is: \(localPlayerThreeScore)"
-                }
-                
-                endGameContainer.isHidden = false
-                gameplayPhase = 10
-
-                return
-            }
-        }
-        if model.playerTurn == playerNum {
-            yourTurnIndicator.isHidden = false
+    }
+    
+    
+    func roundEndStuff() {
+        winnerLabel.fontName = "MyriadPro-Black"
+        let winningPlayer = checkForWinner()
+        if winningPlayer == playerNum {
+            winnerLabel.text = "You Win!"
         } else {
-            yourTurnIndicator.isHidden = true
+            winnerLabel.text = "Player \(winningPlayer) Wins!"
         }
         
-        /*
-        for (index,scoreToken) in scoreTokens.enumerated() {
-            if model.playerTurn - 1 == index {
-                addTouchableEffectSprite(in: scoreToken.position, with: scoreToken.size)
-            }
-        }
-        */
+        finalScoreLabel.fontName = "MyriadPro-Black"
+       
+            finalScoreLabel.text = "You Score is: \(localPlayerOneScore)"
        
         
-         print("Function LoadGameModel Ended")
+        endGameContainer.isHidden = false
+        gameplayPhase = 10
+        
+        return
     }
+    
+    
+    
+    
+    
     
     
     func makeStartingPeices() {
@@ -258,9 +175,8 @@ import GameplayKit
         self.scoreBoard = self.childNode(withName: "scoreBoard") as? SKSpriteNode
         self.localPlayerOneScoreLabel = scoreBoard.childNode(withName: "localPlayerOneScoreLabel") as? SKLabelNode
         self.localPlayerTwoScoreLabel = scoreBoard.childNode(withName: "localPlayerTwoScoreLabel") as? SKLabelNode
-        self.localPlayerThreeScoreLabel = scoreBoard.childNode(withName: "localPlayerThreeScoreLabel") as? SKLabelNode
         self.scoreBarContainerTemplate = scoreBoard.childNode(withName: "scoreBarContainerTemplate") as? SKSpriteNode
-        for num in 1...3 {
+        for num in 1...2 {
             let scoreBarString = "scoreBar" + String(num)
             if let scoreBar = scoreBoard.childNode(withName: scoreBarString) as? SKSpriteNode {
                 scoreBars.append(scoreBar)
@@ -285,19 +201,83 @@ import GameplayKit
         
         self.finalScoreLabel = self.childNode(withName: "finalScoreLabel") as? SKLabelNode
         
+        for token in model.playerTwoHand {
+            model.grabBag.tokens.append(token)
+            token.player = nil
+        }
+        for token in model.playerThreeHand {
+            model.grabBag.tokens.append(token)
+            token.player = nil
+        }
+        model.playerTwoHand.removeAll()
+        model.playerThreeHand.removeAll()
         
         
         
         
+        model.grabBag.tokens.append(model.playerOneHand[1])
+        model.playerOneHand[1].player = nil
+        model.playerOneHand.remove(at: 1)
+        for _ in 1...4 {
+            for (index,token) in model.grabBag.tokens.enumerated() {
+                //print("index is: \(index)")
+                if token.birdType == "pond" {
+                    koiPonds.append(token)
+                    model.grabBag.tokens.remove(at: index)
+                    break
+                }
+            }
+        }
+        if model.playerOneHand[0].birdType == "pond" {
+            let koiPond = model.playerOneHand.remove(at: 0)
+            koiPonds.append(koiPond)
+            drawNewToken(for: 1)
+            
+        }
         
         
+        
+        if  let firstKoiPond = koiPonds.popLast() {
+            model.playerOneHand.append(firstKoiPond)
+            firstKoiPond.player = 1
+        }
+        
+        
+        for onlineToken in model.TokensInPlay {
+            var match = false
+            for localToken in self.tokensInPlay {
+                
+                if onlineToken == localToken.tokenData{
+                    match = true
+                    print("Found match")
+                    break
+                }
+            }
+            if match == false {
+                print("Didn't find match, creating piece")
+                let tokenToPlace = tokenNode(token: onlineToken, sizingHexagon: centerHexagon)
+                tokensInPlay.append(tokenToPlace)
+                let positionToPut = getPositionOfTokenSpace(at: onlineToken.Location!)
+                tokenToPlace.placeTokenNode(in: positionToPut!, on: self)
+            }
+            
+        }
+        for tokenSpace in self.tokenSpacesInPlay {
+                   for token in self.tokensInPlay {
+                       if token.tokenData.Location == tokenSpace.Location {
+                           removeTokenSpace(at: tokenSpace.Location)
+                       }
+                   }
+               }
+        
+        print("num Of Ponds \(koiPonds.count)")
+        print("num in Grabbag: \(model.grabBag.tokens.count)")
         print("Function MakeStartingPieces Ended")
     }
     
     override func sceneDidLoad() {
          print("Function SceneDidLoad started")
-        NotificationCenter.default.addObserver(self, selector: #selector(loadGameModel(_:)), name: .turnStart, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(loadGameModel(_:)), name: .roundEnd, object: nil)
+
         self.centerHexagon = self.childNode(withName: "//centerHexagon") as? SKSpriteNode
         print("Screen Width: \(JKGame.rect.width)")
         print("Screen Height: \(JKGame.rect.height)")
@@ -354,32 +334,9 @@ import GameplayKit
         }
        
         
-        if self.playerNum == 1 {
-            for (index,token) in model.playerOneHand.enumerated() {
-                print("index is \(index)")
-                let nodeOfToken = tokenNode(token: token)
-                let posistionOfNode = sksPlayerTokenNodes[index].position
-                nodeOfToken.sprite!.size = sksPlayerTokenNodes[index].size
-                nodeOfToken.placeTokenNode(in: posistionOfNode, on: self)
-                playerTokenNodesInPlay.append(nodeOfToken)
-            }
-        } else if self.playerNum == 2 {
-            for (index,token) in model.playerTwoHand.enumerated() {
-                let nodeOfToken = tokenNode(token: token)
-                let posistionOfNode = sksPlayerTokenNodes[index].position
-                nodeOfToken.sprite!.size = sksPlayerTokenNodes[index].size
-                nodeOfToken.placeTokenNode(in: posistionOfNode, on: self)
-                playerTokenNodesInPlay.append(nodeOfToken)
-            }
-        } else if self.playerNum == 3 {
-            for (index,token) in model.playerThreeHand.enumerated() {
-                let nodeOfToken = tokenNode(token: token)
-                let posistionOfNode = sksPlayerTokenNodes[index].position
-                nodeOfToken.sprite!.size = sksPlayerTokenNodes[index].size
-                nodeOfToken.placeTokenNode(in: posistionOfNode, on: self)
-                playerTokenNodesInPlay.append(nodeOfToken)
-            }
-        }
+        
+       
+        
         
         for _ in 0...2 {
             let arrayOfScores = [0,0,0,0,0,0,0]
@@ -456,12 +413,7 @@ import GameplayKit
                     return
                 }
                 
-                guard model.playerTurn == playerNum else {
-                    print("Not your turn")
-                    print("Turn num is: \(model.playerTurn)")
-                    print("You are num: \(String(describing: playerNum))")
-                    return
-                }
+                
                 
                 if gameplayPhase == 0 {
                     if node.name == "tokenNode" {
@@ -514,14 +466,33 @@ import GameplayKit
             
             nodeToPlace.tokenData.Location = tokenSpaceNode.Location
             addScoreFromPlacing(tokenNodeToCheck: nodeToPlace)
-            let playerTurn = model.playerTurn
             
-            var plusPointsFromRow = getScoreForRowWithTokenAdded( player: playerTurn, tokenAdded: nodeToPlace) - rowScores[playerTurn - 1][tokenSpaceNode.Location.col - 1]
+            //For You
+            var plusPointsFromRow = getScoreForRowWithTokenAdded(player: 1, tokenAdded: nodeToPlace) - rowScores[1 - 1][tokenSpaceNode.Location.col - 1]
             if plusPointsFromRow < 0 {
                 plusPointsFromRow = 0
             }
-            updateScore(player: playerTurn, amount: plusPointsFromRow)
-            rowScores[playerTurn - 1][tokenSpaceNode.Location.col - 1] += plusPointsFromRow
+            updateScore(player: 1, amount: plusPointsFromRow)
+            rowScores[0][tokenSpaceNode.Location.col - 1] += plusPointsFromRow
+            
+            
+            //Add row scores for p2
+            var plusPointsFromRowForOppenent1 = getScoreForRowWithTokenAdded(player: 2, tokenAdded: nodeToPlace) - rowScores[2 - 1][tokenSpaceNode.Location.col - 1]
+            if plusPointsFromRowForOppenent1 < 0 {
+                plusPointsFromRowForOppenent1 = 0
+            }
+            updateScore(player: 2, amount: plusPointsFromRow)
+            rowScores[1][tokenSpaceNode.Location.col - 1] += plusPointsFromRow
+            //add Row scores for p3
+            var plusPointsFromRowForOppenent2 = getScoreForRowWithTokenAdded(player: 3, tokenAdded: nodeToPlace) - rowScores[3 - 1][tokenSpaceNode.Location.col - 1]
+            if plusPointsFromRowForOppenent2 < 0 {
+                plusPointsFromRowForOppenent2 = 0
+            }
+            updateScore(player: 2, amount: plusPointsFromRow)
+            rowScores[2][tokenSpaceNode.Location.col - 1] += plusPointsFromRow
+            
+            
+            
             
             tokensInPlay.append(nodeToPlace)
             model.TokensInPlay.append(nodeToPlace.tokenData)
@@ -535,35 +506,61 @@ import GameplayKit
     //executed when a TokenNode has already been selected and a player taps on a tokenSpace to play the token
     func tokenSpaceTouched(node: SKNode, phase: Int){
         if phase == 1 {
+            
+            
             if let nodeToPlace = selectedToken {
-                gameplayPhase = 2
+                
                 guard let tokenSpaceNode = node as? TokenSpace else {
                     return
                 }
                 nodeToPlace.tokenData.Location = tokenSpaceNode.Location
-                selectedTokenOldPosistion = selectedToken?.position
-                phaseThreeGraphics(nodeToPlace: nodeToPlace, tokenSpace: tokenSpaceNode)
-                selectedTokenSpace = tokenSpaceNode
+                if nodeToPlace.tokenData.birdType == "pond" {
+                    for tokenNode in tokensInPlay {
+                        if nodeToPlace.isAdjacent(tokenNode2: tokenNode) {
+                            selectedTokenOldPosistion = selectedToken?.position
+                            phaseThreeGraphics(nodeToPlace: nodeToPlace, tokenSpace: tokenSpaceNode)
+                            selectedTokenSpace = tokenSpaceNode
+                            gameplayPhase = 2
+                            return
+                        }
+                    }
+                    nodeToPlace.tokenData.Location = nil
+                    return
+                }
                 
                 
-                /*
-                selectedTokenOldPosistion = selectedToken?.position
-                nodeToPlace.position = node.position
-                let tokenSpaceNode = node as! TokenSpace
-                
-                
-                nodeToPlace.tokenData.Location = tokenSpaceNode.Location
-                addScoreFromPlacing(tokenNodeToCheck: nodeToPlace)
-                tokensInPlay.append(nodeToPlace)
-                model.TokensInPlay.append(nodeToPlace.tokenData)
-                nodeToPlace.tokenData.player = nil
-                nodeToPlace.xScale = 1.0
-                nodeToPlace.yScale = 1.0
-                nodeToPlace.zPosition = 20
-                nodeToPlace.sprite?.size = CGSize(width: centerHexagon.size.height/8, height: centerHexagon.size.height/8)
-                removeTokenSpace(at: tokenSpaceNode.Location)
-                nextTurn()
-                 */
+                if model.turnNum == 0 {
+                    let placeholderToken1 = tokenNode(token: Token(flowerType: "placeholder", birdType: "placeholder"))
+                    placeholderToken1.tokenData.Location = Location(col: 3, numInCol: 3, posistioningNumInCol: 3)
+                    let placeholderToken2 = tokenNode(token: Token(flowerType: "placeholder", birdType: "placeholder"))
+                    placeholderToken2.tokenData.Location = Location(col: 5, numInCol: 3, posistioningNumInCol: 3)
+                    let placeholderToken3 = tokenNode(token: Token(flowerType: "placeholder", birdType: "placeholder"))
+                    placeholderToken3.tokenData.Location = Location(col: 4, numInCol: 5, posistioningNumInCol: 5)
+                    if nodeToPlace.isAdjacent(tokenNode2: placeholderToken1) || nodeToPlace.isAdjacent(tokenNode2: placeholderToken2) || nodeToPlace.isAdjacent(tokenNode2: placeholderToken3) {
+                        
+                        selectedTokenOldPosistion = selectedToken?.position
+                        phaseThreeGraphics(nodeToPlace: nodeToPlace, tokenSpace: tokenSpaceNode)
+                        selectedTokenSpace = tokenSpaceNode
+                        gameplayPhase = 2
+                        return
+                    } else {
+                        nodeToPlace.tokenData.Location = nil
+                        return
+                    }
+                    
+                } else {
+                    if nodeToPlace.isAdjacent(tokenNode2: lastPlayedTokenNode) {
+                        selectedTokenOldPosistion = selectedToken?.position
+                        phaseThreeGraphics(nodeToPlace: nodeToPlace, tokenSpace: tokenSpaceNode)
+                        selectedTokenSpace = tokenSpaceNode
+                        gameplayPhase = 2
+                        return
+                    } else {
+                        nodeToPlace.tokenData.Location = nil
+                        return
+                    }
+                }
+        
             } else {
                 print("Error: Selected Token Not Found")
             }
@@ -573,40 +570,36 @@ import GameplayKit
     //executed when Player turn has ended, after placing new TokenNode
     func nextTurn() {
         model.turnNum += 1
-        let oldPosition = selectedTokenOldPosistion
-        if playerNum == 1 {
-            for (index,token) in model.playerOneHand.enumerated() {
-                if token == selectedToken?.tokenData {
-                    model.playerOneHand.remove(at: index)
-                }
-            }
-        } else if playerNum == 2 {
-            for (index,token) in model.playerTwoHand.enumerated() {
-                if token == selectedToken?.tokenData {
-                    model.playerTwoHand.remove(at: index)
-                }
-            }
-        } else if playerNum == 3 {
-            for (index,token) in model.playerThreeHand.enumerated() {
-                if token == selectedToken?.tokenData {
-                    model.playerThreeHand.remove(at: index)
-                }
+//        let oldPosition = selectedTokenOldPosistion
+        
+        for (index,token) in model.playerOneHand.enumerated() {
+            if token == selectedToken?.tokenData {
+                model.playerOneHand.remove(at: index)
             }
         }
+        
         for (index, token) in self.playerTokenNodesInPlay.enumerated() {
             if selectedToken?.tokenData == token.tokenData {
                 self.playerTokenNodesInPlay.remove(at: index)
             }
         }
         
-        selectedToken = nil
-        model.playerTurn = playerNum + 1
-        if model.playerTurn == 4 {
-            model.playerTurn = 1
+        
+        if selectedToken?.tokenData.birdType == "pond" {
+            if let nextKoiPond = koiPonds.popLast() {
+                model.playerOneHand.append(nextKoiPond)
+                nextKoiPond.player = 1
+            }
+        } else {
+            drawNewToken(for: 1)
         }
-        drawNewToken(for: self.playerNum, at: oldPosition!)
+        
+        
         gameplayPhase = 0
         
+        lastPlayedTokenNode = selectedToken
+        
+        selectedToken = nil
         if model.turnNum >= 33 {
             endOfRound()
             return
@@ -620,19 +613,19 @@ import GameplayKit
         print("Player Three score in local: \(localPlayerThreeScore)")
         print("Player Three score in Online: \(model.playerThreeScore) ")
  */
-        SocketIOHelper.helper.endTurn(model: self.model)
+        startTurn()
     }
-        
+    
     func tokenNodeTouched(node: SKNode, phase: Int) {
         if phase == 0 {
             let tokenNode = node as? tokenNode
-            if tokenNode?.tokenData.player == model.playerTurn {
-                selectedToken = tokenNode
-                gameplayPhase = 1
-                tokenNode?.xScale = 1.15
-                tokenNode?.yScale = 1.15
-                tokenNode?.zPosition = 21
-            }
+            
+            selectedToken = tokenNode
+            gameplayPhase = 1
+            tokenNode?.xScale = 1.15
+            tokenNode?.yScale = 1.15
+            tokenNode?.zPosition = 21
+            
         } else if phase == 1 {
             let tokenNode = node as? tokenNode
             if tokenNode?.tokenData.player == model.playerTurn {
@@ -761,7 +754,7 @@ import GameplayKit
     
     
     //No graphical changes, just updates the model
-    func drawNewToken(for player: Int, at position: CGPoint) {
+    func drawNewToken(for player: Int) {
         if model.grabBag.tokens.count <= 0 {
             return
         }
@@ -902,12 +895,12 @@ import GameplayKit
         let amountToAdd = getScoreFromPlacing(tokenNodeToCheck: tokenNodeToCheck)
         
         // add the score here
-        if self.playerNum == 1 {
+        if difficulty == "easy" {
             updateScore(player: 1, amount: amountToAdd)
-        } else if self.playerNum == 2 {
+        } else if difficulty == "medium" {
+            return
+        } else if difficulty == "hard" {
             updateScore(player: 2, amount: amountToAdd)
-        } else if self.playerNum == 3 {
-            updateScore(player: 3, amount: amountToAdd)
         } else {
             print("Error adding score, Player not found")
         }
@@ -925,14 +918,7 @@ import GameplayKit
                 model.playerTwoScore += amount
                 localPlayerTwoScore += amount
                 moveScoreBars(player: player, score: model.playerTwoScore)
-            } else if player == 3 {
-                model.playerThreeScore += amount
-                localPlayerThreeScore += amount
-                moveScoreBars(player: player, score: model.playerThreeScore)
-            } else {
-                print("error Updating score, player not found")
             }
-            
             return
         } else if let setAt = setAt {
             if player == 1 {
@@ -942,10 +928,6 @@ import GameplayKit
             } else if player == 2 {
                 model.playerTwoScore = setAt
                 localPlayerTwoScore = setAt
-                moveScoreBars(player: player, score: setAt)
-            } else if player == 3 {
-                model.playerThreeScore = setAt
-                localPlayerThreeScore = setAt
                 moveScoreBars(player: player, score: setAt)
             } else {
                 print("error Updating score, player not found")
@@ -987,8 +969,8 @@ import GameplayKit
         let playerRowsArray = [player1Rows,player2Rows,player3Rows]
         
         let playerArrayToCheck = playerRowsArray[player - 1]
-        
         var row: Int!
+        
         if player == 1 {
             row = tokenAdded.tokenData.Location?.col
             
@@ -1010,6 +992,7 @@ import GameplayKit
                 }
             }
         }
+        
         let locationArrayToCheck = playerArrayToCheck[row - 1]
         
         
@@ -1051,7 +1034,7 @@ import GameplayKit
         
     }
     
-    
+    /*
     func endOfRoundScoring() {
         print("Started end of round scoring")
         
@@ -1109,7 +1092,7 @@ import GameplayKit
         localPlayerTwoScore += results[1]
         localPlayerThreeScore += results[2]
     }
-    
+    */
     func makeLocationArray(arrayToConvert: [[[Int]]]) -> [[Location]]{
         var finishedArray = [[Location]]()
         for locationArray in arrayToConvert {
@@ -1126,13 +1109,11 @@ import GameplayKit
     
     func checkForWinner() -> Int{
         let winner: Int
-        let winnerScore = max(max(localPlayerOneScore,localPlayerTwoScore), localPlayerThreeScore)
+        let winnerScore = max(localPlayerOneScore,localPlayerTwoScore)
         if winnerScore == localPlayerOneScore {
             winner = 1
         } else if winnerScore == localPlayerTwoScore {
             winner = 2
-        } else if winnerScore == localPlayerThreeScore {
-            winner = 3
         } else {
             winner = 4
         }
