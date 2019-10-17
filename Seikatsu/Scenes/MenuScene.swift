@@ -30,6 +30,8 @@ class MenuScene: SKScene {
         NotificationCenter.default.addObserver(self, selector: #selector(joinedQueue(_:)), name: .joinedQueue, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(alreadyInQueue(_:)), name: .alreadyInQueue, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(connectedToServer(_:)), name: .connectedToServer, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(playAgain(_:)), name: .playAgain, object: nil)
+        
         
         
         title = self.childNode(withName: "title") as? SKLabelNode
@@ -132,6 +134,10 @@ class MenuScene: SKScene {
     func resetScene(){
         touchBufferNode.isHidden = true
         playMenu.isHidden = true
+    }
+    
+    @objc func playAgain(_ notification: Notification){
+        SocketIOHelper.helper.searchForMatch()
     }
     
     func switchToLandscape() {

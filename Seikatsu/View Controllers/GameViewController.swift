@@ -37,6 +37,9 @@ class GameViewController: UIViewController, UITextFieldDelegate {
          NotificationCenter.default.addObserver(self, selector: #selector(hideTextField(_:)), name: .hideTextField, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(gameNameTaken(_:)), name: .gameNameTaken, object: nil)
         
+        
+        
+       
         /*
         Alamofire.request(urlString!).responseJSON { response in
             print("Request: \(String(describing: response.request))")   // original url request

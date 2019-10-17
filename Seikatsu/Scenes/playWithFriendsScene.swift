@@ -32,6 +32,8 @@ class playWithFriendsScene: SKScene {
     
     var gameCodeLabel: SKLabelNode!
     
+    var gameString: String!
+    
     
     override func sceneDidLoad() {
         
@@ -88,7 +90,7 @@ class playWithFriendsScene: SKScene {
                 } else if node.name == "playGameButton" && currentStage == "inLobby" {
                     if let numInRoom = SocketIOHelper.helper.getNumInRoom() {
                         if numInRoom == 3 {
-                            SocketIOHelper.helper.startFriendGame()
+                            SocketIOHelper.helper.startFriendGame(nameOfGame: gameString)
                         } else {
                             //Not enough players or somehow too many players, but I don't think thats possible
                             return
@@ -136,6 +138,7 @@ class playWithFriendsScene: SKScene {
         guard let gameString = notification.object as? String else {
             return
         }
+        self.gameString = gameString
         print("gameString is: \(gameString)")
         
         if currentStage == "createGameButtonPressed" {

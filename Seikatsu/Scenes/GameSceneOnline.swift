@@ -5,6 +5,7 @@
 //  Created by Dovie Shalev on 8/7/19.
 //  Copyright © 2019 Dovie Shalev. All rights reserved.
 //
+// custom font name: "MyriadPro-Black"
 
 import UIKit
 import GameplayKit
@@ -17,6 +18,7 @@ import GameplayKit
     // 0 is new turn start, 1 is picked from hand
     var gameplayPhase = 0
     var selectedToken: tokenNode?
+    var selectedTokenSpace: TokenSpace?
     var selectedTokenOldPosistion: CGPoint?
     var effectNodesInPlay = [SKSpriteNode]()
     var localPlayerOneScore = 0 {
@@ -34,6 +36,8 @@ import GameplayKit
             localPlayerThreeScoreLabel.text = "\(localPlayerThreeScore)"
         }
     }
+    
+    var rowScores = [[Int]]()
   
     
 
@@ -59,6 +63,17 @@ import GameplayKit
     var howToPlayButton: SKSpriteNode!
     var settingsButton: SKSpriteNode!
     var resumeButton: SKSpriteNode!
+    
+    var checkmark: SKSpriteNode!
+    var cross: SKSpriteNode!
+    var pointsFromTilesLabel: SKLabelNode!
+    var pointsFromRowsLabel: SKLabelNode!
+    
+    var playAgainButton: SKSpriteNode!
+    var mainMenuButton: SKSpriteNode!
+    var endGameContainer: SKSpriteNode!
+    var finalScoreLabel: SKLabelNode!
+    var winnerLabel: SKLabelNode!
     
     //Player One: Pink
     //Player Two: Blue
@@ -194,11 +209,27 @@ import GameplayKit
         
         if let notif = notification {
             if notif.name == .roundEnd {
-                endOfRoundScoring()
-                if let winnerLabel = self.childNode(withName: "winnerLabel") as? SKLabelNode {
-                    winnerLabel.text = "Player \(checkForWinner()) Wins!"
-                    winnerLabel.isHidden = false
+//                endOfRoundScoring()
+                winnerLabel.fontName = "MyriadPro-Black"
+                let winningPlayer = checkForWinner()
+                if winningPlayer == playerNum {
+                    winnerLabel.text = "You Win!"
+                } else {
+                    winnerLabel.text = "Player \(winningPlayer) Wins!"
                 }
+                
+                finalScoreLabel.fontName = "MyriadPro-Black"
+                if playerNum == 1 {
+                    finalScoreLabel.text = "You Score is: \(localPlayerOneScore)"
+                } else if playerNum == 2 {
+                    finalScoreLabel.text = "You Score is: \(localPlayerTwoScore)"
+                } else {
+                    finalScoreLabel.text = "You Score is: \(localPlayerThreeScore)"
+                }
+                
+                endGameContainer.isHidden = false
+                gameplayPhase = 10
+
                 return
             }
         }
@@ -244,6 +275,20 @@ import GameplayKit
         self.quitButton = menuContainer.childNode(withName: "quitButton") as? SKSpriteNode
         self.howToPlayButton = menuContainer.childNode(withName: "howToPlayButton") as? SKSpriteNode
         self.settingsButton = menuContainer.childNode(withName: "settingsButton") as? SKSpriteNode
+        self.checkmark = self.childNode(withName: "checkmark") as? SKSpriteNode
+        self.cross = self.childNode(withName: "cross") as? SKSpriteNode
+        self.pointsFromTilesLabel = self.childNode(withName: "pointsFromTilesLabel") as? SKLabelNode
+        self.pointsFromRowsLabel = self.childNode(withName: "pointsFromRowsLabel") as? SKLabelNode
+        self.endGameContainer = self.childNode(withName: "endGameContainer") as? SKSpriteNode
+        
+        self.winnerLabel = self.childNode(withName: "winnerLabel") as? SKLabelNode
+        
+        self.finalScoreLabel = self.childNode(withName: "finalScoreLabel") as? SKLabelNode
+        
+        
+        
+        
+        
         
         
         print("Function MakeStartingPieces Ended")
@@ -336,7 +381,10 @@ import GameplayKit
             }
         }
         
-       
+        for _ in 0...2 {
+            let arrayOfScores = [0,0,0,0,0,0,0]
+            rowScores.append(arrayOfScores)
+        }
         
          print("Function SceneDidLoad Ended")
     }
@@ -350,11 +398,15 @@ import GameplayKit
                 } else if node.name == "settingsButton" {
                     settingsButton.texture = SKTexture(imageNamed: "settingsButtonPressed")
                 } else if node.name == "quitButton" {
-                    //quitButton.texture = SKTexture(imageNamed: "quitButtonPressed")
+//                    quitButton.texture = SKTexture(imageNamed: "quitButtonPressed")
                 } else if node.name == "howToPlayButton" {
                     howToPlayButton.texture = SKTexture(imageNamed: "howToPlayButtonPressed")
                 } else if node.name == "resumeButton" {
                     resumeButton.texture = SKTexture(imageNamed: "resumeButtonPressed")
+                } else if node.name == "playAgainButton" {
+                    playAgainButton.texture = SKTexture(imageNamed: "playAgainButtonPressed")
+                } else if node.name == "mainMenuButton" {
+//                    mainMenuButton.texture = SKTexture(imageNamed: "mainMenuButtonPressed")
                 }
             }
         }
@@ -425,18 +477,81 @@ import GameplayKit
                     } else if node.name == "tokenNode" {
                         tokenNodeTouched(node: node, phase: 1)
                     }
+                } else if gameplayPhase == 2 {
+                    print("phase 3 touch")
+                    if node.name == "checkmark" {
+                        print("checkmark touched in phase 3")
+                        removePhaseThreeGraphics()
+                        placeToken()
+                        return
+                    } else if node.name == "cross" {
+                        print("cross touched in phase 3")
+                        removePhaseThreeGraphics()
+                        revertPhaseThreeTokenMovement()
+                        gameplayPhase = 1
+                        selectedTokenSpace = nil
+                        return
+                    }
+                } else if gameplayPhase == 10 {
+                    if node.name == "playAgainButton" {
+                        backToMainMenuScene()
+                        NotificationCenter.default.post(name: .playAgain, object: nil)
+                    } else if node.name == "mainMenuButton" {
+                        backToMainMenuScene()
+                    }
                 }
             }
         }
     }
     
+    
+    func placeToken() {
+        if let nodeToPlace = selectedToken {
+            selectedTokenOldPosistion = selectedToken?.position
+            guard let tokenSpaceNode = selectedTokenSpace else {
+                return
+            }
+            
+            nodeToPlace.tokenData.Location = tokenSpaceNode.Location
+            addScoreFromPlacing(tokenNodeToCheck: nodeToPlace)
+            let playerTurn = model.playerTurn
+            
+            var plusPointsFromRow = getScoreForRowWithTokenAdded(row: tokenSpaceNode.Location.col, player: playerTurn, tokenAdded: nodeToPlace) - rowScores[playerTurn - 1][tokenSpaceNode.Location.col - 1]
+            if plusPointsFromRow < 0 {
+                plusPointsFromRow = 0
+            }
+            updateScore(player: playerTurn, amount: plusPointsFromRow)
+            rowScores[playerTurn - 1][tokenSpaceNode.Location.col - 1] += plusPointsFromRow
+            
+            tokensInPlay.append(nodeToPlace)
+            model.TokensInPlay.append(nodeToPlace.tokenData)
+            nodeToPlace.tokenData.player = nil
+            
+            removeTokenSpace(at: tokenSpaceNode.Location)
+            selectedTokenSpace = nil
+            nextTurn()
+        }
+    }
     //executed when a TokenNode has already been selected and a player taps on a tokenSpace to play the token
     func tokenSpaceTouched(node: SKNode, phase: Int){
         if phase == 1 {
             if let nodeToPlace = selectedToken {
+                gameplayPhase = 2
+                guard let tokenSpaceNode = node as? TokenSpace else {
+                    return
+                }
+                nodeToPlace.tokenData.Location = tokenSpaceNode.Location
+                selectedTokenOldPosistion = selectedToken?.position
+                phaseThreeGraphics(nodeToPlace: nodeToPlace, tokenSpace: tokenSpaceNode)
+                selectedTokenSpace = tokenSpaceNode
+                
+                
+                /*
                 selectedTokenOldPosistion = selectedToken?.position
                 nodeToPlace.position = node.position
                 let tokenSpaceNode = node as! TokenSpace
+                
+                
                 nodeToPlace.tokenData.Location = tokenSpaceNode.Location
                 addScoreFromPlacing(tokenNodeToCheck: nodeToPlace)
                 tokensInPlay.append(nodeToPlace)
@@ -448,6 +563,7 @@ import GameplayKit
                 nodeToPlace.sprite?.size = CGSize(width: centerHexagon.size.height/8, height: centerHexagon.size.height/8)
                 removeTokenSpace(at: tokenSpaceNode.Location)
                 nextTurn()
+                 */
             } else {
                 print("Error: Selected Token Not Found")
             }
@@ -474,7 +590,6 @@ import GameplayKit
             for (index,token) in model.playerThreeHand.enumerated() {
                 if token == selectedToken?.tokenData {
                     model.playerThreeHand.remove(at: index)
-                    
                 }
             }
         }
@@ -507,7 +622,7 @@ import GameplayKit
  */
         SocketIOHelper.helper.endTurn(model: self.model)
     }
-    
+        
     func tokenNodeTouched(node: SKNode, phase: Int) {
         if phase == 0 {
             let tokenNode = node as? tokenNode
@@ -673,7 +788,58 @@ import GameplayKit
     
     /// Graphical Funcs
     
+    func phaseThreeGraphics(nodeToPlace: tokenNode, tokenSpace: TokenSpace){
+        nodeToPlace.position = tokenSpace.position
+        nodeToPlace.xScale = 1.0
+        nodeToPlace.yScale = 1.0
+        nodeToPlace.zPosition = 20
+        nodeToPlace.sprite?.size = CGSize(width: centerHexagon.size.height/8, height: centerHexagon.size.height/8)
+        let topOfNodeToPlace = CGPoint(x: nodeToPlace.position.x ,y: nodeToPlace.position.y + (nodeToPlace.sprite?.size.height)!/2)
+        
+        
+        checkmark.position = CGPoint(x: topOfNodeToPlace.x + (nodeToPlace.sprite?.size.width)!/2 + 15, y: topOfNodeToPlace.y)
+        cross.position = CGPoint(x: checkmark.position.x + 75, y: checkmark.position.y)
+        checkmark.isHidden = false
+        cross.isHidden = false
+        
+        pointsFromTilesLabel.position = CGPoint(x: nodeToPlace.position.x - (nodeToPlace.sprite?.size.width)!/2 - 25, y: nodeToPlace.position.y)
+        pointsFromTilesLabel.text = "+\(getScoreFromPlacing(tokenNodeToCheck: nodeToPlace))"
+        pointsFromTilesLabel.isHidden = false
+        
+        pointsFromRowsLabel.position = CGPoint(x: pointsFromTilesLabel.position.x, y: pointsFromTilesLabel.position.y - 50)
+        
+        let playerTurn = model.playerTurn
+        var plusPointsFromRow = getScoreForRowWithTokenAdded(row: tokenSpace.Location.col, player: playerTurn, tokenAdded: nodeToPlace) - rowScores[playerTurn - 1][tokenSpace.Location.col - 1]
+        if plusPointsFromRow < 0 {
+            plusPointsFromRow = 0
+        }
+            
+        pointsFromRowsLabel.text = "+\(getScoreFromPlacing(tokenNodeToCheck: nodeToPlace))"
+        pointsFromRowsLabel.isHidden = false
+        
+        
+        
+    }
     
+    func removePhaseThreeGraphics(){
+            checkmark.isHidden = true
+            cross.isHidden = true
+          
+            pointsFromTilesLabel.isHidden = true
+       
+            pointsFromRowsLabel.isHidden = true
+    }
+    
+    func revertPhaseThreeTokenMovement(){
+        if let nodeToPlace = selectedToken {
+            nodeToPlace.position = selectedTokenOldPosistion!
+            nodeToPlace.xScale = 1.15
+            nodeToPlace.yScale = 1.15
+            nodeToPlace.zPosition = 20
+            nodeToPlace.sprite?.size = sksPlayerTokenNodes[0].size
+            nodeToPlace.tokenData.Location = nil
+        }
+    }
     
     
     
@@ -696,8 +862,7 @@ import GameplayKit
     
     
     /// Scoring Funcs
-    
-    func addScoreFromPlacing(tokenNodeToCheck: tokenNode) {
+    func getScoreFromPlacing(tokenNodeToCheck: tokenNode) -> Int {
         var adjacentTokens = [tokenNode]()
         for token in tokensInPlay {
             if tokenNodeToCheck.isAdjacent(tokenNode2: token) {
@@ -728,14 +893,21 @@ import GameplayKit
                 }
             }
         }
+        return count
+    }
+    
+    
+    
+    func addScoreFromPlacing(tokenNodeToCheck: tokenNode) {
+        let amountToAdd = getScoreFromPlacing(tokenNodeToCheck: tokenNodeToCheck)
         
         // add the score here
         if self.playerNum == 1 {
-            updateScore(player: 1, amount: count)
+            updateScore(player: 1, amount: amountToAdd)
         } else if self.playerNum == 2 {
-            updateScore(player: 2, amount: count)
+            updateScore(player: 2, amount: amountToAdd)
         } else if self.playerNum == 3 {
-            updateScore(player: 3, amount: count)
+            updateScore(player: 3, amount: amountToAdd)
         } else {
             print("Error adding score, Player not found")
         }
@@ -797,6 +969,64 @@ import GameplayKit
         
     }
     
+    
+    func getScoreForRowWithTokenAdded(row: Int, player: Int, tokenAdded: tokenNode) -> Int {
+        //Stright down
+        let player1RowsInt = [[[1,1,2],[1,2,3],[1,3,4],[1,4,5]],[[2,1,2],[2,2,3],[2,3,4],[2,4,5],[2,5,6]],[[3,1,1],[3,2,2],[3,3,3],[3,4,4],[3,5,5],[3,6,6]],[[4,1,1],[4,2,2],[4,3,3],[4,5,5],[4,6,6],[4,7,7]],[[5,1,1],[5,2,2],[5,3,3],[5,4,4],[5,5,5],[5,6,6]],[[6,1,2],[6,2,3],[6,3,4],[6,4,5],[6,5,6]],[[7,1,2],[7,2,3],[7,3,4],[7,4,5]]]
+        
+        
+        //Top Left Down
+        let player2RowsInt = [[[4,1,1],[3,1,1],[2,1,2],[1,1,2]],[[5,1,1],[4,2,2],[3,2,2],[2,2,3],[1,2,3]],[[6,1,2],[5,2,2],[4,3,3],[3,3,3],[2,3,4],[1,3,4]],[[7,1,2],[6,2,3],[5,3,3],[3,4,4],[2,4,5],[1,4,5]],[[7,2,3],[6,3,4],[5,4,4],[4,5,5],[3,5,5],[2,5,6]],[[7,3,4],[6,4,5],[5,5,5],[4,6,6],[3,6,6]],[[7,4,5],[6,5,6],[5,6,6],[4,7,7]]]
+        
+        //Top Right Down
+        let player3RowsInt = [[[4,1,1],[5,1,1],[6,1,2],[7,1,2]],[[3,1,1],[4,2,2],[5,2,2],[6,2,3],[7,2,3]],[[2,1,2],[3,2,2],[4,3,3],[5,3,3],[6,3,4],[7,3,4]],[[1,1,2],[2,2,3],[3,3,3],[5,4,4],[6,4,5],[7,4,5]],[[1,2,3],[2,3,4],[3,4,4],[4,5,5],[5,5,5],[6,5,6]],[[1,3,4],[2,4,5],[3,5,5],[4,6,6],[5,6,6]],[[1,4,5],[2,5,6],[3,6,6,],[4,7,7]]]
+        
+        let player1Rows = makeLocationArray(arrayToConvert: player1RowsInt)
+        let player2Rows = makeLocationArray(arrayToConvert: player2RowsInt)
+        let player3Rows = makeLocationArray(arrayToConvert: player3RowsInt)
+        let playerRowsArray = [player1Rows,player2Rows,player3Rows]
+        
+        let playerArrayToCheck = playerRowsArray[player - 1]
+        let locationArrayToCheck = playerArrayToCheck[row - 1]
+        
+        
+        var numOfFlowers = [0,0,0,0]
+        
+        for i in 0...3 {
+            if model.grabBag.flowers[i] == tokenAdded.tokenData.flowerType {
+                numOfFlowers[i] += 1
+            } else if tokenAdded.tokenData.flowerType == "pond" {
+                numOfFlowers[i] += 1
+            }
+        }
+        
+        
+        var tokensArray = [tokenNode]()
+        for location in locationArrayToCheck {
+            for tokenToCheck in tokensInPlay {
+                if location == tokenToCheck.tokenData.Location {
+                    tokensArray.append(tokenToCheck)
+                    break
+                }
+            }
+        }
+        for i in 0...3 {
+            for tokenToCheck in tokensArray {
+                if model.grabBag.flowers[i] == tokenToCheck.tokenData.flowerType {
+                    numOfFlowers[i] += 1
+                } else if tokenToCheck.tokenData.flowerType == "pond" {
+                    numOfFlowers[i] += 1
+                }
+            }
+        }
+        let rawNumberOfFlowers = numOfFlowers.max()!
+        
+        let score = (rawNumberOfFlowers * (rawNumberOfFlowers + 1)) / 2
+        
+        return score
+        
+        
+    }
     
     
     func endOfRoundScoring() {
@@ -886,6 +1116,8 @@ import GameplayKit
         return winner
     }
     
+    
+     
     
     
     

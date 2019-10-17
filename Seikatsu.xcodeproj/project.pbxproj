@@ -12,6 +12,7 @@
 		E80DC658230C69F600D72E53 /* GameSceneOnlinePadPortrait.sks in Resources */ = {isa = PBXBuildFile; fileRef = E80DC657230C69F600D72E53 /* GameSceneOnlinePadPortrait.sks */; };
 		E817C34C22F9DBA500A8BC16 /* SocketIOHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = E817C34B22F9DBA500A8BC16 /* SocketIOHelper.swift */; };
 		E817C34E22FB12BB00A8BC16 /* GameSceneOnline.swift in Sources */ = {isa = PBXBuildFile; fileRef = E817C34D22FB12BB00A8BC16 /* GameSceneOnline.swift */; };
+		E827B6AD2357721600B151F6 /* MyriadPro-Black.otf in Resources */ = {isa = PBXBuildFile; fileRef = E827B6AC2357721600B151F6 /* MyriadPro-Black.otf */; };
 		E83FBCDA22DCCBBB001D8684 /* JKClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = E83FBCD922DCCBBB001D8684 /* JKClass.swift */; };
 		E83FBCDC22DCCC0B001D8684 /* Token.swift in Sources */ = {isa = PBXBuildFile; fileRef = E83FBCDB22DCCC0B001D8684 /* Token.swift */; };
 		E83FBCDE22DCCC84001D8684 /* Location.swift in Sources */ = {isa = PBXBuildFile; fileRef = E83FBCDD22DCCC84001D8684 /* Location.swift */; };
@@ -47,6 +48,7 @@
 		E80DC657230C69F600D72E53 /* GameSceneOnlinePadPortrait.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = GameSceneOnlinePadPortrait.sks; sourceTree = "<group>"; };
 		E817C34B22F9DBA500A8BC16 /* SocketIOHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SocketIOHelper.swift; sourceTree = "<group>"; };
 		E817C34D22FB12BB00A8BC16 /* GameSceneOnline.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameSceneOnline.swift; sourceTree = "<group>"; };
+		E827B6AC2357721600B151F6 /* MyriadPro-Black.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "MyriadPro-Black.otf"; sourceTree = "<group>"; };
 		E83FBCD922DCCBBB001D8684 /* JKClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JKClass.swift; sourceTree = "<group>"; };
 		E83FBCDB22DCCC0B001D8684 /* Token.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Token.swift; sourceTree = "<group>"; };
 		E83FBCDD22DCCC84001D8684 /* Location.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Location.swift; sourceTree = "<group>"; };
@@ -112,6 +114,14 @@
 				E8A8A514234D07CF00C355DC /* GameScene */,
 			);
 			path = "Scene Files";
+			sourceTree = "<group>";
+		};
+		E827B6AB235771DF00B151F6 /* Fonts */ = {
+			isa = PBXGroup;
+			children = (
+				E827B6AC2357721600B151F6 /* MyriadPro-Black.otf */,
+			);
+			path = Fonts;
 			sourceTree = "<group>";
 		};
 		E83FBCD422DCCB63001D8684 /* Helper Classes */ = {
@@ -197,6 +207,7 @@
 		E86F2C1822DCBBAE0069AC1A /* Seikatsu */ = {
 			isa = PBXGroup;
 			children = (
+				E827B6AB235771DF00B151F6 /* Fonts */,
 				E8CFCF81231865600014A254 /* Seikatsu.entitlements */,
 				E86F2C1922DCBBAE0069AC1A /* AppDelegate.swift */,
 				E86F2C2322DCBBAE0069AC1A /* Main.storyboard */,
@@ -299,6 +310,7 @@
 				E80DC654230B4C9000D72E53 /* GameSceneOnlinePadLand.sks in Resources */,
 				E86190D1234D089C00EAE462 /* friendsScenePadPortrait.sks in Resources */,
 				E86F2C2522DCBBAE0069AC1A /* Main.storyboard in Resources */,
+				E827B6AD2357721600B151F6 /* MyriadPro-Black.otf in Resources */,
 				E86190CF234D088D00EAE462 /* friendsScenePhoneLand.sks in Resources */,
 				E86F2C2722DCBBB30069AC1A /* Assets.xcassets in Resources */,
 				E86F2C2A22DCBBB30069AC1A /* LaunchScreen.storyboard in Resources */,

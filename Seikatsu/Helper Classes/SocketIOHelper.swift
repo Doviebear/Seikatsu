@@ -172,8 +172,10 @@ class SocketIOHelper {
         }
     }
     
-    func startFriendGame() {
-        socket.emit("startFriendGame")
+    func startFriendGame(nameOfGame: String) {
+        var arrayToSend = [Any]()
+        arrayToSend.append(nameOfGame)
+        socket.emit("startFriendGame", with: arrayToSend)
     }
     
     func setSocketEvents(){
@@ -444,4 +446,5 @@ extension Notification.Name {
     static let returnText =  Notification.Name(rawValue: "returnText")
     static let gameNameTaken = Notification.Name(rawValue: "gameNameTaken")
     static let updateFriendRoom = Notification.Name(rawValue: "updateFriendRoom")
+    static let playAgain = Notification.Name(rawValue: "playAgain")
 }
