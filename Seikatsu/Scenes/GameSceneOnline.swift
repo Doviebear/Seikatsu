@@ -481,7 +481,7 @@ import GameplayKit
                     return
                 }
                 
-                if node.name == "hamburgerButton" {
+                if node.name == "hamburgerButton" && gameplayPhase != 10 {
                     hamburgerButton.texture = SKTexture(imageNamed: "hamburgerButton")
                     bringUpMenu()
                     return
