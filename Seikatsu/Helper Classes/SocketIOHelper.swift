@@ -15,7 +15,7 @@ class SocketIOHelper {
     
     //AWS Server: http://3.218.33.203/
     //Local Server: http://192.168.1.187:3003/
-    let manager = SocketManager(socketURL: URL(string: "http://192.168.1.187:3003/")!, config: [.log(true), .compress])
+    let manager = SocketManager(socketURL: URL(string: "http://3.218.33.203/")!, config: [.log(true), .compress])
     var socket: SocketIOClient!
     var viewController: UIViewController?
     var uniqueID: String?
@@ -39,7 +39,7 @@ class SocketIOHelper {
     }
     
     func searchForMatch() {
-        socket.emitWithAck("joinQueue").timingOut(after: 3) { data in
+        socket.emitWithAck("joinQueue").timingOut(after: 10) { data in
             
             if let statusNum = data[0] as? Int {
                 if statusNum == 0 {
@@ -97,7 +97,7 @@ class SocketIOHelper {
     
     func getNumInRoom() -> Int? {
         var numToReturn: Int?
-        socket.emitWithAck("getNumInRoom").timingOut(after: 3) { data in
+        socket.emitWithAck("getNumInRoom").timingOut(after: 10) { data in
             if let numInRoom = data[0] as? Int {
                 numToReturn = numInRoom
             } else if let statusNum = data[0] as? String {
@@ -123,7 +123,7 @@ class SocketIOHelper {
     func createGame(gameID: String) {
         var arrayToSend = [Any]()
         arrayToSend.append(gameID)
-        socket.emitWithAck("createGame", with: arrayToSend).timingOut(after: 3) { data in
+        socket.emitWithAck("createGame", with: arrayToSend).timingOut(after: 10) { data in
            if let statusNum = data[0] as? Int {
                 if statusNum == 0 {
                     //All good, game joined
@@ -149,7 +149,7 @@ class SocketIOHelper {
     func joinFriendGame(gameID: String) {
         var arrayToSend = [Any]()
         arrayToSend.append(gameID)
-        socket.emitWithAck("joinRoom", with: arrayToSend).timingOut(after: 3) { data in
+        socket.emitWithAck("joinRoom", with: arrayToSend).timingOut(after: 10) { data in
             if let statusNum = data[0] as? Int {
                 if statusNum == 0 {
                     //All good, game joined
@@ -447,4 +447,5 @@ extension Notification.Name {
     static let gameNameTaken = Notification.Name(rawValue: "gameNameTaken")
     static let updateFriendRoom = Notification.Name(rawValue: "updateFriendRoom")
     static let playAgain = Notification.Name(rawValue: "playAgain")
+    static let checkGameCode = Notification.Name(rawValue: "checkGameCode")
 }

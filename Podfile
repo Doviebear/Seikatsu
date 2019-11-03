@@ -6,6 +6,6 @@ target 'Seikatsu' do
   use_frameworks!
 
   # Pods for Seikatsu
-	pod 'Alamofire'
+
   pod 'Socket.IO-Client-Swift'
 end

@@ -75,6 +75,7 @@ import GameplayKit
     var finalScoreLabel: SKLabelNode!
     var winnerLabel: SKLabelNode!
     
+    var playerRowsArray: [[[Location]]]!
     //Player One: Pink
     //Player Two: Blue
     //Player Three: Green
@@ -86,10 +87,15 @@ import GameplayKit
         self.scaleMode = .aspectFill
         self.model = gameModel
         self.playerNum = player
-       
+        print("This is player number: \(player)")
         
+        
+        makePlayerLocationArrays()
         makeStartingPeices()
         loadGameModel()
+        updateScore(player: 1, amount: 3)
+        updateScore(player: 2, amount: 3)
+        updateScore(player: 3, amount: 3)
     }
     
     
@@ -134,7 +140,6 @@ import GameplayKit
                 let positionToPut = getPositionOfTokenSpace(at: onlineToken.Location!)
                 tokenToPlace.placeTokenNode(in: positionToPut!, on: self)
             }
-            
         }
         
         //Update All Player Hands
@@ -285,13 +290,31 @@ import GameplayKit
         
         self.finalScoreLabel = self.childNode(withName: "finalScoreLabel") as? SKLabelNode
         
-        
-        
+        if let yourScoreToken = scoreBoard.childNode(withName: "scoreToken\(playerNum!)") as? SKLabelNode {
+            yourScoreToken.text = "You"
+        }
         
         
         
         
         print("Function MakeStartingPieces Ended")
+    }
+    
+    func makePlayerLocationArrays(){
+        // Top Left Down
+        let player1RowsInt = [[[4,1,1],[3,1,1],[2,1,2],[1,1,2]],[[5,1,1],[4,2,2],[3,2,2],[2,2,3],[1,2,3]],[[6,1,2],[5,2,2],[4,3,3],[3,3,3],[2,3,4],[1,3,4]],[[7,1,2],[6,2,3],[5,3,3],[3,4,4],[2,4,5],[1,4,5]],[[7,2,3],[6,3,4],[5,4,4],[4,5,5],[3,5,5],[2,5,6]],[[7,3,4],[6,4,5],[5,5,5],[4,6,6],[3,6,6]],[[7,4,5],[6,5,6],[5,6,6],[4,7,7]]]
+        
+        //Top Right Down
+        let player2RowsInt = [[[4,1,1],[5,1,1],[6,1,2],[7,1,2]],[[3,1,1],[4,2,2],[5,2,2],[6,2,3],[7,2,3]],[[2,1,2],[3,2,2],[4,3,3],[5,3,3],[6,3,4],[7,3,4]],[[1,1,2],[2,2,3],[3,3,3],[5,4,4],[6,4,5],[7,4,5]],[[1,2,3],[2,3,4],[3,4,4],[4,5,5],[5,5,5],[6,5,6]],[[1,3,4],[2,4,5],[3,5,5],[4,6,6],[5,6,6]],[[1,4,5],[2,5,6],[3,6,6,],[4,7,7]]]
+        
+        //Stright down
+        let player3RowsInt = [[[1,1,2],[1,2,3],[1,3,4],[1,4,5]],[[2,1,2],[2,2,3],[2,3,4],[2,4,5],[2,5,6]],[[3,1,1],[3,2,2],[3,3,3],[3,4,4],[3,5,5],[3,6,6]],[[4,1,1],[4,2,2],[4,3,3],[4,5,5],[4,6,6],[4,7,7]],[[5,1,1],[5,2,2],[5,3,3],[5,4,4],[5,5,5],[5,6,6]],[[6,1,2],[6,2,3],[6,3,4],[6,4,5],[6,5,6]],[[7,1,2],[7,2,3],[7,3,4],[7,4,5]]]
+        
+        let player1Rows = makeLocationArray(arrayToConvert: player1RowsInt)
+        let player2Rows = makeLocationArray(arrayToConvert: player2RowsInt)
+        let player3Rows = makeLocationArray(arrayToConvert: player3RowsInt)
+        self.playerRowsArray = [player1Rows,player2Rows,player3Rows]
+        
     }
     
     override func sceneDidLoad() {
@@ -382,7 +405,7 @@ import GameplayKit
         }
         
         for _ in 0...2 {
-            let arrayOfScores = [0,0,0,0,0,0,0]
+            let arrayOfScores = [0,0,1,1,1,0,0]
             rowScores.append(arrayOfScores)
         }
         
@@ -513,16 +536,15 @@ import GameplayKit
             }
             
             nodeToPlace.tokenData.Location = tokenSpaceNode.Location
-            addScoreFromPlacing(tokenNodeToCheck: nodeToPlace)
-            let playerTurn = model.playerTurn
             
-            var plusPointsFromRow = getScoreForRowWithTokenAdded( player: playerTurn, tokenAdded: nodeToPlace) - rowScores[playerTurn - 1][tokenSpaceNode.Location.col - 1]
-            if plusPointsFromRow < 0 {
-                plusPointsFromRow = 0
+            for i in 1...3 {
+                if i == playerNum {
+                    addTotalScore(from: nodeToPlace, for: i)
+                } else {
+                   addRowScore(from: nodeToPlace, for: i)
+                }
             }
-            updateScore(player: playerTurn, amount: plusPointsFromRow)
-            rowScores[playerTurn - 1][tokenSpaceNode.Location.col - 1] += plusPointsFromRow
-            
+
             tokensInPlay.append(nodeToPlace)
             model.TokensInPlay.append(nodeToPlace.tokenData)
             nodeToPlace.tokenData.player = nil
@@ -645,6 +667,26 @@ import GameplayKit
                 }
             }
         }
+    }
+    
+    func addTotalScore(from tokenNode: tokenNode, for player: Int) {
+        addScoreFromBirds(tokenNodeToCheck: tokenNode, for: player)
+        addRowScore(from: tokenNode, for: player)
+    }
+    
+    func addRowScore(from tokenNode: tokenNode, for player: Int){
+        let rowToUse = getRowForToken(tokenNode: tokenNode, player: player)
+        let scoreForRow = getScoreForRowWithTokenAdded( player: player, tokenAdded: tokenNode)
+        print("The total Score for this row is: \(scoreForRow)")
+        print("Row score that has already been accounted for is: \(rowScores[player - 1][rowToUse])")
+        
+        var plusPointsFromRow = getScoreForRowWithTokenAdded( player: player, tokenAdded: tokenNode) - rowScores[player - 1][rowToUse]
+        if plusPointsFromRow < 0 {
+            plusPointsFromRow = 0
+        }
+        updateScore(player: player, amount: plusPointsFromRow)
+        rowScores[player - 1][rowToUse] += plusPointsFromRow
+        
     }
     
     func endOfRound() {
@@ -803,18 +845,18 @@ import GameplayKit
         cross.isHidden = false
         
         pointsFromTilesLabel.position = CGPoint(x: nodeToPlace.position.x - (nodeToPlace.sprite?.size.width)!/2 - 25, y: nodeToPlace.position.y)
-        pointsFromTilesLabel.text = "+\(getScoreFromPlacing(tokenNodeToCheck: nodeToPlace))"
+        pointsFromTilesLabel.text = "+\(getScoreFromBirds(tokenNodeToCheck: nodeToPlace))"
         pointsFromTilesLabel.isHidden = false
         
         pointsFromRowsLabel.position = CGPoint(x: pointsFromTilesLabel.position.x, y: pointsFromTilesLabel.position.y - 50)
         
-        let playerTurn = model.playerTurn
-        var plusPointsFromRow = getScoreForRowWithTokenAdded( player: playerTurn, tokenAdded: nodeToPlace) - rowScores[playerTurn - 1][tokenSpace.Location.col - 1]
+       let rowToUse = getRowForToken(tokenNode: nodeToPlace, player: playerNum)
+        var plusPointsFromRow = getScoreForRowWithTokenAdded( player: playerNum, tokenAdded: nodeToPlace) - rowScores[playerNum - 1][rowToUse]
         if plusPointsFromRow < 0 {
             plusPointsFromRow = 0
         }
             
-        pointsFromRowsLabel.text = "+\(getScoreFromPlacing(tokenNodeToCheck: nodeToPlace))"
+        pointsFromRowsLabel.text = "+\(plusPointsFromRow)"
         pointsFromRowsLabel.isHidden = false
         
         
@@ -862,7 +904,7 @@ import GameplayKit
     
     
     /// Scoring Funcs
-    func getScoreFromPlacing(tokenNodeToCheck: tokenNode) -> Int {
+    func getScoreFromBirds(tokenNodeToCheck: tokenNode) -> Int {
         var adjacentTokens = [tokenNode]()
         for token in tokensInPlay {
             if tokenNodeToCheck.isAdjacent(tokenNode2: token) {
@@ -876,7 +918,7 @@ import GameplayKit
                 for adjacentToken in adjacentTokens {
                     if model.grabBag.birds[i] == adjacentToken.tokenData.birdType {
                         if numOfBirds[i] == 0 {
-                            numOfBirds[i] = 1
+                            numOfBirds[i] += 1
                         }
                         numOfBirds[i] += 1
                     }
@@ -898,20 +940,9 @@ import GameplayKit
     
     
     
-    func addScoreFromPlacing(tokenNodeToCheck: tokenNode) {
-        let amountToAdd = getScoreFromPlacing(tokenNodeToCheck: tokenNodeToCheck)
-        
-        // add the score here
-        if self.playerNum == 1 {
-            updateScore(player: 1, amount: amountToAdd)
-        } else if self.playerNum == 2 {
-            updateScore(player: 2, amount: amountToAdd)
-        } else if self.playerNum == 3 {
-            updateScore(player: 3, amount: amountToAdd)
-        } else {
-            print("Error adding score, Player not found")
-        }
-        
+    func addScoreFromBirds(tokenNodeToCheck: tokenNode, for player: Int) {
+        let amountToAdd = getScoreFromBirds(tokenNodeToCheck: tokenNodeToCheck)
+        updateScore(player: player, amount: amountToAdd)
     }
     
     
@@ -971,45 +1002,9 @@ import GameplayKit
     
     
     func getScoreForRowWithTokenAdded(player: Int, tokenAdded: tokenNode) -> Int {
-        //Stright down
-        let player1RowsInt = [[[1,1,2],[1,2,3],[1,3,4],[1,4,5]],[[2,1,2],[2,2,3],[2,3,4],[2,4,5],[2,5,6]],[[3,1,1],[3,2,2],[3,3,3],[3,4,4],[3,5,5],[3,6,6]],[[4,1,1],[4,2,2],[4,3,3],[4,5,5],[4,6,6],[4,7,7]],[[5,1,1],[5,2,2],[5,3,3],[5,4,4],[5,5,5],[5,6,6]],[[6,1,2],[6,2,3],[6,3,4],[6,4,5],[6,5,6]],[[7,1,2],[7,2,3],[7,3,4],[7,4,5]]]
-        
-        
-        //Top Left Down
-        let player2RowsInt = [[[4,1,1],[3,1,1],[2,1,2],[1,1,2]],[[5,1,1],[4,2,2],[3,2,2],[2,2,3],[1,2,3]],[[6,1,2],[5,2,2],[4,3,3],[3,3,3],[2,3,4],[1,3,4]],[[7,1,2],[6,2,3],[5,3,3],[3,4,4],[2,4,5],[1,4,5]],[[7,2,3],[6,3,4],[5,4,4],[4,5,5],[3,5,5],[2,5,6]],[[7,3,4],[6,4,5],[5,5,5],[4,6,6],[3,6,6]],[[7,4,5],[6,5,6],[5,6,6],[4,7,7]]]
-        
-        //Top Right Down
-        let player3RowsInt = [[[4,1,1],[5,1,1],[6,1,2],[7,1,2]],[[3,1,1],[4,2,2],[5,2,2],[6,2,3],[7,2,3]],[[2,1,2],[3,2,2],[4,3,3],[5,3,3],[6,3,4],[7,3,4]],[[1,1,2],[2,2,3],[3,3,3],[5,4,4],[6,4,5],[7,4,5]],[[1,2,3],[2,3,4],[3,4,4],[4,5,5],[5,5,5],[6,5,6]],[[1,3,4],[2,4,5],[3,5,5],[4,6,6],[5,6,6]],[[1,4,5],[2,5,6],[3,6,6,],[4,7,7]]]
-        
-        let player1Rows = makeLocationArray(arrayToConvert: player1RowsInt)
-        let player2Rows = makeLocationArray(arrayToConvert: player2RowsInt)
-        let player3Rows = makeLocationArray(arrayToConvert: player3RowsInt)
-        let playerRowsArray = [player1Rows,player2Rows,player3Rows]
-        
+       
         let playerArrayToCheck = playerRowsArray[player - 1]
-        
-        var row: Int!
-        if player == 1 {
-            row = tokenAdded.tokenData.Location?.col
-            
-        } else if player == 2 {
-            for (index,locationArray) in player2Rows.enumerated() {
-                for location in locationArray {
-                    if tokenAdded.tokenData.Location == location {
-                        row = index + 1
-                    }
-                }
-            }
-            
-        } else {
-            for (index,locationArray) in player3Rows.enumerated() {
-                for location in locationArray {
-                    if tokenAdded.tokenData.Location == location {
-                        row = index + 1
-                    }
-                }
-            }
-        }
+        let row = getRowForToken(tokenNode: tokenAdded, player: player)
         let locationArrayToCheck = playerArrayToCheck[row - 1]
         
         
@@ -1049,6 +1044,32 @@ import GameplayKit
         return score
         
         
+    }
+    
+    func getRowForToken(tokenNode: tokenNode, player: Int) -> Int {
+        var row: Int!
+        if player == 1 {
+            for (index,locationArray) in playerRowsArray[0].enumerated() {
+                for location in locationArray {
+                    if tokenNode.tokenData.Location == location {
+                        row = index + 1
+                    }
+                }
+            }
+        } else if player == 2 {
+            for (index,locationArray) in playerRowsArray[1].enumerated() {
+                for location in locationArray {
+                    if tokenNode.tokenData.Location == location {
+                        row = index + 1
+                    }
+                }
+            }
+        } else {
+            row = tokenNode.tokenData.Location!.col
+            
+        }
+        
+        return row
     }
     
     

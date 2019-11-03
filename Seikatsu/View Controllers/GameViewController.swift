@@ -9,7 +9,6 @@
 import UIKit
 import SpriteKit
 import GameplayKit
-import Alamofire
 import SocketIO
 
 
@@ -36,6 +35,7 @@ class GameViewController: UIViewController, UITextFieldDelegate {
         NotificationCenter.default.addObserver(self, selector: #selector(showTextField(_:)), name: .showTextField, object: nil)
          NotificationCenter.default.addObserver(self, selector: #selector(hideTextField(_:)), name: .hideTextField, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(gameNameTaken(_:)), name: .gameNameTaken, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(checkGameCode(_:)), name: .checkGameCode, object: nil)
         
         
         
@@ -166,9 +166,9 @@ class GameViewController: UIViewController, UITextFieldDelegate {
         playWithFriendsTextField.textColor = .gray
         playWithFriendsTextField.backgroundColor = .white
         var frame = self.playWithFriendsTextField.frame
-        frame.origin.x = positionOfField.x
+        frame.origin.x = positionOfField.x - 75
         frame.origin.y = positionOfField.y
-        frame.size = CGSize(width : 300, height: 25)
+        frame.size = CGSize(width : 150, height: 25)
         playWithFriendsTextField.frame = frame
         
         
@@ -185,7 +185,20 @@ class GameViewController: UIViewController, UITextFieldDelegate {
         
     }
     
+    @objc func checkGameCode(_ notification: Notification) {
+        if let gameString = playWithFriendsTextField.text {
+            if joiningOrCreatingGame == "joining" {
+                SocketIOHelper.helper.joinFriendGame(gameID: gameString)
+            } else {
+                SocketIOHelper.helper.createGame(gameID: gameString)
+            }
+        } else {
+            print("couldn't get Text from field")
+        }
+    }
+    
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        /*
         textField.resignFirstResponder()
         if let gameString = textField.text {
             print(joiningOrCreatingGame!)
@@ -201,6 +214,9 @@ class GameViewController: UIViewController, UITextFieldDelegate {
         } else {
             return false
         }
+ */
+        textField.resignFirstResponder()
+        return true
     }
     
     func getFileName() -> String? {

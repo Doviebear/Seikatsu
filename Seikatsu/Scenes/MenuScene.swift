@@ -22,13 +22,42 @@ class MenuScene: SKScene {
     
     var testingSprite: SKSpriteNode!
     
-    var playMenu: SKSpriteNode!
+    
     var touchBufferNode: SKSpriteNode!
+    
+    
+    
+    var playMenu: SKSpriteNode!
+    var playWithFriendsButton: SKSpriteNode!
+    var playOnlineButton: SKSpriteNode!
+    var playSoloButton: SKSpriteNode!
+    
     
     var difficultyMenu: SKSpriteNode!
     var easyButton: SKSpriteNode!
     var mediumButton: SKSpriteNode!
     var hardButton: SKSpriteNode!
+    
+    var createOrJoinMenu: SKSpriteNode!
+    var createGameButton: SKSpriteNode!
+    var joinGameButton: SKSpriteNode!
+    
+    var gameCodeMenu: SKSpriteNode!
+    var playWithFriendsInfoLabel: SKLabelNode!
+    var textFieldPlaceholder: SKNode!
+    var gameCodeButton: SKSpriteNode!
+    
+    var gameLobbyContainer: SKSpriteNode!
+    var player1Indicator: SKLabelNode!
+    var player2Indicator: SKLabelNode!
+    var player3Indicator: SKLabelNode!
+    var lobbyIndicator: SKLabelNode!
+    var startFriendGameButton: SKSpriteNode!
+    var waitingForHostLabel: SKLabelNode!
+    var gameCodeLabel: SKLabelNode!
+    
+    var isFriendGameCreate: Bool!
+    var friendGameString: String!
     
     override func sceneDidLoad() {
         NotificationCenter.default.addObserver(self, selector: #selector(joinedQueue(_:)), name: .joinedQueue, object: nil)
@@ -39,18 +68,29 @@ class MenuScene: SKScene {
         
         
         title = self.childNode(withName: "title") as? SKLabelNode
-        playButton = self.childNode(withName: "playgameButton") as? SKSpriteNode
+        playButton = self.childNode(withName: "playButton") as? SKSpriteNode
         howToPlayButton = self.childNode(withName: "howToPlayButton") as? SKSpriteNode
         settingsButton = self.childNode(withName: "settingsButton") as? SKSpriteNode
         searchingForGameSprite = self.childNode(withName: "searchingForGameSprite") as? SKSpriteNode
         notConnectedToServerSprite = self.childNode(withName: "notConnectedToServer") as? SKSpriteNode
+        
         playMenu = self.childNode(withName: "playMenu") as? SKSpriteNode
+        playOnlineButton = playMenu.childNode(withName: "playOnlineButton") as? SKSpriteNode
+        playSoloButton = playMenu.childNode(withName: "playSoloButton") as? SKSpriteNode
+        playWithFriendsButton = playMenu.childNode(withName: "playWithFriendsButton") as? SKSpriteNode
+        
+        
         difficultyMenu = self.childNode(withName: "difficultyContainer") as? SKSpriteNode
         easyButton = self.childNode(withName: "easyButton") as? SKSpriteNode
         mediumButton = self.childNode(withName: "mediumButton") as? SKSpriteNode
         hardButton = self.childNode(withName: "hardButton") as? SKSpriteNode
-        //testingSprite = self.childNode(withName: "testingSprite") as? SKSpriteNode
+        
+         //testingSprite = self.childNode(withName: "testingSprite") as? SKSpriteNode
         //testingSprite.removeFromParent()
+        gameCodeMenu = self.childNode(withName: "gameCodeContainer") as? SKSpriteNode
+        createOrJoinMenu = self.childNode(withName: "playWithFriendsContainer") as? SKSpriteNode
+        gameLobbyContainer = self.childNode(withName: "gameLobbyContainer") as? SKSpriteNode
+        gameCodeLabel = gameLobbyContainer.childNode(withName: "gameCodeLabel") as? SKLabelNode
 
         //print("status is: \(SocketIOHelper.helper.socket.status)")
         if SocketIOHelper.helper.socket.status != .connected {
@@ -61,93 +101,197 @@ class MenuScene: SKScene {
         touchBufferNode.position = CGPoint(x: self.size.width/2, y:  self.size.height/2)
         touchBufferNode.zPosition = 100
         touchBufferNode.isHidden = true
+        touchBufferNode.name = "touchBufferNode"
         addChild(touchBufferNode)
+        
+        // PlayWithFriends Stuff
+        
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(textFieldReturned(_:)), name: .returnText, object: nil)
+         NotificationCenter.default.addObserver(self, selector: #selector(gameNameTaken(_:)), name: .gameNameTaken, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(updateFriendRoom(_:)), name: .updateFriendRoom, object: nil)
+        
+        createGameButton = createOrJoinMenu.childNode(withName: "createGameButton") as? SKSpriteNode
+        
+        joinGameButton = createOrJoinMenu.childNode(withName: "joinGameButton") as? SKSpriteNode
+        
+        playWithFriendsInfoLabel = gameCodeMenu.childNode(withName: "playWithFriendsInfoLabel") as? SKLabelNode
+        
+        textFieldPlaceholder = self.childNode(withName: "textFieldPlaceholder")
+        player1Indicator = gameLobbyContainer.childNode(withName: "youIndicator") as? SKLabelNode
+        player2Indicator = gameLobbyContainer.childNode(withName: "player2Indicator") as? SKLabelNode
+        player3Indicator = gameLobbyContainer.childNode(withName: "player3Indicator") as? SKLabelNode
+        lobbyIndicator = gameLobbyContainer.childNode(withName: "lobbyIndicator") as? SKLabelNode
+        
+        
+        gameCodeButton = gameCodeMenu.childNode(withName: "gameCodeButton") as? SKSpriteNode
+        startFriendGameButton = gameLobbyContainer.childNode(withName: "startFriendGameButton") as? SKSpriteNode
+        waitingForHostLabel = gameLobbyContainer.childNode(withName: "waitingForHostLabel") as? SKLabelNode
+        
+        
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         let touch = touches.first
         if let location = touch?.location(in: self) {
             let nodesArray = self.nodes(at: location)
-            for node in nodesArray {
+            if let node = nodesArray.first {
                 if node.name == "playButton" {
-//                    playButton.texture = SKTexture(imageNamed: "playgameButtonPressed")
+                    let newTexture = SKTexture(imageNamed: "playGameButtonPressed")
+                    playButton.texture = newTexture
                     return
                 } else if node.name == "howToPlayButton" {
-//                    howToPlayButton.texture = SKTexture(imageNamed: "howToPlayButtonPressed")
+                    howToPlayButton.texture = SKTexture(imageNamed: "howToPlayButtonPressed")
                     return
                 } else if node.name == "settingsButton" {
-//                    settingsButton.texture = SKTexture(imageNamed: "settingsButtonPressed")
+                    settingsButton.texture = SKTexture(imageNamed: "settingsButtonPressed")
+                    return
+                } else if node.name == "gameCodeButton" {
+                    if isFriendGameCreate {
+                        gameCodeButton.texture = SKTexture(imageNamed: "createGameButtonPressed")
+                    } else {
+                        gameCodeButton.texture = SKTexture(imageNamed: "joinGameButtonPressed")
+                    }
+                    return
+                    
+                } else if node.name == "startFriendGameButton" {
+                    startFriendGameButton.texture = SKTexture(imageNamed: "playGameButtonPressed")
+                    return
+                } else if node.name == "playWithFriendsButton" {
+                    playWithFriendsButton.texture = SKTexture(imageNamed: "playWithFriendsButtonPressed")
+                    return
+                } else if node.name == "playOnlineButton" {
+                    playOnlineButton.texture = SKTexture(imageNamed: "playOnlineButtonPressed")
+                    return
+                } else if node.name == "playSoloButton" {
+                    playSoloButton.texture = SKTexture(imageNamed: "playSoloButtonPressed")
+                    return
+                } else if node.name == "createGameButton" {
+                    createGameButton.texture = SKTexture(imageNamed: "createGameButtonPressed")
+                    return
+                } else if node.name == "joinGameButton" {
+                    joinGameButton.texture = SKTexture(imageNamed: "joinGameButtonPressed")
                     return
                 }
             }
         }
     }
-    
+   
+        
+        
+        
+        
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         let touch = touches.first
         if let location = touch?.location(in: self) {
             let nodesArray = self.nodes(at: location)
-            for node in nodesArray {
+            if let node = nodesArray.first {
                 if node.name == "touchBufferNode" {
                     resetScene()
                     return
                 }
                 
                 
-                if node.name == "playButton" && SocketIOHelper.helper.socket.status == .connected{
+                if node.name == "playButton" && SocketIOHelper.helper.socket.status == .connected {
+                    playButton.texture = SKTexture(imageNamed: "playGameButton")
                     touchBufferNode.isHidden = false
                     createPlayButtonPopup()
-                    
-                    
-                    //SocketIOHelper.helper.searchForMatch()
-//                    playButton.texture = SKTexture(imageNamed: "playgameButton")
                     return
                 } else if node.name == "howToPlayButton" {
-                    //addChild(testingSprite)
-                    //SocketIOHelper.helper.createGame(gameID: "Boo")
-//                    howToPlayButton.texture = SKTexture(imageNamed: "howToPlayButtonPressed")
+                 
+                   
+                    howToPlayButton.texture = SKTexture(imageNamed: "howToPlayButton")
                    return
                 } else if node.name == "settingsButton" {
-                    //SocketIOHelper.helper.startFriendGame()
-//                    settingsButton.texture = SKTexture(imageNamed: "settingsButtonPressed")
+                    settingsButton.texture = SKTexture(imageNamed: "settingsButton")
                     return
                 }
                 
                 if node.name == "playOnlineButton" {
+                    playOnlineButton.texture = SKTexture(imageNamed: "playOnlineButton")
                     SocketIOHelper.helper.searchForMatch()
                     resetScene()
                     return
                 } else if node.name == "playWithFriendsButton" {
-                   let transition = SKTransition.flipVertical(withDuration: 0.5)
-                    if let fileName = getFriendsSceneFileName() {
-                        if let scene = playWithFriendsScene(fileNamed: fileName) {
-                            scene.scaleMode = .aspectFill
-                            
-                           
-                            self.view?.presentScene(scene, transition: transition)
-                        } else {
-                            print("Couldn't create playWithFriendsScene")
-                        }
-                    } else {
-                        print("Couldn't get File Name for playWithFriendsScene")
-                    }
-                    return
+                    playWithFriendsButton.texture = SKTexture(imageNamed: "playWithFriendsButton")
+                    playMenu.isHidden = true
+                    createOrJoinMenu.isHidden = false
                 } else if node.name == "playSoloButton" {
+                    playSoloButton.texture = SKTexture(imageNamed: "playSoloButton")
                     difficultyMenu.isHidden = false
                     playMenu.isHidden = true
                     return
                     
                 } else if node.name == "easyButton" {
                     startSingleplayerGame(with: "easy")
+                    return
                 } else if node.name == "mediumButton" {
                     startSingleplayerGame(with: "medium")
+                    return
                 } else if node.name == "hardButton" {
                     startSingleplayerGame(with: "hard")
+                    return
+                } else if node.name == "createGameButton" {
+                    createGameButton.texture = SKTexture(imageNamed: "createGameButton")
+                    createOrJoinMenu.isHidden = true
+                    gameCodeMenu.isHidden = false
+                    gameCodeButton.texture = SKTexture(imageNamed: "createGameButton")
+                    isFriendGameCreate = true
+                    playWithFriendsInfoLabel.text = "Create Game Code Below"
+                    
+                    let posistionOfTextField = CGPoint(x: textFieldPlaceholder.position.x, y: textFieldPlaceholder.position.y)
+                  
+                    let convertedPosistion = view?.convert(posistionOfTextField, from: self)
+                    //let textFieldRect = CGRect(x: textFieldPlaceholder.position.x, y: textFieldPlaceholder.position.y, width: 300, height: 100)
+                    let ArrayToSend = [convertedPosistion!, "creating"] as [Any]
+                    
+                    NotificationCenter.default.post(name: .showTextField, object: ArrayToSend )
+                    
+                    return
+                } else if node.name == "joinGameButton" {
+                    joinGameButton.texture = SKTexture(imageNamed: "joinGameButton")
+                    isFriendGameCreate = false
+                    createOrJoinMenu.isHidden = true
+                    gameCodeMenu.isHidden = false
+                    gameCodeButton.texture = SKTexture(imageNamed: "joinGameButton")
+                    playWithFriendsInfoLabel.text = "Enter Game Code Below"
+                    
+                    let posistionOfTextField = CGPoint(x: textFieldPlaceholder.position.x, y: textFieldPlaceholder.position.y)
+                    let convertedPosistion = view?.convert(posistionOfTextField, from: self)
+                    //let textFieldRect = CGRect(x: textFieldPlaceholder.position.x, y: textFieldPlaceholder.position.y, width: 300, height: 100)
+                    let ArrayToSend = [convertedPosistion!, "joining"] as [Any]
+                    
+                    NotificationCenter.default.post(name: .showTextField, object: ArrayToSend )
+                    
+                    return
+                } else if node.name == "gameCodeButton" {
+                    if isFriendGameCreate {
+                        gameCodeButton.texture = SKTexture(imageNamed: "createGameButton")
+                    } else {
+                        gameCodeButton.texture = SKTexture(imageNamed: "joinGameButton")
+                    }
+                    
+                    NotificationCenter.default.post(name: .checkGameCode , object: nil)
+                    //TODO Loading Animation
+                    return
+                } else if node.name == "startFriendGameButton" {
+                    startFriendGameButton.texture = SKTexture(imageNamed: "playGameButton" )
+                    if let numInRoom = SocketIOHelper.helper.getNumInRoom() {
+                        if numInRoom == 3 {
+                            SocketIOHelper.helper.startFriendGame(nameOfGame: friendGameString)
+                        } else {
+                            //Not enough players or somehow too many players, but I don't think thats possible
+                            return
+                        }
+                        return
+                    }
                 }
                 
             }
         }
     }
+    
+    
     
     func startSingleplayerGame(with difficulty: String) {
         let transition = SKTransition.flipVertical(withDuration: 0.5)
@@ -174,6 +318,11 @@ class MenuScene: SKScene {
     func resetScene(){
         touchBufferNode.isHidden = true
         playMenu.isHidden = true
+        gameCodeMenu.isHidden = true
+        difficultyMenu.isHidden = true
+        createOrJoinMenu.isHidden = true
+        gameLobbyContainer.isHidden = true
+        NotificationCenter.default.post(name: .hideTextField, object: nil)
     }
     
     @objc func playAgain(_ notification: Notification){
@@ -203,6 +352,52 @@ class MenuScene: SKScene {
         */
     }
     
+    @objc func textFieldReturned(_ notification: Notification) {
+        guard let gameString = notification.object as? String else {
+            return
+        }
+        self.friendGameString = gameString
+        
+        gameCodeMenu.isHidden = true
+        gameLobbyContainer.isHidden = false
+        gameCodeLabel.text = "Game Code: \(gameString)"
+        NotificationCenter.default.post(name: .hideTextField, object: nil)
+        
+        if isFriendGameCreate {
+            waitingForHostLabel.isHidden = true
+            startFriendGameButton.isHidden = false
+        } else {
+            waitingForHostLabel.isHidden = false
+            startFriendGameButton.isHidden = true
+        }
+         
+    }
+    
+    @objc func gameNameTaken(_ notification: Notification) {
+        if isFriendGameCreate {
+            playWithFriendsInfoLabel.text = "Game Code Taken, Please Try Again"
+        } else {
+            playWithFriendsInfoLabel.text = "Game Code Doesn't Exist, Please Try Again"
+        }
+        
+    }
+    
+    @objc func updateFriendRoom(_ notification: Notification) {
+        guard let numInRoom = notification.object as? Int else {
+                   return
+               }
+               if numInRoom == 2 {
+                   player2Indicator.text = "Player 2 Joined"
+                   player2Indicator.fontColor = UIColor(rgb: 0x7CFF55)
+               } else if numInRoom == 3 {
+                   player3Indicator.text = "Player 3 Joined"
+                   player3Indicator.fontColor = UIColor(rgb: 0x7CFF55)
+                   
+                
+                   startFriendGameButton.texture = SKTexture(imageNamed: "playGameButton")
+               }
+    }
+    
     func switchToPortrait() {
         /*
         if UIDevice.current.userInterfaceIdiom == .phone {
@@ -225,68 +420,6 @@ class MenuScene: SKScene {
          */
     }
    
-    func getFriendsSceneFileName() -> String? {
-//        let baseSKSName = "friendsScene"
-        var fullSKSNameToLoad:String
-        fullSKSNameToLoad = "friendsScenePhonePortrait"
-        /*
-        if ( UIDevice.current.userInterfaceIdiom == .pad) {
-            if UIDevice.current.orientation.isLandscape {
-                if let _ = MenuScene(fileNamed:  baseSKSName + "PadLand"){
-                    // this if statement would NOT be true if the iPad file did not exist
-                    fullSKSNameToLoad = baseSKSName + "PadLand"
-                } else {
-                    return nil
-                }
-            } else if UIDevice.current.orientation.isPortrait {
-                if let _ = MenuScene(fileNamed:  baseSKSName + "PadPortrait"){
-                    // this if statement would NOT be true if the iPad file did not exist
-                    fullSKSNameToLoad = baseSKSName + "PadPortrait"
-                } else {
-                    return nil
-                }
-            } else if UIDevice.current.orientation.isFlat {
-                if let _ = MenuScene(fileNamed:  baseSKSName + "PadPortrait"){
-                    // this if statement would NOT be true if the iPad file did not exist
-                    fullSKSNameToLoad = baseSKSName + "PadPortrait"
-                } else {
-                    return nil
-                }
-            } else {
-                fullSKSNameToLoad = baseSKSName + "PadPortrait"
-            }
-        } else if ( UIDevice.current.userInterfaceIdiom == .phone) {
-            if UIDevice.current.orientation.isLandscape {
-                if let _ = MenuScene(fileNamed:  baseSKSName + "PhoneLand"){
-                    // this if statement would NOT be true if the Phone file did not exist
-                    fullSKSNameToLoad = baseSKSName + "PhoneLand"
-                } else {
-                    return nil
-                }
-            } else if UIDevice.current.orientation.isPortrait {
-                if let _ = MenuScene(fileNamed:  baseSKSName + "PhonePortrait"){
-                    // this if statement would NOT be true if the Phone file did not exist
-                    fullSKSNameToLoad = baseSKSName + "PhonePortrait"
-                } else {
-                    return nil
-                }
-            } else if UIDevice.current.orientation.isFlat {
-                if let _ = MenuScene(fileNamed:  baseSKSName + "PhonePortrait"){
-                    // this if statement would NOT be true if the Phone file did not exist
-                    fullSKSNameToLoad = baseSKSName + "PhonePortrait"
-                } else {
-                    return nil
-                }
-            } else  {
-                fullSKSNameToLoad = baseSKSName + "PhonePortrait"
-            }
-            //worry about TV later
-        } else {
-            return nil
-        }
-        */
-        return fullSKSNameToLoad
-    }
     
     func getFileName(baseSKSName: String) -> String? {
         //We call this function with a baseSKSName passed in, and return either a
