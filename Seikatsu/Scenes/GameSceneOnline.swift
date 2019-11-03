@@ -212,6 +212,8 @@ import GameplayKit
         updateScore(player: 2, setAt: model.playerTwoScore)
         updateScore(player: 3, setAt: model.playerThreeScore)
         
+        rowScores = model.rowScores
+        
         if let notif = notification {
             if notif.name == .roundEnd {
 //                endOfRoundScoring()
@@ -280,15 +282,19 @@ import GameplayKit
         self.quitButton = menuContainer.childNode(withName: "quitButton") as? SKSpriteNode
         self.howToPlayButton = menuContainer.childNode(withName: "howToPlayButton") as? SKSpriteNode
         self.settingsButton = menuContainer.childNode(withName: "settingsButton") as? SKSpriteNode
+        
+        
         self.checkmark = self.childNode(withName: "checkmark") as? SKSpriteNode
         self.cross = self.childNode(withName: "cross") as? SKSpriteNode
         self.pointsFromTilesLabel = self.childNode(withName: "pointsFromTilesLabel") as? SKLabelNode
         self.pointsFromRowsLabel = self.childNode(withName: "pointsFromRowsLabel") as? SKLabelNode
+        
+        
         self.endGameContainer = self.childNode(withName: "endGameContainer") as? SKSpriteNode
-        
-        self.winnerLabel = self.childNode(withName: "winnerLabel") as? SKLabelNode
-        
-        self.finalScoreLabel = self.childNode(withName: "finalScoreLabel") as? SKLabelNode
+        self.winnerLabel = endGameContainer.childNode(withName: "winnerLabel") as? SKLabelNode
+        self.finalScoreLabel = endGameContainer.childNode(withName: "finalScoreLabel") as? SKLabelNode
+        self.playAgainButton = endGameContainer.childNode(withName: "playAgainButton") as? SKSpriteNode
+        self.mainMenuButton = endGameContainer.childNode(withName: "endGameContainer") as? SKSpriteNode
         
         if let yourScoreToken = scoreBoard.childNode(withName: "scoreToken\(playerNum!)") as? SKLabelNode {
             yourScoreToken.text = "You"
@@ -321,6 +327,8 @@ import GameplayKit
          print("Function SceneDidLoad started")
         NotificationCenter.default.addObserver(self, selector: #selector(loadGameModel(_:)), name: .turnStart, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(loadGameModel(_:)), name: .roundEnd, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(playerDisconnected(_:)), name: .playerDisconnected, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(playerDisconnected(_:)), name: .disconnectedFromServer, object: nil)
         self.centerHexagon = self.childNode(withName: "//centerHexagon") as? SKSpriteNode
         print("Screen Width: \(JKGame.rect.width)")
         print("Screen Height: \(JKGame.rect.height)")
@@ -479,7 +487,7 @@ import GameplayKit
                     return
                 }
                 
-                guard model.playerTurn == playerNum else {
+                guard model.playerTurn == playerNum || gameplayPhase == 10 else {
                     print("Not your turn")
                     print("Turn num is: \(model.playerTurn)")
                     print("You are num: \(String(describing: playerNum))")
@@ -517,6 +525,7 @@ import GameplayKit
                     }
                 } else if gameplayPhase == 10 {
                     if node.name == "playAgainButton" {
+                        playAgainButton.texture = SKTexture(imageNamed: "playAgainButton")
                         backToMainMenuScene()
                         NotificationCenter.default.post(name: .playAgain, object: nil)
                     } else if node.name == "mainMenuButton" {
@@ -678,14 +687,15 @@ import GameplayKit
         let rowToUse = getRowForToken(tokenNode: tokenNode, player: player)
         let scoreForRow = getScoreForRowWithTokenAdded( player: player, tokenAdded: tokenNode)
         print("The total Score for this row is: \(scoreForRow)")
-        print("Row score that has already been accounted for is: \(rowScores[player - 1][rowToUse])")
+        print("Row score that has already been accounted for is: \(rowScores[player - 1][rowToUse - 1])")
         
-        var plusPointsFromRow = getScoreForRowWithTokenAdded( player: player, tokenAdded: tokenNode) - rowScores[player - 1][rowToUse]
+        var plusPointsFromRow = getScoreForRowWithTokenAdded( player: player, tokenAdded: tokenNode) - rowScores[player - 1][rowToUse - 1]
         if plusPointsFromRow < 0 {
             plusPointsFromRow = 0
         }
         updateScore(player: player, amount: plusPointsFromRow)
-        rowScores[player - 1][rowToUse] += plusPointsFromRow
+        rowScores[player - 1][rowToUse - 1] += plusPointsFromRow
+        model.rowScores = rowScores
         
     }
     
@@ -851,7 +861,7 @@ import GameplayKit
         pointsFromRowsLabel.position = CGPoint(x: pointsFromTilesLabel.position.x, y: pointsFromTilesLabel.position.y - 50)
         
        let rowToUse = getRowForToken(tokenNode: nodeToPlace, player: playerNum)
-        var plusPointsFromRow = getScoreForRowWithTokenAdded( player: playerNum, tokenAdded: nodeToPlace) - rowScores[playerNum - 1][rowToUse]
+        var plusPointsFromRow = getScoreForRowWithTokenAdded( player: playerNum, tokenAdded: nodeToPlace) - rowScores[playerNum - 1][rowToUse - 1]
         if plusPointsFromRow < 0 {
             plusPointsFromRow = 0
         }
@@ -1160,6 +1170,20 @@ import GameplayKit
         return winner
     }
     
+    @objc func playerDisconnected(_ notification: Notification){
+        if notification.name == .playerDisconnected {
+            winnerLabel.text = "Player Disconnected"
+        } else {
+            winnerLabel.text = "You Disconnected"
+        }
+        winnerLabel.fontName = "MyriadPro-Black"
+        
+        finalScoreLabel.fontName = "MyriadPro-Black"
+        finalScoreLabel.text = "Tie"
+        endGameContainer.isHidden = false
+        gameplayPhase = 10
+        return
+    }
     
      
     

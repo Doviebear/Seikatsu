@@ -26,7 +26,7 @@ class SocketIOHelper {
     
     
     func createConnection() {
-        manager.reconnects = true
+        //manager.reconnects = true
         socket = manager.defaultSocket
         socket.connect()
         self.setSocketEvents()
@@ -39,7 +39,7 @@ class SocketIOHelper {
     }
     
     func searchForMatch() {
-        socket.emitWithAck("joinQueue").timingOut(after: 10) { data in
+        socket.emitWithAck("joinQueue").timingOut(after: 3) { data in
             
             if let statusNum = data[0] as? Int {
                 if statusNum == 0 {
@@ -50,6 +50,11 @@ class SocketIOHelper {
                 }
             } else if let statusNum = data[0] as? String {
                 if statusNum == SocketAckStatus.noAck.rawValue {
+                    if SocketIOHelper.helper.socket.status != .connected {
+                        NotificationCenter.default.post(name: .serverTimeout, object: nil)
+                    } else {
+                        self.searchForMatch()
+                    }
                     print("Emit for searchForMatch Timed out")
                     return
                 }
@@ -63,6 +68,28 @@ class SocketIOHelper {
             
         }
         print("emitted message to Join Queue")
+    }
+    
+    func stopSearchForMatch(){
+        socket.emitWithAck("removeFromQueue").timingOut(after: 3) { data in
+            if let statusNum = data[0] as? Int {
+                if statusNum == 0 {
+                    //All good, left queue
+                    NotificationCenter.default.post(name: .removedFromQueue, object: nil)
+                } else if statusNum == 11 {
+                    //You were never in the queue in the first place...
+                }
+            } else if let statusNum = data[0] as? String {
+                if statusNum == SocketAckStatus.noAck.rawValue {
+                    NotificationCenter.default.post(name: .serverTimeout, object: nil)
+                    print("Emit for searchForMatch Timed out")
+                    return
+                }
+            } else {
+                print("Couldn't typecast callback")
+                return
+            }
+        }
     }
     
     func disconnect() {
@@ -97,11 +124,14 @@ class SocketIOHelper {
     
     func getNumInRoom() -> Int? {
         var numToReturn: Int?
-        socket.emitWithAck("getNumInRoom").timingOut(after: 10) { data in
+        socket.emitWithAck("getNumInRoom").timingOut(after: 3) { data in
             if let numInRoom = data[0] as? Int {
                 numToReturn = numInRoom
             } else if let statusNum = data[0] as? String {
                 if statusNum == SocketAckStatus.noAck.rawValue {
+                    
+                    NotificationCenter.default.post(name: .serverTimeout, object: nil)
+                    
                     print("Emit for searchForMatch Timed out")
                     numToReturn = nil
                 }
@@ -123,7 +153,7 @@ class SocketIOHelper {
     func createGame(gameID: String) {
         var arrayToSend = [Any]()
         arrayToSend.append(gameID)
-        socket.emitWithAck("createGame", with: arrayToSend).timingOut(after: 10) { data in
+        socket.emitWithAck("createGame", with: arrayToSend).timingOut(after: 3) { data in
            if let statusNum = data[0] as? Int {
                 if statusNum == 0 {
                     //All good, game joined
@@ -134,6 +164,7 @@ class SocketIOHelper {
                 }
             } else if let statusNum = data[0] as? String {
                 if statusNum == SocketAckStatus.noAck.rawValue {
+                    NotificationCenter.default.post(name: .serverTimeout, object: nil)
                     print("Couldn't create Game")
                     return
                 }
@@ -149,7 +180,7 @@ class SocketIOHelper {
     func joinFriendGame(gameID: String) {
         var arrayToSend = [Any]()
         arrayToSend.append(gameID)
-        socket.emitWithAck("joinRoom", with: arrayToSend).timingOut(after: 10) { data in
+        socket.emitWithAck("joinRoom", with: arrayToSend).timingOut(after: 3) { data in
             if let statusNum = data[0] as? Int {
                 if statusNum == 0 {
                     //All good, game joined
@@ -157,9 +188,13 @@ class SocketIOHelper {
                 } else if statusNum == 10 {
                     //Game Name Not Found
                     NotificationCenter.default.post(name: .gameNameTaken, object: gameID )
+                } else if statusNum == 11 {
+                    // Already three people in the room
+                    NotificationCenter.default.post(name: .gameNameTaken, object: gameID )
                 }
             } else if let statusNum = data[0] as? String {
                 if statusNum == SocketAckStatus.noAck.rawValue {
+                    NotificationCenter.default.post(name: .serverTimeout, object: nil)
                     print("Couldn't Join Game")
                     return
                 }
@@ -191,6 +226,7 @@ class SocketIOHelper {
         }
         socket.on(clientEvent: .disconnect) {data, ack in
             print("socket Disconnected")
+            NotificationCenter.default.post(name: .disconnectedFromServer, object: nil)
         }
         socket.on(clientEvent: .statusChange) {data, ack in
             // Some status changing logging
@@ -204,6 +240,10 @@ class SocketIOHelper {
                 self.socket.emit("reconnection", with: arrayToSend)
             }
  */
+        }
+        socket.on("playerDisconnected") { data, ack in
+            NotificationCenter.default.post(name: .playerDisconnected, object: nil)
+            
         }
         socket.on("hereIsUniqueId") { data, ack in
             if self.uniqueID != nil {
@@ -441,6 +481,7 @@ extension Notification.Name {
     static let joinedQueue = Notification.Name(rawValue: "joinedQueue")
     static let alreadyInQueue = Notification.Name(rawValue: "alreadyInQueue")
     static let connectedToServer = Notification.Name(rawValue: "connectedToServer")
+    static let disconnectedFromServer = Notification.Name(rawValue: "disconnectedFromServer")
     static let showTextField = Notification.Name(rawValue: "showTextField")
     static let hideTextField = Notification.Name(rawValue: "hideTextField")
     static let returnText =  Notification.Name(rawValue: "returnText")
@@ -448,4 +489,7 @@ extension Notification.Name {
     static let updateFriendRoom = Notification.Name(rawValue: "updateFriendRoom")
     static let playAgain = Notification.Name(rawValue: "playAgain")
     static let checkGameCode = Notification.Name(rawValue: "checkGameCode")
+    static let playerDisconnected = Notification.Name(rawValue: "playerDisconnected")
+    static let serverTimeout = Notification.Name(rawValue: "serverTimeout")
+    static let removedFromQueue = Notification.Name(rawValue: "removedFromQueue")
 }

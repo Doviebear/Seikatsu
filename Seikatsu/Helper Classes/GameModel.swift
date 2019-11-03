@@ -19,6 +19,7 @@ struct GameModel: Codable {
     var playerOneScore = 0
     var playerTwoScore = 0
     var playerThreeScore = 0
+    var rowScores = [[Int]]()
     
     
     init(){
@@ -54,6 +55,10 @@ struct GameModel: Codable {
         token3.Location = Location3
         self.TokensInPlay.append(token3)
         
+        for _ in 0...2 {
+            let arrayOfScores = [0,0,1,1,1,0,0]
+            rowScores.append(arrayOfScores)
+        }
     }
     
     

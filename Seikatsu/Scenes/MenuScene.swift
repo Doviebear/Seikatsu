@@ -19,11 +19,13 @@ class MenuScene: SKScene {
     
     var searchingForGameSprite: SKSpriteNode!
     var notConnectedToServerSprite: SKSpriteNode!
+    var stopSearchingForGameSprite: SKSpriteNode!
     
     var testingSprite: SKSpriteNode!
     
     
     var touchBufferNode: SKSpriteNode!
+    var searchingForMatch = false
     
     
     
@@ -58,12 +60,14 @@ class MenuScene: SKScene {
     
     var isFriendGameCreate: Bool!
     var friendGameString: String!
+    var loadingSprite: SKSpriteNode!
     
     override func sceneDidLoad() {
         NotificationCenter.default.addObserver(self, selector: #selector(joinedQueue(_:)), name: .joinedQueue, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(alreadyInQueue(_:)), name: .alreadyInQueue, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(connectedToServer(_:)), name: .connectedToServer, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(playAgain(_:)), name: .playAgain, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(serverTimedOut(_:)), name: .serverTimeout, object: nil)
         
         
         
@@ -110,6 +114,7 @@ class MenuScene: SKScene {
         NotificationCenter.default.addObserver(self, selector: #selector(textFieldReturned(_:)), name: .returnText, object: nil)
          NotificationCenter.default.addObserver(self, selector: #selector(gameNameTaken(_:)), name: .gameNameTaken, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(updateFriendRoom(_:)), name: .updateFriendRoom, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(removedFromQueue(_:)), name: .removedFromQueue, object: nil)
         
         createGameButton = createOrJoinMenu.childNode(withName: "createGameButton") as? SKSpriteNode
         
@@ -127,7 +132,18 @@ class MenuScene: SKScene {
         gameCodeButton = gameCodeMenu.childNode(withName: "gameCodeButton") as? SKSpriteNode
         startFriendGameButton = gameLobbyContainer.childNode(withName: "startFriendGameButton") as? SKSpriteNode
         waitingForHostLabel = gameLobbyContainer.childNode(withName: "waitingForHostLabel") as? SKLabelNode
+        loadingSprite = self.childNode(withName: "loadingSprite") as? SKSpriteNode
         
+        stopSearchingForGameSprite = self.childNode(withName: "stopSearchingForGameSprite") as? SKSpriteNode
+        
+        /*
+        let rotate = SKAction.rotate(byAngle: -(CGFloat((2.0 * Float.pi) / 12.0)), duration: 0)
+        let wait = SKAction.wait(forDuration: 0.1)
+       
+        let sequence = SKAction.sequence([rotate, wait])
+        let repeatAction = SKAction.repeatForever(sequence)
+        loadingSprite.run(repeatAction, withKey: "spinningAnimation")
+        */
         
     }
     
@@ -212,11 +228,11 @@ class MenuScene: SKScene {
                     SocketIOHelper.helper.searchForMatch()
                     resetScene()
                     return
-                } else if node.name == "playWithFriendsButton" {
+                } else if node.name == "playWithFriendsButton" && !searchingForMatch {
                     playWithFriendsButton.texture = SKTexture(imageNamed: "playWithFriendsButton")
                     playMenu.isHidden = true
                     createOrJoinMenu.isHidden = false
-                } else if node.name == "playSoloButton" {
+                } else if node.name == "playSoloButton" && !searchingForMatch {
                     playSoloButton.texture = SKTexture(imageNamed: "playSoloButton")
                     difficultyMenu.isHidden = false
                     playMenu.isHidden = true
@@ -281,10 +297,13 @@ class MenuScene: SKScene {
                             SocketIOHelper.helper.startFriendGame(nameOfGame: friendGameString)
                         } else {
                             //Not enough players or somehow too many players, but I don't think thats possible
+                            print("Something went wrong, not enough players or too many players in room")
                             return
                         }
                         return
                     }
+                } else if node.name == "stopSearchingForGameSprite" {
+                    stopSearchingForGame()
                 }
                 
             }
@@ -311,6 +330,22 @@ class MenuScene: SKScene {
     }
     func createPlayButtonPopup(){
         playMenu.isHidden = false
+    }
+    
+    func startLoadingAnimation(at posistion: CGPoint){
+        loadingSprite.isHidden = false
+        loadingSprite.position = posistion
+        let rotate = SKAction.rotate(byAngle: -(CGFloat((2.0 * Float.pi) / 12.0)), duration: 0)
+        let wait = SKAction.wait(forDuration: 0.1)
+        
+        let sequence = SKAction.sequence([rotate, wait])
+        let repeatAction = SKAction.repeatForever(sequence)
+        loadingSprite.run(repeatAction, withKey: "spinningAnimation")
+    }
+    
+    func stopLoadingAnimation(){
+        loadingSprite.isHidden = true
+        loadingSprite.removeAction(forKey: "spinningAnimation")
     }
     
    
@@ -377,25 +412,32 @@ class MenuScene: SKScene {
         if isFriendGameCreate {
             playWithFriendsInfoLabel.text = "Game Code Taken, Please Try Again"
         } else {
-            playWithFriendsInfoLabel.text = "Game Code Doesn't Exist, Please Try Again"
+            playWithFriendsInfoLabel.text = "Game Code Doesn't Exist, Try Again"
         }
         
     }
     
     @objc func updateFriendRoom(_ notification: Notification) {
         guard let numInRoom = notification.object as? Int else {
-                   return
-               }
-               if numInRoom == 2 {
-                   player2Indicator.text = "Player 2 Joined"
-                   player2Indicator.fontColor = UIColor(rgb: 0x7CFF55)
-               } else if numInRoom == 3 {
-                   player3Indicator.text = "Player 3 Joined"
-                   player3Indicator.fontColor = UIColor(rgb: 0x7CFF55)
-                   
-                
-                   startFriendGameButton.texture = SKTexture(imageNamed: "playGameButton")
-               }
+            return
+        }
+        if numInRoom == 2 {
+            player2Indicator.text = "Player 2 Joined"
+            player2Indicator.fontColor = UIColor(rgb: 0x7CFF55)
+        } else if numInRoom == 3 {
+            player2Indicator.text = "Player 2 Joined"
+            player2Indicator.fontColor = UIColor(rgb: 0x7CFF55)
+            player3Indicator.text = "Player 3 Joined"
+            player3Indicator.fontColor = UIColor(rgb: 0x7CFF55)
+            
+            
+            startFriendGameButton.texture = SKTexture(imageNamed: "playGameButton")
+        }
+    }
+    
+    @objc func serverTimedOut(_ notification: Notification){
+         notConnectedToServerSprite.run(SKAction.moveBy(x: -(notConnectedToServerSprite.size.width), y: 0, duration: 0.3))
+        SocketIOHelper.helper.manager.reconnect()
     }
     
     func switchToPortrait() {
@@ -492,11 +534,34 @@ class MenuScene: SKScene {
         }
         return fullSKSNameToLoad
     }
+    
+    func stopSearchingForGame(){
+        SocketIOHelper.helper.stopSearchForMatch()
+    }
+    
+    @objc func removedFromQueue(_ notification: Notification){
+        searchingForGameSprite.run(SKAction.moveBy(x: (searchingForGameSprite.size.width), y: 0, duration: 0.3))
+        stopSearchingForGameSprite.run(SKAction.moveBy(x: (searchingForGameSprite.size.width + 20), y: 0, duration: 0.3))
+        
+        searchingForMatch = false
+        
+        playWithFriendsButton.texture = SKTexture(imageNamed: "playWithFriendsButton")
+        playSoloButton.texture = SKTexture(imageNamed: "playSoloButton")
+        
+    }
         
         
     
     @objc func joinedQueue(_ notification: Notification) {
         searchingForGameSprite.run(SKAction.moveBy(x: -(searchingForGameSprite.size.width), y: 0, duration: 0.3))
+        stopSearchingForGameSprite.run(SKAction.moveBy(x: -(searchingForGameSprite.size.width + 20), y: 0, duration: 0.3))
+        
+        playWithFriendsButton.texture = SKTexture(imageNamed: "playWithFriendsButtonInactive")
+        playSoloButton.texture = SKTexture(imageNamed: "playSoloButtonInactive")
+        
+        searchingForMatch = true
+        
+        
     }
     
     @objc func alreadyInQueue(_ notification: Notification) {
