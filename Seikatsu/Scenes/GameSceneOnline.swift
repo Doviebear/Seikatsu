@@ -865,7 +865,6 @@ import GameplayKit
         if plusPointsFromRow < 0 {
             plusPointsFromRow = 0
         }
-            
         pointsFromRowsLabel.text = "+\(plusPointsFromRow)"
         pointsFromRowsLabel.isHidden = false
         

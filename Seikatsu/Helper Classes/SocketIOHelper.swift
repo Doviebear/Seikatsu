@@ -492,4 +492,5 @@ extension Notification.Name {
     static let playerDisconnected = Notification.Name(rawValue: "playerDisconnected")
     static let serverTimeout = Notification.Name(rawValue: "serverTimeout")
     static let removedFromQueue = Notification.Name(rawValue: "removedFromQueue")
+    static let playSoloGameAgain = Notification.Name(rawValue: "playSoloGameAgain")
 }

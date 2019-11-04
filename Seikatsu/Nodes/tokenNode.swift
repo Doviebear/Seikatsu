@@ -121,6 +121,34 @@ class tokenNode: SKNode {
         }
     }
     
+    func isAdjacentToSpace(tokenSpace: TokenSpace) -> Bool {
+        let col = self.tokenData.Location!.col
+        let posistioningNumInCol = self.tokenData.Location!.posistioningNumInCol
+        let col2 = tokenSpace.Location.col
+        let posistioningNumInCol2 = tokenSpace.Location.posistioningNumInCol
+        
+        
+        if col == col2 && posistioningNumInCol + 1 == posistioningNumInCol2 {
+            return true
+        } else if col == col2 && posistioningNumInCol - 1 == posistioningNumInCol2 {
+            return true
+        } else if col - 1 == col2 && posistioningNumInCol == posistioningNumInCol2 {
+            return true
+        } else if col + 1 == col2 && posistioningNumInCol == posistioningNumInCol2 {
+            return true
+        } else if col - 1 == col2 && posistioningNumInCol - 1 == posistioningNumInCol2 && col % 2 == 0 {
+            return true
+        } else if col + 1 == col2 && posistioningNumInCol - 1 == posistioningNumInCol2 && col % 2 == 0 {
+            return true
+        } else if col - 1 == col2 && posistioningNumInCol + 1 == posistioningNumInCol2 && col % 2 == 1 {
+            return true
+        } else if col + 1 == col2 && posistioningNumInCol + 1 == posistioningNumInCol2 && col % 2 == 1 {
+            return true
+        } else {
+            return false
+        }
+    }
+    
     
 }
 

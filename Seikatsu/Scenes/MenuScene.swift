@@ -68,6 +68,7 @@ class MenuScene: SKScene {
         NotificationCenter.default.addObserver(self, selector: #selector(connectedToServer(_:)), name: .connectedToServer, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(playAgain(_:)), name: .playAgain, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(serverTimedOut(_:)), name: .serverTimeout, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(playSoloGameAgain(_:)), name: .playSoloGameAgain, object: nil)
         
         
         
@@ -173,13 +174,13 @@ class MenuScene: SKScene {
                 } else if node.name == "startFriendGameButton" {
                     startFriendGameButton.texture = SKTexture(imageNamed: "playGameButtonPressed")
                     return
-                } else if node.name == "playWithFriendsButton" {
+                } else if node.name == "playWithFriendsButton" && !searchingForMatch{
                     playWithFriendsButton.texture = SKTexture(imageNamed: "playWithFriendsButtonPressed")
                     return
                 } else if node.name == "playOnlineButton" {
                     playOnlineButton.texture = SKTexture(imageNamed: "playOnlineButtonPressed")
                     return
-                } else if node.name == "playSoloButton" {
+                } else if node.name == "playSoloButton" && !searchingForMatch {
                     playSoloButton.texture = SKTexture(imageNamed: "playSoloButtonPressed")
                     return
                 } else if node.name == "createGameButton" {
@@ -537,6 +538,11 @@ class MenuScene: SKScene {
     
     func stopSearchingForGame(){
         SocketIOHelper.helper.stopSearchForMatch()
+    }
+    
+    @objc func playSoloGameAgain(_ notification: Notification){
+        difficultyMenu.isHidden = false
+        playMenu.isHidden = true
     }
     
     @objc func removedFromQueue(_ notification: Notification){

@@ -109,7 +109,7 @@
 		E80DC652230B4C3E00D72E53 /* Scene Files */ = {
 			isa = PBXGroup;
 			children = (
-				E881B65C2358ED1A0041A519 /* GameSceneOnlinePhonePortrait */,
+				E881B65C2358ED1A0041A519 /* singplayerScene */,
 				E86190CA234D081000EAE462 /* MenuScene */,
 				E8A8A514234D07CF00C355DC /* GameScene */,
 			);
@@ -212,7 +212,7 @@
 			path = Seikatsu;
 			sourceTree = "<group>";
 		};
-		E881B65C2358ED1A0041A519 /* GameSceneOnlinePhonePortrait */ = {
+		E881B65C2358ED1A0041A519 /* singplayerScene */ = {
 			isa = PBXGroup;
 			children = (
 				E881B65D2358ED5A0041A519 /* singleplayerPhonePortrait.sks */,
@@ -220,7 +220,7 @@
 				E881B6612358EE2D0041A519 /* singleplayerPadPortrait.sks */,
 				E881B6632358EE460041A519 /* singleplayerPadLand.sks */,
 			);
-			path = GameSceneOnlinePhonePortrait;
+			path = singplayerScene;
 			sourceTree = "<group>";
 		};
 		E8A8A514234D07CF00C355DC /* GameScene */ = {
