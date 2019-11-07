@@ -86,9 +86,9 @@ class MenuScene: SKScene {
         
         
         difficultyMenu = self.childNode(withName: "difficultyContainer") as? SKSpriteNode
-        easyButton = self.childNode(withName: "easyButton") as? SKSpriteNode
-        mediumButton = self.childNode(withName: "mediumButton") as? SKSpriteNode
-        hardButton = self.childNode(withName: "hardButton") as? SKSpriteNode
+        easyButton = difficultyMenu.childNode(withName: "easyButton") as? SKSpriteNode
+        mediumButton = difficultyMenu.childNode(withName: "mediumButton") as? SKSpriteNode
+        hardButton = difficultyMenu.childNode(withName: "hardButton") as? SKSpriteNode
         
          //testingSprite = self.childNode(withName: "testingSprite") as? SKSpriteNode
         //testingSprite.removeFromParent()
@@ -189,6 +189,15 @@ class MenuScene: SKScene {
                 } else if node.name == "joinGameButton" {
                     joinGameButton.texture = SKTexture(imageNamed: "joinGameButtonPressed")
                     return
+                } else if node.name == "easyButton" {
+                    easyButton.texture = SKTexture(imageNamed: "easyButtonPressed")
+                    return
+                } else if node.name == "mediumButton" {
+                    mediumButton.texture = SKTexture(imageNamed: "mediumButtonPressed")
+                    return
+                } else if node.name == "hardButton" {
+                    hardButton.texture = SKTexture(imageNamed: "hardButtonPressed")
+                    return
                 }
             }
         }
@@ -240,12 +249,15 @@ class MenuScene: SKScene {
                     return
                     
                 } else if node.name == "easyButton" {
+                     easyButton.texture = SKTexture(imageNamed: "easyButton")
                     startSingleplayerGame(with: "easy")
                     return
                 } else if node.name == "mediumButton" {
+                     mediumButton.texture = SKTexture(imageNamed: "mediumButton")
                     startSingleplayerGame(with: "medium")
                     return
                 } else if node.name == "hardButton" {
+                    hardButton.texture = SKTexture(imageNamed: "hardButton")
                     startSingleplayerGame(with: "hard")
                     return
                 } else if node.name == "createGameButton" {
