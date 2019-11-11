@@ -126,6 +126,7 @@ class SocketIOHelper {
         var numToReturn: Int?
         socket.emitWithAck("getNumInRoom").timingOut(after: 3) { data in
             if let numInRoom = data[0] as? Int {
+                print("Num in room after emit is \(numInRoom)")
                 numToReturn = numInRoom
             } else if let statusNum = data[0] as? String {
                 if statusNum == SocketAckStatus.noAck.rawValue {
@@ -143,6 +144,7 @@ class SocketIOHelper {
             }
             
         }
+        //print("num To return is \(numToReturn)")
         return numToReturn
     }
     

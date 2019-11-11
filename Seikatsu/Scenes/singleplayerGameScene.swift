@@ -438,7 +438,13 @@ import GameplayKit
                 
                 if gameplayPhase == 0 {
                     if node.name == "tokenNode" {
-                        tokenNodeTouched(node: node, phase: 0)
+                        if let tokenNode = node as? tokenNode {
+                            if tokenNode.tokenData.player == nil {
+                                return
+                            }
+                            tokenNodeTouched(node: node, phase: 0)
+                        }
+                      
                     }
                 } else if gameplayPhase == 1 {
                     if node.name == "tokenSpace" {

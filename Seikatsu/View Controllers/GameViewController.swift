@@ -178,7 +178,7 @@ class GameViewController: UIViewController, UITextFieldDelegate {
     
     @objc func hideTextField(_ notification: Notification) {
         playWithFriendsTextField.isHidden = true
-        
+        playWithFriendsTextField.resignFirstResponder()
     }
     
     @objc func gameNameTaken(_ notification: Notification) {

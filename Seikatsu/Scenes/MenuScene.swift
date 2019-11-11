@@ -48,6 +48,7 @@ class MenuScene: SKScene {
     var playWithFriendsInfoLabel: SKLabelNode!
     var textFieldPlaceholder: SKNode!
     var gameCodeButton: SKSpriteNode!
+    var tryAgainLabel: SKLabelNode!
     
     var gameLobbyContainer: SKSpriteNode!
     var player1Indicator: SKLabelNode!
@@ -61,6 +62,9 @@ class MenuScene: SKScene {
     var isFriendGameCreate: Bool!
     var friendGameString: String!
     var loadingSprite: SKSpriteNode!
+    
+    var currentlyConnected = true
+    var backgroundMusic: SKAudioNode!
     
     override func sceneDidLoad() {
         NotificationCenter.default.addObserver(self, selector: #selector(joinedQueue(_:)), name: .joinedQueue, object: nil)
@@ -96,10 +100,12 @@ class MenuScene: SKScene {
         createOrJoinMenu = self.childNode(withName: "playWithFriendsContainer") as? SKSpriteNode
         gameLobbyContainer = self.childNode(withName: "gameLobbyContainer") as? SKSpriteNode
         gameCodeLabel = gameLobbyContainer.childNode(withName: "gameCodeLabel") as? SKLabelNode
+        tryAgainLabel = gameCodeMenu.childNode(withName: "tryAgainLabel") as? SKLabelNode
 
         //print("status is: \(SocketIOHelper.helper.socket.status)")
         if SocketIOHelper.helper.socket.status != .connected {
             notConnectedToServerSprite.run(SKAction.moveBy(x: -(notConnectedToServerSprite.size.width), y: 0, duration: 0.3))
+            currentlyConnected = false
         }
         
         touchBufferNode = SKSpriteNode(color:SKColor(red:0.0,green:0.0,blue:0.0,alpha:0.5),size:self.size)
@@ -145,9 +151,21 @@ class MenuScene: SKScene {
         let repeatAction = SKAction.repeatForever(sequence)
         loadingSprite.run(repeatAction, withKey: "spinningAnimation")
         */
+        adjustGraphics()
         
     }
-    
+    /*
+    override func didMove(to view: SKView) {
+       if let bg = SKAudioNode(fileNamed: "upbeatJingleLowQuality") {
+                  addChild(bg)
+                  backgroundMusic = bg
+                  print("Found music")
+              } else {
+                  print("Couldn't find music")
+              }
+       
+    }
+    */
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         let touch = touches.first
         if let location = touch?.location(in: self) {
@@ -218,7 +236,7 @@ class MenuScene: SKScene {
                 }
                 
                 
-                if node.name == "playButton" && SocketIOHelper.helper.socket.status == .connected {
+                if node.name == "playButton"  {
                     playButton.texture = SKTexture(imageNamed: "playGameButton")
                     touchBufferNode.isHidden = false
                     createPlayButtonPopup()
@@ -233,7 +251,7 @@ class MenuScene: SKScene {
                     return
                 }
                 
-                if node.name == "playOnlineButton" {
+                if node.name == "playOnlineButton" && SocketIOHelper.helper.socket.status == .connected {
                     playOnlineButton.texture = SKTexture(imageNamed: "playOnlineButton")
                     SocketIOHelper.helper.searchForMatch()
                     resetScene()
@@ -305,7 +323,11 @@ class MenuScene: SKScene {
                     return
                 } else if node.name == "startFriendGameButton" {
                     startFriendGameButton.texture = SKTexture(imageNamed: "playGameButton" )
+                    SocketIOHelper.helper.startFriendGame(nameOfGame: friendGameString)
+                    return
+                    /*
                     if let numInRoom = SocketIOHelper.helper.getNumInRoom() {
+                        print("numInRoom is \(numInRoom)")
                         if numInRoom == 3 {
                             SocketIOHelper.helper.startFriendGame(nameOfGame: friendGameString)
                         } else {
@@ -315,6 +337,7 @@ class MenuScene: SKScene {
                         }
                         return
                     }
+                     */
                 } else if node.name == "stopSearchingForGameSprite" {
                     stopSearchingForGame()
                 }
@@ -371,6 +394,7 @@ class MenuScene: SKScene {
         createOrJoinMenu.isHidden = true
         gameLobbyContainer.isHidden = true
         NotificationCenter.default.post(name: .hideTextField, object: nil)
+        tryAgainLabel.isHidden = true
     }
     
     @objc func playAgain(_ notification: Notification){
@@ -406,6 +430,7 @@ class MenuScene: SKScene {
         }
         self.friendGameString = gameString
         
+        tryAgainLabel.isHidden = true
         gameCodeMenu.isHidden = true
         gameLobbyContainer.isHidden = false
         gameCodeLabel.text = "Game Code: \(gameString)"
@@ -423,10 +448,11 @@ class MenuScene: SKScene {
     
     @objc func gameNameTaken(_ notification: Notification) {
         if isFriendGameCreate {
-            playWithFriendsInfoLabel.text = "Game Code Taken, Please Try Again"
+            playWithFriendsInfoLabel.text = "Game Code Taken"
         } else {
-            playWithFriendsInfoLabel.text = "Game Code Doesn't Exist, Try Again"
+            playWithFriendsInfoLabel.text = "Game Code Doesn't Exist"
         }
+        tryAgainLabel.isHidden = false
         
     }
     
@@ -449,7 +475,10 @@ class MenuScene: SKScene {
     }
     
     @objc func serverTimedOut(_ notification: Notification){
+        if currentlyConnected {
          notConnectedToServerSprite.run(SKAction.moveBy(x: -(notConnectedToServerSprite.size.width), y: 0, duration: 0.3))
+        }
+        currentlyConnected = false
         SocketIOHelper.helper.manager.reconnect()
     }
     
@@ -473,6 +502,16 @@ class MenuScene: SKScene {
             searchingForGameSprite.position = CGPoint(x: 1880, y: 160)
         }
          */
+    }
+    
+    func adjustGraphics(){
+        if !UIDevice.current.hasNotch {
+            notConnectedToServerSprite.position.y -= 170
+            searchingForGameSprite.position.y += 170
+            stopSearchingForGameSprite.position.y += 170
+            print("adjusted Graphics for Non-Notch deviced ")
+        }
+        print("Adjusted no Graphics")
     }
    
     
@@ -586,7 +625,10 @@ class MenuScene: SKScene {
         
     }
     @objc func connectedToServer( _ notification: Notification) {
-        notConnectedToServerSprite.run(SKAction.moveBy(x: notConnectedToServerSprite.size.width, y: 0, duration: 0.3))
+        if !currentlyConnected {
+            notConnectedToServerSprite.run(SKAction.moveBy(x: notConnectedToServerSprite.size.width, y: 0, duration: 0.3))
+        }
+        currentlyConnected = true
     }
 }
 
@@ -595,3 +637,9 @@ extension SKScene {
     
 }
 */
+extension UIDevice {
+    var hasNotch: Bool {
+        let bottom = UIApplication.shared.keyWindow?.safeAreaInsets.bottom ?? 0
+        return bottom > 0
+    }
+}
