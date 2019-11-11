@@ -1,9 +1,13 @@
 PODS:
+  - Sentry (4.4.1):
+    - Sentry/Core (= 4.4.1)
+  - Sentry/Core (4.4.1)
   - Socket.IO-Client-Swift (15.2.0):
     - Starscream (~> 3.1)
   - Starscream (3.1.1)
 
 DEPENDENCIES:
+  - Sentry (from `https://github.com/getsentry/sentry-cocoa.git`, tag `4.4.1`)
   - Socket.IO-Client-Swift
 
 SPEC REPOS:
@@ -11,10 +15,21 @@ SPEC REPOS:
     - Socket.IO-Client-Swift
     - Starscream
 
+EXTERNAL SOURCES:
+  Sentry:
+    :git: https://github.com/getsentry/sentry-cocoa.git
+    :tag: 4.4.1
+
+CHECKOUT OPTIONS:
+  Sentry:
+    :git: https://github.com/getsentry/sentry-cocoa.git
+    :tag: 4.4.1
+
 SPEC CHECKSUMS:
+  Sentry: 5d312a04e369154aeac616214f4dfc3cbcc8b296
   Socket.IO-Client-Swift: 1e3e3a1f09f3312a167f0d781eb2f383d477357c
   Starscream: 4bb2f9942274833f7b4d296a55504dcfc7edb7b0
 
-PODFILE CHECKSUM: 98318411d2773ba87efbb72f282685c16fa55ba4
+PODFILE CHECKSUM: 0d40ff961310ac9c1ba055c7f4f718710b3372cf
 
 COCOAPODS: 1.8.4

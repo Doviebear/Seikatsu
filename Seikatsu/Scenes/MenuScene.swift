@@ -8,6 +8,7 @@
 
 import UIKit
 import SpriteKit
+import Sentry
 
 
 class MenuScene: SKScene {

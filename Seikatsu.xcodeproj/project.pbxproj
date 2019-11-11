@@ -246,6 +246,7 @@
 				E86F2C1322DCBBAE0069AC1A /* Frameworks */,
 				E86F2C1422DCBBAE0069AC1A /* Resources */,
 				24BE5B659699AD41EC95FCB7 /* [CP] Embed Pods Frameworks */,
+				E89EADEC2379012E00F941E6 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -359,6 +360,24 @@
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
+		};
+		E89EADEC2379012E00F941E6 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"$(SRCROOT)/${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Resources/DWARF/${TARGET_NAME}",
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\nif which sentry-cli >/dev/null; then\nexport SENTRY_ORG=dov-shalev\nexport SENTRY_PROJECT=dov-shalev\nexport SENTRY_AUTH_TOKEN=1bd59de128c4424c8c4340f0437aa3ef44c3e831241f4ac18f87ea3af267bd71\nERROR=$(sentry-cli upload-dif \"$DWARF_DSYM_FOLDER_PATH\" 2>&1 >/dev/null)\nif [ ! $? -eq 0 ]; then\necho \"warning: sentry-cli - $ERROR\"\nfi\nelse\necho \"warning: sentry-cli not installed, download from https://github.com/getsentry/sentry-cli/releases\"\nfi\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -529,6 +548,7 @@
 				CODE_SIGN_ENTITLEMENTS = Seikatsu/Seikatsu.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 4;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = 85HTDRNFLR;
 				INFOPLIST_FILE = Seikatsu/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
