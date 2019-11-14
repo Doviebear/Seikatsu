@@ -35,6 +35,13 @@
 		E881B6602358EE1C0041A519 /* singleplayerPhoneLand.sks in Resources */ = {isa = PBXBuildFile; fileRef = E881B65F2358EE1C0041A519 /* singleplayerPhoneLand.sks */; };
 		E881B6622358EE2D0041A519 /* singleplayerPadPortrait.sks in Resources */ = {isa = PBXBuildFile; fileRef = E881B6612358EE2D0041A519 /* singleplayerPadPortrait.sks */; };
 		E881B6642358EE460041A519 /* singleplayerPadLand.sks in Resources */ = {isa = PBXBuildFile; fileRef = E881B6632358EE460041A519 /* singleplayerPadLand.sks */; };
+		E89EADEF237AF37C00F941E6 /* upbeatJingleLowQuality.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = E89EADEE237AF37C00F941E6 /* upbeatJingleLowQuality.mp3 */; };
+		E89EADF2237B98E200F941E6 /* title1.wav in Resources */ = {isa = PBXBuildFile; fileRef = E89EADF0237B98E000F941E6 /* title1.wav */; };
+		E89EADF3237B98E200F941E6 /* gameplay1.wav in Resources */ = {isa = PBXBuildFile; fileRef = E89EADF1237B98E200F941E6 /* gameplay1.wav */; };
+		E89EADF5237CA7B000F941E6 /* singleplayerNoNotchPortrait.sks in Resources */ = {isa = PBXBuildFile; fileRef = E89EADF4237CA7B000F941E6 /* singleplayerNoNotchPortrait.sks */; };
+		E89EADF7237CA7EB00F941E6 /* singleplayerNoNotchLand.sks in Resources */ = {isa = PBXBuildFile; fileRef = E89EADF6237CA7EB00F941E6 /* singleplayerNoNotchLand.sks */; };
+		E89EADF9237CAE1F00F941E6 /* GameSceneOnlineNoNotchPortrait.sks in Resources */ = {isa = PBXBuildFile; fileRef = E89EADF8237CAE1F00F941E6 /* GameSceneOnlineNoNotchPortrait.sks */; };
+		E89EADFB237CAE3500F941E6 /* GameSceneOnlineNoNotchLand.sks in Resources */ = {isa = PBXBuildFile; fileRef = E89EADFA237CAE3500F941E6 /* GameSceneOnlineNoNotchLand.sks */; };
 		E8DB2C2E22E8D92100A6A212 /* MenuScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8DB2C2D22E8D92100A6A212 /* MenuScene.swift */; };
 		FFB926427AC41A8E1C01A580 /* Pods_Seikatsu.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D9A9399E779A376C0DB6F184 /* Pods_Seikatsu.framework */; };
 /* End PBXBuildFile section */
@@ -73,6 +80,13 @@
 		E881B65F2358EE1C0041A519 /* singleplayerPhoneLand.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = singleplayerPhoneLand.sks; sourceTree = "<group>"; };
 		E881B6612358EE2D0041A519 /* singleplayerPadPortrait.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = singleplayerPadPortrait.sks; sourceTree = "<group>"; };
 		E881B6632358EE460041A519 /* singleplayerPadLand.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = singleplayerPadLand.sks; sourceTree = "<group>"; };
+		E89EADEE237AF37C00F941E6 /* upbeatJingleLowQuality.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = upbeatJingleLowQuality.mp3; sourceTree = "<group>"; };
+		E89EADF0237B98E000F941E6 /* title1.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = title1.wav; sourceTree = "<group>"; };
+		E89EADF1237B98E200F941E6 /* gameplay1.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = gameplay1.wav; sourceTree = "<group>"; };
+		E89EADF4237CA7B000F941E6 /* singleplayerNoNotchPortrait.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = singleplayerNoNotchPortrait.sks; sourceTree = "<group>"; };
+		E89EADF6237CA7EB00F941E6 /* singleplayerNoNotchLand.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = singleplayerNoNotchLand.sks; sourceTree = "<group>"; };
+		E89EADF8237CAE1F00F941E6 /* GameSceneOnlineNoNotchPortrait.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = GameSceneOnlineNoNotchPortrait.sks; sourceTree = "<group>"; };
+		E89EADFA237CAE3500F941E6 /* GameSceneOnlineNoNotchLand.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = GameSceneOnlineNoNotchLand.sks; sourceTree = "<group>"; };
 		E8CFCF81231865600014A254 /* Seikatsu.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Seikatsu.entitlements; sourceTree = "<group>"; };
 		E8DB2C2D22E8D92100A6A212 /* MenuScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuScene.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -196,6 +210,7 @@
 		E86F2C1822DCBBAE0069AC1A /* Seikatsu */ = {
 			isa = PBXGroup;
 			children = (
+				E89EADED237AF34C00F941E6 /* Music */,
 				E827B6AB235771DF00B151F6 /* Fonts */,
 				E8CFCF81231865600014A254 /* Seikatsu.entitlements */,
 				E86F2C1922DCBBAE0069AC1A /* AppDelegate.swift */,
@@ -219,8 +234,20 @@
 				E881B65F2358EE1C0041A519 /* singleplayerPhoneLand.sks */,
 				E881B6612358EE2D0041A519 /* singleplayerPadPortrait.sks */,
 				E881B6632358EE460041A519 /* singleplayerPadLand.sks */,
+				E89EADF4237CA7B000F941E6 /* singleplayerNoNotchPortrait.sks */,
+				E89EADF6237CA7EB00F941E6 /* singleplayerNoNotchLand.sks */,
 			);
 			path = singplayerScene;
+			sourceTree = "<group>";
+		};
+		E89EADED237AF34C00F941E6 /* Music */ = {
+			isa = PBXGroup;
+			children = (
+				E89EADEE237AF37C00F941E6 /* upbeatJingleLowQuality.mp3 */,
+				E89EADF1237B98E200F941E6 /* gameplay1.wav */,
+				E89EADF0237B98E000F941E6 /* title1.wav */,
+			);
+			path = Music;
 			sourceTree = "<group>";
 		};
 		E8A8A514234D07CF00C355DC /* GameScene */ = {
@@ -230,6 +257,8 @@
 				E80DC655230C69E500D72E53 /* GameSceneOnlinePhoneLand.sks */,
 				E80DC657230C69F600D72E53 /* GameSceneOnlinePadPortrait.sks */,
 				E80DC653230B4C9000D72E53 /* GameSceneOnlinePadLand.sks */,
+				E89EADF8237CAE1F00F941E6 /* GameSceneOnlineNoNotchPortrait.sks */,
+				E89EADFA237CAE3500F941E6 /* GameSceneOnlineNoNotchLand.sks */,
 			);
 			path = GameScene;
 			sourceTree = "<group>";
@@ -304,6 +333,9 @@
 				E877B62C2304509600DA2AA6 /* GameSceneOnlinePhonePortrait.sks in Resources */,
 				E84E2C6223171E34004EF2DF /* MenuScenePadPortrait.sks in Resources */,
 				E84E2C5E23171C5F004EF2DF /* MenuScenePhoneLand.sks in Resources */,
+				E89EADEF237AF37C00F941E6 /* upbeatJingleLowQuality.mp3 in Resources */,
+				E89EADF2237B98E200F941E6 /* title1.wav in Resources */,
+				E89EADF9237CAE1F00F941E6 /* GameSceneOnlineNoNotchPortrait.sks in Resources */,
 				E881B6642358EE460041A519 /* singleplayerPadLand.sks in Resources */,
 				E84E2C6423171F1F004EF2DF /* MenuScenePadLand.sks in Resources */,
 				E80DC656230C69E500D72E53 /* GameSceneOnlinePhoneLand.sks in Resources */,
@@ -311,8 +343,12 @@
 				E80DC654230B4C9000D72E53 /* GameSceneOnlinePadLand.sks in Resources */,
 				E881B6602358EE1C0041A519 /* singleplayerPhoneLand.sks in Resources */,
 				E86F2C2522DCBBAE0069AC1A /* Main.storyboard in Resources */,
+				E89EADF3237B98E200F941E6 /* gameplay1.wav in Resources */,
+				E89EADFB237CAE3500F941E6 /* GameSceneOnlineNoNotchLand.sks in Resources */,
 				E827B6AD2357721600B151F6 /* MyriadPro-Black.otf in Resources */,
+				E89EADF5237CA7B000F941E6 /* singleplayerNoNotchPortrait.sks in Resources */,
 				E881B65E2358ED5A0041A519 /* singleplayerPhonePortrait.sks in Resources */,
+				E89EADF7237CA7EB00F941E6 /* singleplayerNoNotchLand.sks in Resources */,
 				E881B6622358EE2D0041A519 /* singleplayerPadPortrait.sks in Resources */,
 				E86F2C2722DCBBB30069AC1A /* Assets.xcassets in Resources */,
 				E86F2C2A22DCBBB30069AC1A /* LaunchScreen.storyboard in Resources */,
@@ -377,7 +413,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\nif which sentry-cli >/dev/null; then\nexport SENTRY_ORG=dov-shalev\nexport SENTRY_PROJECT=dov-shalev\nexport SENTRY_AUTH_TOKEN=1bd59de128c4424c8c4340f0437aa3ef44c3e831241f4ac18f87ea3af267bd71\nERROR=$(sentry-cli upload-dif \"$DWARF_DSYM_FOLDER_PATH\" 2>&1 >/dev/null)\nif [ ! $? -eq 0 ]; then\necho \"warning: sentry-cli - $ERROR\"\nfi\nelse\necho \"warning: sentry-cli not installed, download from https://github.com/getsentry/sentry-cli/releases\"\nfi\n";
+			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\nif which sentry-cli >/dev/null; then\nexport SENTRY_ORG=dov-shalev\nexport SENTRY_PROJECT=seikatsu_frontend\nexport SENTRY_AUTH_TOKEN=1bd59de128c4424c8c4340f0437aa3ef44c3e831241f4ac18f87ea3af267bd71\nERROR=$(sentry-cli upload-dif \"$DWARF_DSYM_FOLDER_PATH\" 2>&1 >/dev/null)\nif [ ! $? -eq 0 ]; then\necho \"warning: sentry-cli - $ERROR\"\nfi\nelse\necho \"warning: sentry-cli not installed, download from https://github.com/getsentry/sentry-cli/releases\"\nfi\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -547,7 +583,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = Seikatsu/Seikatsu.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 4;
+				CURRENT_PROJECT_VERSION = 5;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = 85HTDRNFLR;
 				INFOPLIST_FILE = Seikatsu/Info.plist;
@@ -570,7 +606,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = Seikatsu/Seikatsu.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 4;
+				CURRENT_PROJECT_VERSION = 5;
 				DEVELOPMENT_TEAM = 85HTDRNFLR;
 				INFOPLIST_FILE = Seikatsu/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (

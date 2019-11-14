@@ -13,10 +13,12 @@ import Sentry
 
 class MenuScene: SKScene {
     
-    var title: SKLabelNode!
+    var title: SKSpriteNode!
     var playButton: SKSpriteNode!
     var howToPlayButton: SKSpriteNode!
     var settingsButton: SKSpriteNode!
+    var background: SKSpriteNode!
+    var screenArt: SKSpriteNode!
     
     var searchingForGameSprite: SKSpriteNode!
     var notConnectedToServerSprite: SKSpriteNode!
@@ -77,12 +79,14 @@ class MenuScene: SKScene {
         
         
         
-        title = self.childNode(withName: "title") as? SKLabelNode
+        title = self.childNode(withName: "title") as? SKSpriteNode
         playButton = self.childNode(withName: "playButton") as? SKSpriteNode
         howToPlayButton = self.childNode(withName: "howToPlayButton") as? SKSpriteNode
         settingsButton = self.childNode(withName: "settingsButton") as? SKSpriteNode
         searchingForGameSprite = self.childNode(withName: "searchingForGameSprite") as? SKSpriteNode
         notConnectedToServerSprite = self.childNode(withName: "notConnectedToServer") as? SKSpriteNode
+        background = self.childNode(withName: "background") as? SKSpriteNode
+        screenArt = self.childNode(withName: "screenArt") as? SKSpriteNode
         
         playMenu = self.childNode(withName: "playMenu") as? SKSpriteNode
         playOnlineButton = playMenu.childNode(withName: "playOnlineButton") as? SKSpriteNode
@@ -154,17 +158,24 @@ class MenuScene: SKScene {
         */
         adjustGraphics()
         
+        
+        ///Adding Music
+        
+        
+        if let musicURL = Bundle.main.url(forResource: "title1", withExtension: "wav") {
+            let bg = SKAudioNode(url: musicURL)
+            addChild(bg)
+//            backgroundMusic = bg
+            print("Found music")
+        } else {
+            print("Couldn't find music")
+        }
+        
+        
     }
     /*
     override func didMove(to view: SKView) {
-       if let bg = SKAudioNode(fileNamed: "upbeatJingleLowQuality") {
-                  addChild(bg)
-                  backgroundMusic = bg
-                  print("Found music")
-              } else {
-                  print("Couldn't find music")
-              }
-       
+      
     }
     */
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -402,28 +413,7 @@ class MenuScene: SKScene {
         SocketIOHelper.helper.searchForMatch()
     }
     
-    func switchToLandscape() {
-        /*
-        if UIDevice.current.userInterfaceIdiom == .phone {
-            self.size = CGSize(width: 2436, height: 1125 )
-            
-            title.position = CGPoint(x: 1218, y: 795)
-            playButton.position = CGPoint(x: 1218, y: 570)
-            howToPlayButton.position = CGPoint(x: 958, y: 265)
-            settingsButton.position = CGPoint(x: 1478, y: 265)
-            searchingForGameSprite.position = CGPoint(x: 2780, y: 105)
-        } else if UIDevice.current.userInterfaceIdiom == .pad {
-            self.size = CGSize(width: 2048, height: 1536 )
-            
-            title.position = CGPoint(x: 1024, y: 1172)
-            playButton.position = CGPoint(x: 1024, y: 835)
-            howToPlayButton.position = CGPoint(x: 764, y: 535)
-            settingsButton.position = CGPoint(x: 1284, y: 535)
-            searchingForGameSprite.position = CGPoint(x: 2392, y: 165)
-            
-        }
-        */
-    }
+   
     
     @objc func textFieldReturned(_ notification: Notification) {
         guard let gameString = notification.object as? String else {
@@ -484,29 +474,277 @@ class MenuScene: SKScene {
     }
     
     func switchToPortrait() {
-        /*
+        
         if UIDevice.current.userInterfaceIdiom == .phone {
+            
+            if let sceneWithPositions = MenuScene(fileNamed: "MenuScenePhonePortrait") {
+                self.size = CGSize(width: 1125, height: 2436 )
+                
+                title.position = sceneWithPositions.title.position
+                title.xScale = sceneWithPositions.title.xScale
+                title.yScale = sceneWithPositions.title.yScale
+                
+                playButton.position = sceneWithPositions.playButton.position
+                howToPlayButton.position = sceneWithPositions.howToPlayButton.position
+                settingsButton.position = sceneWithPositions.settingsButton.position
+                
+                searchingForGameSprite.position = sceneWithPositions.searchingForGameSprite.position
+                stopSearchingForGameSprite.position = sceneWithPositions.stopSearchingForGameSprite.position
+                notConnectedToServerSprite.position = sceneWithPositions.notConnectedToServerSprite.position
+                
+                background.position = sceneWithPositions.background.position
+                background.size = sceneWithPositions.background.size
+                
+                screenArt.texture = sceneWithPositions.screenArt.texture
+                
+               
+                screenArt.xScale = sceneWithPositions.screenArt.xScale
+                
+                screenArt.yScale = sceneWithPositions.screenArt.yScale
+                
+                screenArt.size = sceneWithPositions.screenArt.size
+                screenArt.position = sceneWithPositions.screenArt.position
+               
+                
+                /*
+                 print("Portrait: Art width: \(screenArt.size.width), Art Height: \(screenArt.size.height)")
+                print("Portrait: Art xScale: \(screenArt.xScale)")
+                print("Portrait: Art yScale: \(screenArt.yScale)")
+                 print("Portrait: Art X: \(screenArt.position.x), Art Y: \(screenArt.position.y)")
+                 */
+                
+                playMenu.position = sceneWithPositions.playMenu.position
+                difficultyMenu.position = sceneWithPositions.difficultyMenu.position
+                createOrJoinMenu.position = sceneWithPositions.createOrJoinMenu.position
+                gameCodeMenu.position = sceneWithPositions.gameCodeMenu.position
+                gameLobbyContainer.position = sceneWithPositions.gameLobbyContainer.position
+                
+                textFieldPlaceholder.position = sceneWithPositions.textFieldPlaceholder.position
+                
+                
+                
+                
+            }
+            
+            
+            
+            
+            
+            /*
+            let centerOfContainers = CGPoint(x: 562.5, y: 1280)
             self.size = CGSize(width: 1125, height: 2436 )
             
-            title.position = CGPoint(x: 562.5, y: 1750)
-            playButton.position = CGPoint(x: 562.5, y: 1400)
-            howToPlayButton.position = CGPoint(x: 302.5, y: 1085)
-            settingsButton.position = CGPoint(x: 822.5, y: 1085)
-            searchingForGameSprite.position = CGPoint(x: 1469, y: 180)
-        } else if UIDevice.current.userInterfaceIdiom == .pad {
-             self.size = CGSize(width: 1536, height: 2048 )
+            title.position = CGPoint(x: 562.5, y: 1890)
+            title.xScale = 1
+            title.yScale = 1
+            playButton.position = CGPoint(x: 562.5, y: 1425)
+            howToPlayButton.position = CGPoint(x: 282.5, y: 1150)
+            settingsButton.position = CGPoint(x: 842.5, y: 1150)
             
-            title.position = CGPoint(x: 768, y: 1500)
-            playButton.position = CGPoint(x: 768, y: 1060)
-            howToPlayButton.position = CGPoint(x: 508, y: 765)
-            settingsButton.position = CGPoint(x: 1028, y: 765)
+            searchingForGameSprite.position = CGPoint(x: 1469, y: 180)
+            stopSearchingForGameSprite.position = CGPoint(x: 1181.333, y: 260)
+            notConnectedToServerSprite.position = CGPoint(x: 1545.5, y: 2222)
+            
+            background.position = CGPoint(x: 562.5, y: 1218)
+            background.size = self.size
+            
+            //screenArt.texture = SKTexture(imageNamed: "Illustration")
+            screenArt.size = CGSize(width: 1125, height: 1066)
+            screenArt.xScale = 1
+            screenArt.yScale = 1
+            screenArt.position = CGPoint(x: 562.5, y: 533)
+            
+           
+            
+            playMenu.position = centerOfContainers
+            difficultyMenu.position = centerOfContainers
+            createOrJoinMenu.position = centerOfContainers
+            gameCodeMenu.position = centerOfContainers
+            gameLobbyContainer.position = centerOfContainers
+            
+            textFieldPlaceholder.position = CGPoint(x: 562.5, y: 1360)
+            
+ */
+            
+        } else if UIDevice.current.userInterfaceIdiom == .pad {
+            
+            /*
+            let centerOfContainers = CGPoint(x: 768, y: 1024)
+            self.size = CGSize(width: 1536, height: 2048 )
+            
+            title.position = CGPoint(x: 768, y: 1801)
+            title.xScale = 1
+            title.yScale = 1
+            playButton.position = CGPoint(x: 768, y: 1435)
+            playButton.xScale = 1
+            playButton.yScale = 1
+            howToPlayButton.position = CGPoint(x: 268, y: 1435)
+            howToPlayButton.xScale = 1
+            howToPlayButton.yScale = 1
+            
+            settingsButton.position = CGPoint(x: 1268, y: 1435)
+            settingsButton.xScale = 1
+            settingsButton.yScale = 1
+            
             searchingForGameSprite.position = CGPoint(x: 1880, y: 160)
+            stopSearchingForGameSprite.position = CGPoint(x: 1625.843, y: 240)
+            notConnectedToServerSprite.position = CGPoint(x: 1956.5, y: 1880)
+            
+            background.position = centerOfContainers
+            background.size = self.size
+            screenArt.position = CGPoint(x: 1536, y: 1397.261)
+            screenArt.xScale = 1.365
+            screenArt.yScale = 1.311
+            
+            playMenu.position = centerOfContainers
+            difficultyMenu.position = centerOfContainers
+            createOrJoinMenu.position = centerOfContainers
+            gameCodeMenu.position = centerOfContainers
+            gameLobbyContainer.position = centerOfContainers
+            
+            textFieldPlaceholder.position = CGPoint(x: 768, y: 1024)
+            */
+            
         }
-         */
+        
+    }
+    
+    func switchToLandscape() {
+        
+        if UIDevice.current.userInterfaceIdiom == .phone {
+            if let sceneWithPositions = MenuScene(fileNamed: "MenuScenePhoneLand") {
+                self.size = CGSize(width: 2436, height: 1125 )
+                
+                title.position = sceneWithPositions.title.position
+                title.xScale = sceneWithPositions.title.xScale
+                title.yScale = sceneWithPositions.title.yScale
+                
+                playButton.position = sceneWithPositions.playButton.position
+                howToPlayButton.position = sceneWithPositions.howToPlayButton.position
+                settingsButton.position = sceneWithPositions.settingsButton.position
+                
+                searchingForGameSprite.position = sceneWithPositions.searchingForGameSprite.position
+                stopSearchingForGameSprite.position = sceneWithPositions.stopSearchingForGameSprite.position
+                notConnectedToServerSprite.position = sceneWithPositions.notConnectedToServerSprite.position
+                
+                background.position = sceneWithPositions.background.position
+                background.size = sceneWithPositions.background.size
+                
+                screenArt.texture = sceneWithPositions.screenArt.texture
+
+
+                screenArt.xScale = sceneWithPositions.screenArt.xScale
+               
+                screenArt.yScale = sceneWithPositions.screenArt.yScale
+                screenArt.size = sceneWithPositions.screenArt.size
+                screenArt.position = sceneWithPositions.screenArt.position
+                
+                
+                /*
+                print("Land: Art width: \(screenArt.size.width), Art Height: \(screenArt.size.height)")
+                 print("Land: Art xScale: \(screenArt.xScale)")
+                print("Land: Art yScale: \(screenArt.yScale)")
+                print("Land: Art X: \(screenArt.position.x), Art Y: \(screenArt.position.y)")
+                */
+                
+                
+                playMenu.position = sceneWithPositions.playMenu.position
+                difficultyMenu.position = sceneWithPositions.difficultyMenu.position
+                createOrJoinMenu.position = sceneWithPositions.createOrJoinMenu.position
+                gameCodeMenu.position = sceneWithPositions.gameCodeMenu.position
+                gameLobbyContainer.position = sceneWithPositions.gameLobbyContainer.position
+                
+                textFieldPlaceholder.position = sceneWithPositions.textFieldPlaceholder.position
+                
+                
+                
+                
+            }
+            
+            
+            
+            
+            /*
+            let centerOfContainers = CGPoint(x: 1218, y: 562.5)
+            self.size = CGSize(width: 2436, height: 1125 )
+            
+            title.position = CGPoint(x: 1218, y: 927.4)
+            title.xScale = 0.8
+            title.yScale = 0.8
+            playButton.position = CGPoint(x: 1218, y: 620)
+            howToPlayButton.position = CGPoint(x: 2018, y: 620)
+            settingsButton.position = CGPoint(x: 418, y: 620)
+            
+            searchingForGameSprite.position = CGPoint(x: 2780, y: 105)
+            notConnectedToServerSprite.position = CGPoint(x: 2856.5, y: 1000)
+            stopSearchingForGameSprite.position = CGPoint(x: 2524.333, y: 185)
+            
+            background.position = centerOfContainers
+            background.size = self.size
+            
+            //screenArt.texture = SKTexture(imageNamed: "landscapeIllustration")
+            screenArt.position = CGPoint(x: 1218, y: 265.2)
+            screenArt.size = CGSize(width: 1973.4, height: 530.4)
+            screenArt.xScale = 1.3
+            screenArt.yScale = 1.3
+            
+            playMenu.position = centerOfContainers
+            difficultyMenu.position = centerOfContainers
+            createOrJoinMenu.position = centerOfContainers
+            gameCodeMenu.position = centerOfContainers
+            gameLobbyContainer.position = centerOfContainers
+            
+            textFieldPlaceholder.position = CGPoint(x: 1218, y: 562.5)
+            
+ */
+            
+        } else if UIDevice.current.userInterfaceIdiom == .pad {
+            /*
+            let centerOfContainers = CGPoint(x: 1024, y: 768)
+            self.size = CGSize(width: 2048, height: 1536 )
+            
+            
+            
+            title.position = CGPoint(x: 1024, y: 1313.7)
+            title.yScale = 0.9
+            title.xScale = 0.9
+            
+            playButton.position = CGPoint(x: 1024, y: 935)
+            playButton.xScale = 1.4
+            playButton.yScale = 1.4
+            howToPlayButton.position = CGPoint(x: 324, y: 935)
+            howToPlayButton.xScale = 1.4
+            howToPlayButton.yScale = 1.4
+            settingsButton.position = CGPoint(x: 1724, y: 935)
+            settingsButton.xScale = 1.4
+            settingsButton.yScale = 1.4
+            
+            searchingForGameSprite.position = CGPoint(x: 2392, y: 165)
+            notConnectedToServerSprite.position = CGPoint(x: 2468.5, y: 1420)
+            stopSearchingForGameSprite.position = CGPoint(x: 2136.531, y: 245)
+            
+            background.position = centerOfContainers
+            background.size = self.size
+            background.xScale = 1.824
+            background.yScale = 0.642
+            screenArt.position = CGPoint(x: 1021.295, y: 428.534)
+            
+            
+            
+            playMenu.position = centerOfContainers
+            difficultyMenu.position = centerOfContainers
+            createOrJoinMenu.position = centerOfContainers
+            gameCodeMenu.position = centerOfContainers
+            gameLobbyContainer.position = centerOfContainers
+            
+            textFieldPlaceholder.position = centerOfContainers
+            */
+        }
+        
     }
     
     func adjustGraphics(){
-        if !UIDevice.current.hasNotch {
+        if !(UIDevice.current.hasTopNotch && UIDevice.current.userInterfaceIdiom == .phone) {
             notConnectedToServerSprite.position.y -= 170
             searchingForGameSprite.position.y += 170
             stopSearchingForGameSprite.position.y += 170
@@ -558,25 +796,53 @@ class MenuScene: SKScene {
             }
         } else if ( UIDevice.current.userInterfaceIdiom == .phone) {
             if UIDevice.current.orientation.isLandscape {
-                if let _ = GameSceneOnline(fileNamed:  baseSKSName + "PhoneLand"){
-                    // this if statement would NOT be true if the Phone file did not exist
-                    fullSKSNameToLoad = baseSKSName + "PhoneLand"
+                if UIDevice.current.hasTopNotch {
+                    if let _ = GameSceneOnline(fileNamed:  baseSKSName + "PhoneLand"){
+                        // this if statement would NOT be true if the Phone file did not exist
+                        fullSKSNameToLoad = baseSKSName + "PhoneLand"
+                    } else {
+                        return nil
+                    }
                 } else {
-                    return nil
+                    if let _ = GameSceneOnline(fileNamed:  baseSKSName + "NoNotchLand"){
+                        // this if statement would NOT be true if the Phone file did not exist
+                        fullSKSNameToLoad = baseSKSName + "NoNotchLand"
+                    } else {
+                        return nil
+                    }
                 }
             } else if UIDevice.current.orientation.isPortrait {
-                if let _ = GameSceneOnline(fileNamed:  baseSKSName + "PhonePortrait"){
-                    // this if statement would NOT be true if the Phone file did not exist
-                    fullSKSNameToLoad = baseSKSName + "PhonePortrait"
+                if UIDevice.current.hasTopNotch {
+                    if let _ = GameSceneOnline(fileNamed:  baseSKSName + "PhonePortrait"){
+                        // this if statement would NOT be true if the Phone file did not exist
+                        fullSKSNameToLoad = baseSKSName + "PhonePortrait"
+                    } else {
+                        return nil
+                    }
                 } else {
-                    return nil
+                    if let _ = GameSceneOnline(fileNamed:  baseSKSName + "NoNotchPortrait"){
+                        // this if statement would NOT be true if the Phone file did not exist
+                        fullSKSNameToLoad = baseSKSName + "NoNotchPortrait"
+                    } else {
+                        return nil
+                    }
                 }
+                
             } else if UIDevice.current.orientation.isFlat {
-                if let _ = GameSceneOnline(fileNamed:  baseSKSName + "PhonePortrait"){
-                    // this if statement would NOT be true if the Phone file did not exist
-                    fullSKSNameToLoad = baseSKSName + "PhonePortrait"
+                if UIDevice.current.hasTopNotch {
+                    if let _ = GameSceneOnline(fileNamed:  baseSKSName + "PhonePortrait"){
+                        // this if statement would NOT be true if the Phone file did not exist
+                        fullSKSNameToLoad = baseSKSName + "PhonePortrait"
+                    } else {
+                        return nil
+                    }
                 } else {
-                    return nil
+                    if let _ = GameSceneOnline(fileNamed:  baseSKSName + "NoNotchPortrait"){
+                        // this if statement would NOT be true if the Phone file did not exist
+                        fullSKSNameToLoad = baseSKSName + "NoNotchPortrait"
+                    } else {
+                        return nil
+                    }
                 }
             } else {
                  fullSKSNameToLoad = baseSKSName + "PhonePortrait"
@@ -639,8 +905,11 @@ extension SKScene {
 }
 */
 extension UIDevice {
-    var hasNotch: Bool {
-        let bottom = UIApplication.shared.keyWindow?.safeAreaInsets.bottom ?? 0
-        return bottom > 0
+    var hasTopNotch: Bool {
+        if #available(iOS 11.0,  *) {
+            return UIApplication.shared.delegate?.window??.safeAreaInsets.top ?? 0 > 20
+        }
+
+        return false
     }
 }

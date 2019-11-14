@@ -49,6 +49,8 @@ import GameplayKit
     var scoreBarContainerTemplate: SKSpriteNode!
     var scoreBars = [SKSpriteNode]()
     
+    var touchBufferNode: SKSpriteNode!
+    
     
     
     var centerHexagon: SKSpriteNode!
@@ -416,6 +418,23 @@ import GameplayKit
             let arrayOfScores = [0,0,1,1,1,0,0]
             rowScores.append(arrayOfScores)
         }
+        
+        if let musicURL = Bundle.main.url(forResource: "gameplay1", withExtension: "wav") {
+                    let bg = SKAudioNode(url: musicURL)
+                    addChild(bg)
+        //            backgroundMusic = bg
+                    print("Found music")
+                } else {
+                    print("Couldn't find music")
+                }
+        
+        
+        touchBufferNode = SKSpriteNode(color:SKColor(red:0.0,green:0.0,blue:0.0,alpha:0.5),size:self.size)
+        touchBufferNode.position = CGPoint(x: self.size.width/2, y:  self.size.height/2)
+        touchBufferNode.zPosition = 100
+        touchBufferNode.isHidden = true
+        touchBufferNode.name = "touchBufferNode"
+        addChild(touchBufferNode)
         
          print("Function SceneDidLoad Ended")
     }
@@ -1195,8 +1214,6 @@ import GameplayKit
     
     
     /// Utility Funcs
-    
-    
     
     
     
