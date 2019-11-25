@@ -19,6 +19,7 @@ class MenuScene: SKScene {
     var settingsButton: SKSpriteNode!
     var background: SKSpriteNode!
     var screenArt: SKSpriteNode!
+    var IDWLogo: SKSpriteNode!
     
     var searchingForGameSprite: SKSpriteNode!
     var notConnectedToServerSprite: SKSpriteNode!
@@ -62,12 +63,43 @@ class MenuScene: SKScene {
     var waitingForHostLabel: SKLabelNode!
     var gameCodeLabel: SKLabelNode!
     
+    var settingsContainer: SKSpriteNode!
+    var muteButton: SKSpriteNode!
+    var isMutedSprite: SKSpriteNode!
+    
     var isFriendGameCreate: Bool!
     var friendGameString: String!
     var loadingSprite: SKSpriteNode!
     
     var currentlyConnected = true
     var backgroundMusic: SKAudioNode!
+    
+    var playIntroLogo = false
+    
+    var creditsButton: SKSpriteNode!
+    var creditsContainer: SKSpriteNode!
+    var creditsTitle: SKLabelNode!
+    var creditsBody1: SKLabelNode!
+    var creditsBody2: SKLabelNode!
+    
+    var creditsText = """
+Game Designers:
+Matt Loomis and Isaac Shalev
+Game Design Manager:
+Daryl Andrews
+Art Direction:
+Jerry Bennington, Kyle Merkley, and Sam Barlin
+Artwork:
+Peter Wocken, Lucas Mendonca, and Sam Barlin
+Graphic Designer:
+Peter Wocken Design
+Editing:
+Jerry Bennington, Spencer Reeve, Kyle Merkley, and Dustin Schwartz
+Product Development:
+Jerry Bennington and Daryl Andrews
+Product Management:
+Shauna Monteforte
+"""
     
     override func sceneDidLoad() {
         NotificationCenter.default.addObserver(self, selector: #selector(joinedQueue(_:)), name: .joinedQueue, object: nil)
@@ -87,6 +119,7 @@ class MenuScene: SKScene {
         notConnectedToServerSprite = self.childNode(withName: "notConnectedToServer") as? SKSpriteNode
         background = self.childNode(withName: "background") as? SKSpriteNode
         screenArt = self.childNode(withName: "screenArt") as? SKSpriteNode
+        IDWLogo = self.childNode(withName: "IDWLogo") as? SKSpriteNode
         
         playMenu = self.childNode(withName: "playMenu") as? SKSpriteNode
         playOnlineButton = playMenu.childNode(withName: "playOnlineButton") as? SKSpriteNode
@@ -106,7 +139,19 @@ class MenuScene: SKScene {
         gameLobbyContainer = self.childNode(withName: "gameLobbyContainer") as? SKSpriteNode
         gameCodeLabel = gameLobbyContainer.childNode(withName: "gameCodeLabel") as? SKLabelNode
         tryAgainLabel = gameCodeMenu.childNode(withName: "tryAgainLabel") as? SKLabelNode
-
+        
+        settingsContainer = self.childNode(withName: "settingsContainer") as? SKSpriteNode
+        muteButton = settingsContainer.childNode(withName: "muteButton") as? SKSpriteNode
+        isMutedSprite = muteButton.childNode(withName: "isMutedSprite") as? SKSpriteNode
+        
+        
+        creditsButton = self.childNode(withName: "creditsButton") as? SKSpriteNode
+        creditsContainer = self.childNode(withName: "creditsContainer") as? SKSpriteNode
+        creditsTitle = creditsContainer.childNode(withName: "creditsTitle") as? SKLabelNode
+        creditsBody1 = creditsContainer.childNode(withName: "creditsBody1") as? SKLabelNode
+        creditsBody2 = creditsContainer.childNode(withName: "creditsBody1") as? SKLabelNode
+        
+        
         //print("status is: \(SocketIOHelper.helper.socket.status)")
         if SocketIOHelper.helper.socket.status != .connected {
             notConnectedToServerSprite.run(SKAction.moveBy(x: -(notConnectedToServerSprite.size.width), y: 0, duration: 0.3))
@@ -127,6 +172,9 @@ class MenuScene: SKScene {
          NotificationCenter.default.addObserver(self, selector: #selector(gameNameTaken(_:)), name: .gameNameTaken, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(updateFriendRoom(_:)), name: .updateFriendRoom, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(removedFromQueue(_:)), name: .removedFromQueue, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(muteMusic(_:)), name: .muteAllMusic, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(unmuteMusic(_:)), name: .unmuteAllMusic, object: nil)
+       
         
         createGameButton = createOrJoinMenu.childNode(withName: "createGameButton") as? SKSpriteNode
         
@@ -161,6 +209,7 @@ class MenuScene: SKScene {
         
         ///Adding Music
         
+        /*
         
         if let musicURL = Bundle.main.url(forResource: "title1", withExtension: "wav") {
             let bg = SKAudioNode(url: musicURL)
@@ -170,7 +219,82 @@ class MenuScene: SKScene {
         } else {
             print("Couldn't find music")
         }
+         
+         */
+        creditsBody1.text = nil
+        creditsBody1.attributedText = parseCreditsBody(creditsBody: creditsText)
+        creditsBody1.preferredMaxLayoutWidth = creditsContainer.size.width/2 - 50
         
+    }
+    
+    func parseCreditsBody(creditsBody: String) -> NSMutableAttributedString {
+       
+        let titleAttributes = [.foregroundColor: UIColor.white, NSAttributedString.Key.font: UIFont(name: "MyriadPro-Black", size: 36) ]
+        let namesAttributes = [NSAttributedString.Key.foregroundColor: UIColor.gray, NSAttributedString.Key.font: UIFont(name: "MyriadPro-Black", size: 36)]
+        
+        var newString = NSMutableAttributedString(string: "")
+        let stringArray = creditsBody.split(separator: "\n")
+        for (index,string) in stringArray.enumerated() {
+            if index % 2 == 0 {
+                let titleString = NSAttributedString(string: String(string), attributes: titleAttributes)
+                newString.append(titleString)
+                newString.append(NSAttributedString(string:" "))
+            } else {
+                let namesString = NSAttributedString(string: String(string), attributes: namesAttributes)
+                newString.append(namesString)
+                newString.append(NSAttributedString(string:"\n"))
+            }
+        }
+        
+        return newString
+    }
+    
+    func playIntro() {
+        if playIntroLogo {
+            IDWLogo.isHidden = false
+            background.zPosition = 100
+            IDWLogo.alpha = 0.0
+            let fadeIn = SKAction.fadeIn(withDuration: 1.0)
+            let soundBite = SKAction.run(
+            {
+                print("running soundbite")
+                if let logoMusicURL = Bundle.main.url(forResource: "SeikatsuLogoJingle", withExtension: "wav") {
+                    let logoMusic = SKAudioNode(url: logoMusicURL)
+                    logoMusic.autoplayLooped = false
+                    self.addChild(logoMusic)
+                    print("playing Logo Music")
+                } else {
+                    print("Couldn't get Logo Music")
+                }
+            })
+            let wait = SKAction.wait(forDuration: 2.0)
+            let fadeOut = SKAction.fadeOut(withDuration: 1.0)
+            let sequence = SKAction.sequence([fadeIn,soundBite,wait,fadeOut])
+            
+            IDWLogo.run(sequence) {
+                self.background.zPosition = -10
+                self.IDWLogo.isHidden = true
+                
+                if let musicURL = Bundle.main.url(forResource: "title_v2", withExtension: "wav") {
+                    let bg = SKAudioNode(url: musicURL)
+                    self.addChild(bg)
+                    self.backgroundMusic = bg
+                    print("Found music")
+                } else {
+                    print("Couldn't find music")
+                }
+            }
+            playIntroLogo = false
+        } else {
+            if let musicURL = Bundle.main.url(forResource: "title_v2", withExtension: "wav") {
+                let bg = SKAudioNode(url: musicURL)
+                self.addChild(bg)
+                self.backgroundMusic = bg
+                print("Found music")
+            } else {
+                print("Couldn't find music")
+            }
+        }
         
     }
     /*
@@ -228,6 +352,9 @@ class MenuScene: SKScene {
                 } else if node.name == "hardButton" {
                     hardButton.texture = SKTexture(imageNamed: "hardButtonPressed")
                     return
+                } else if node.name == "creditsButton" {
+                    creditsButton.texture = SKTexture(imageNamed: "questionmarkButtonPressed")
+                    return
                 }
             }
         }
@@ -260,6 +387,22 @@ class MenuScene: SKScene {
                    return
                 } else if node.name == "settingsButton" {
                     settingsButton.texture = SKTexture(imageNamed: "settingsButton")
+                    settingsContainer.isHidden = false
+                    touchBufferNode.isHidden = false
+                    return
+                } else if node.name == "muteButton" || node.name == "isMutedSprite" {
+                    if isMutedSprite.isHidden == true {
+                        NotificationCenter.default.post(name: .muteAllMusic, object: nil)
+                        isMutedSprite.isHidden = false
+                    } else {
+                        NotificationCenter.default.post(name: .unmuteAllMusic, object: nil)
+                        isMutedSprite.isHidden = true
+                    }
+                    
+                } else if node.name == "creditsButton" {
+                    creditsButton.texture = SKTexture(imageNamed: "questionmarkButton")
+                    creditsContainer.isHidden = false
+                    touchBufferNode.isHidden = false
                     return
                 }
                 
@@ -407,6 +550,8 @@ class MenuScene: SKScene {
         gameLobbyContainer.isHidden = true
         NotificationCenter.default.post(name: .hideTextField, object: nil)
         tryAgainLabel.isHidden = true
+        settingsContainer.isHidden = true
+        creditsContainer.isHidden = true
     }
     
     @objc func playAgain(_ notification: Notification){
@@ -446,6 +591,21 @@ class MenuScene: SKScene {
         tryAgainLabel.isHidden = false
         
     }
+    
+    @objc func muteMusic(_ notification: Notification) {
+        let mute = SKAction.changeVolume(to: 0.0, duration: 0.1)
+        backgroundMusic.run(mute)
+        isMutedSprite.isHidden = true
+    }
+    
+    @objc func unmuteMusic(_ notification: Notification) {
+        let unmute = SKAction.changeVolume(to: 1.0, duration: 0.0)
+        backgroundMusic.run(unmute)
+        isMutedSprite.isHidden = false
+        
+    }
+    
+   
     
     @objc func updateFriendRoom(_ notification: Notification) {
         guard let numInRoom = notification.object as? Int else {
@@ -524,86 +684,19 @@ class MenuScene: SKScene {
                 
                 
                 
+            } else {
+                print("Couldn't get Scene For Transition")
             }
             
             
             
             
             
-            /*
-            let centerOfContainers = CGPoint(x: 562.5, y: 1280)
-            self.size = CGSize(width: 1125, height: 2436 )
-            
-            title.position = CGPoint(x: 562.5, y: 1890)
-            title.xScale = 1
-            title.yScale = 1
-            playButton.position = CGPoint(x: 562.5, y: 1425)
-            howToPlayButton.position = CGPoint(x: 282.5, y: 1150)
-            settingsButton.position = CGPoint(x: 842.5, y: 1150)
-            
-            searchingForGameSprite.position = CGPoint(x: 1469, y: 180)
-            stopSearchingForGameSprite.position = CGPoint(x: 1181.333, y: 260)
-            notConnectedToServerSprite.position = CGPoint(x: 1545.5, y: 2222)
-            
-            background.position = CGPoint(x: 562.5, y: 1218)
-            background.size = self.size
-            
-            //screenArt.texture = SKTexture(imageNamed: "Illustration")
-            screenArt.size = CGSize(width: 1125, height: 1066)
-            screenArt.xScale = 1
-            screenArt.yScale = 1
-            screenArt.position = CGPoint(x: 562.5, y: 533)
-            
-           
-            
-            playMenu.position = centerOfContainers
-            difficultyMenu.position = centerOfContainers
-            createOrJoinMenu.position = centerOfContainers
-            gameCodeMenu.position = centerOfContainers
-            gameLobbyContainer.position = centerOfContainers
-            
-            textFieldPlaceholder.position = CGPoint(x: 562.5, y: 1360)
-            
- */
+          
             
         } else if UIDevice.current.userInterfaceIdiom == .pad {
             
-            /*
-            let centerOfContainers = CGPoint(x: 768, y: 1024)
-            self.size = CGSize(width: 1536, height: 2048 )
-            
-            title.position = CGPoint(x: 768, y: 1801)
-            title.xScale = 1
-            title.yScale = 1
-            playButton.position = CGPoint(x: 768, y: 1435)
-            playButton.xScale = 1
-            playButton.yScale = 1
-            howToPlayButton.position = CGPoint(x: 268, y: 1435)
-            howToPlayButton.xScale = 1
-            howToPlayButton.yScale = 1
-            
-            settingsButton.position = CGPoint(x: 1268, y: 1435)
-            settingsButton.xScale = 1
-            settingsButton.yScale = 1
-            
-            searchingForGameSprite.position = CGPoint(x: 1880, y: 160)
-            stopSearchingForGameSprite.position = CGPoint(x: 1625.843, y: 240)
-            notConnectedToServerSprite.position = CGPoint(x: 1956.5, y: 1880)
-            
-            background.position = centerOfContainers
-            background.size = self.size
-            screenArt.position = CGPoint(x: 1536, y: 1397.261)
-            screenArt.xScale = 1.365
-            screenArt.yScale = 1.311
-            
-            playMenu.position = centerOfContainers
-            difficultyMenu.position = centerOfContainers
-            createOrJoinMenu.position = centerOfContainers
-            gameCodeMenu.position = centerOfContainers
-            gameLobbyContainer.position = centerOfContainers
-            
-            textFieldPlaceholder.position = CGPoint(x: 768, y: 1024)
-            */
+      
             
         }
         
@@ -659,86 +752,62 @@ class MenuScene: SKScene {
                 
                 
                 
+            } else {
+                print("Couldn't get Scene For Transition")
+            }
+                        
+        } else if UIDevice.current.userInterfaceIdiom == .pad {
+            if let sceneWithPositions = MenuScene(fileNamed: "MenuScenePadLand") {
+                self.size = CGSize(width: 2048 , height: 1536 )
+                             
+                             title.position = sceneWithPositions.title.position
+                             title.xScale = sceneWithPositions.title.xScale
+                             title.yScale = sceneWithPositions.title.yScale
+                             
+                             playButton.position = sceneWithPositions.playButton.position
+                             howToPlayButton.position = sceneWithPositions.howToPlayButton.position
+                             settingsButton.position = sceneWithPositions.settingsButton.position
+                             
+                             searchingForGameSprite.position = sceneWithPositions.searchingForGameSprite.position
+                             stopSearchingForGameSprite.position = sceneWithPositions.stopSearchingForGameSprite.position
+                             notConnectedToServerSprite.position = sceneWithPositions.notConnectedToServerSprite.position
+                             
+                             background.position = sceneWithPositions.background.position
+                             background.size = sceneWithPositions.background.size
+                             
+                             screenArt.texture = sceneWithPositions.screenArt.texture
+
+
+                             screenArt.xScale = sceneWithPositions.screenArt.xScale
+                            
+                             screenArt.yScale = sceneWithPositions.screenArt.yScale
+                             screenArt.size = sceneWithPositions.screenArt.size
+                             screenArt.position = sceneWithPositions.screenArt.position
+                             
+                             
+                             /*
+                             print("Land: Art width: \(screenArt.size.width), Art Height: \(screenArt.size.height)")
+                              print("Land: Art xScale: \(screenArt.xScale)")
+                             print("Land: Art yScale: \(screenArt.yScale)")
+                             print("Land: Art X: \(screenArt.position.x), Art Y: \(screenArt.position.y)")
+                             */
+                             
+                             
+                             playMenu.position = sceneWithPositions.playMenu.position
+                             difficultyMenu.position = sceneWithPositions.difficultyMenu.position
+                             createOrJoinMenu.position = sceneWithPositions.createOrJoinMenu.position
+                             gameCodeMenu.position = sceneWithPositions.gameCodeMenu.position
+                             gameLobbyContainer.position = sceneWithPositions.gameLobbyContainer.position
+                             
+                             textFieldPlaceholder.position = sceneWithPositions.textFieldPlaceholder.position
+                             
+                             
+                             
+            } else {
+             print("Couldn't get Scene For Transition")
             }
             
-            
-            
-            
-            /*
-            let centerOfContainers = CGPoint(x: 1218, y: 562.5)
-            self.size = CGSize(width: 2436, height: 1125 )
-            
-            title.position = CGPoint(x: 1218, y: 927.4)
-            title.xScale = 0.8
-            title.yScale = 0.8
-            playButton.position = CGPoint(x: 1218, y: 620)
-            howToPlayButton.position = CGPoint(x: 2018, y: 620)
-            settingsButton.position = CGPoint(x: 418, y: 620)
-            
-            searchingForGameSprite.position = CGPoint(x: 2780, y: 105)
-            notConnectedToServerSprite.position = CGPoint(x: 2856.5, y: 1000)
-            stopSearchingForGameSprite.position = CGPoint(x: 2524.333, y: 185)
-            
-            background.position = centerOfContainers
-            background.size = self.size
-            
-            //screenArt.texture = SKTexture(imageNamed: "landscapeIllustration")
-            screenArt.position = CGPoint(x: 1218, y: 265.2)
-            screenArt.size = CGSize(width: 1973.4, height: 530.4)
-            screenArt.xScale = 1.3
-            screenArt.yScale = 1.3
-            
-            playMenu.position = centerOfContainers
-            difficultyMenu.position = centerOfContainers
-            createOrJoinMenu.position = centerOfContainers
-            gameCodeMenu.position = centerOfContainers
-            gameLobbyContainer.position = centerOfContainers
-            
-            textFieldPlaceholder.position = CGPoint(x: 1218, y: 562.5)
-            
- */
-            
-        } else if UIDevice.current.userInterfaceIdiom == .pad {
-            /*
-            let centerOfContainers = CGPoint(x: 1024, y: 768)
-            self.size = CGSize(width: 2048, height: 1536 )
-            
-            
-            
-            title.position = CGPoint(x: 1024, y: 1313.7)
-            title.yScale = 0.9
-            title.xScale = 0.9
-            
-            playButton.position = CGPoint(x: 1024, y: 935)
-            playButton.xScale = 1.4
-            playButton.yScale = 1.4
-            howToPlayButton.position = CGPoint(x: 324, y: 935)
-            howToPlayButton.xScale = 1.4
-            howToPlayButton.yScale = 1.4
-            settingsButton.position = CGPoint(x: 1724, y: 935)
-            settingsButton.xScale = 1.4
-            settingsButton.yScale = 1.4
-            
-            searchingForGameSprite.position = CGPoint(x: 2392, y: 165)
-            notConnectedToServerSprite.position = CGPoint(x: 2468.5, y: 1420)
-            stopSearchingForGameSprite.position = CGPoint(x: 2136.531, y: 245)
-            
-            background.position = centerOfContainers
-            background.size = self.size
-            background.xScale = 1.824
-            background.yScale = 0.642
-            screenArt.position = CGPoint(x: 1021.295, y: 428.534)
-            
-            
-            
-            playMenu.position = centerOfContainers
-            difficultyMenu.position = centerOfContainers
-            createOrJoinMenu.position = centerOfContainers
-            gameCodeMenu.position = centerOfContainers
-            gameLobbyContainer.position = centerOfContainers
-            
-            textFieldPlaceholder.position = centerOfContainers
-            */
+        
         }
         
     }
@@ -748,6 +817,7 @@ class MenuScene: SKScene {
             notConnectedToServerSprite.position.y -= 170
             searchingForGameSprite.position.y += 170
             stopSearchingForGameSprite.position.y += 170
+            creditsButton.position.y += 170
             print("adjusted Graphics for Non-Notch deviced ")
         }
         print("Adjusted no Graphics")

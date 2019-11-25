@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		E80A34BF238AFCC10032DB8A /* SeikatsuLogoJingle.wav in Resources */ = {isa = PBXBuildFile; fileRef = E80A34BE238AFCC10032DB8A /* SeikatsuLogoJingle.wav */; };
+		E80A34C1238AFE880032DB8A /* gameplay_v2.wav in Resources */ = {isa = PBXBuildFile; fileRef = E80A34C0238AFE880032DB8A /* gameplay_v2.wav */; };
+		E80A34C3238AFE910032DB8A /* title_v2.wav in Resources */ = {isa = PBXBuildFile; fileRef = E80A34C2238AFE910032DB8A /* title_v2.wav */; };
 		E80DC654230B4C9000D72E53 /* GameSceneOnlinePadLand.sks in Resources */ = {isa = PBXBuildFile; fileRef = E80DC653230B4C9000D72E53 /* GameSceneOnlinePadLand.sks */; };
 		E80DC656230C69E500D72E53 /* GameSceneOnlinePhoneLand.sks in Resources */ = {isa = PBXBuildFile; fileRef = E80DC655230C69E500D72E53 /* GameSceneOnlinePhoneLand.sks */; };
 		E80DC658230C69F600D72E53 /* GameSceneOnlinePadPortrait.sks in Resources */ = {isa = PBXBuildFile; fileRef = E80DC657230C69F600D72E53 /* GameSceneOnlinePadPortrait.sks */; };
@@ -50,6 +53,9 @@
 		468178FF1C2B089363F5B4EB /* Pods-Seikatsu.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Seikatsu.release.xcconfig"; path = "Target Support Files/Pods-Seikatsu/Pods-Seikatsu.release.xcconfig"; sourceTree = "<group>"; };
 		9509E7E748CB1D3F0F406D7C /* Pods-Seikatsu.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Seikatsu.debug.xcconfig"; path = "Target Support Files/Pods-Seikatsu/Pods-Seikatsu.debug.xcconfig"; sourceTree = "<group>"; };
 		D9A9399E779A376C0DB6F184 /* Pods_Seikatsu.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Seikatsu.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		E80A34BE238AFCC10032DB8A /* SeikatsuLogoJingle.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = SeikatsuLogoJingle.wav; sourceTree = "<group>"; };
+		E80A34C0238AFE880032DB8A /* gameplay_v2.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = gameplay_v2.wav; sourceTree = "<group>"; };
+		E80A34C2238AFE910032DB8A /* title_v2.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = title_v2.wav; sourceTree = "<group>"; };
 		E80DC653230B4C9000D72E53 /* GameSceneOnlinePadLand.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = GameSceneOnlinePadLand.sks; sourceTree = "<group>"; };
 		E80DC655230C69E500D72E53 /* GameSceneOnlinePhoneLand.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = GameSceneOnlinePhoneLand.sks; sourceTree = "<group>"; };
 		E80DC657230C69F600D72E53 /* GameSceneOnlinePadPortrait.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = GameSceneOnlinePadPortrait.sks; sourceTree = "<group>"; };
@@ -244,8 +250,11 @@
 			isa = PBXGroup;
 			children = (
 				E89EADEE237AF37C00F941E6 /* upbeatJingleLowQuality.mp3 */,
+				E80A34C0238AFE880032DB8A /* gameplay_v2.wav */,
 				E89EADF1237B98E200F941E6 /* gameplay1.wav */,
+				E80A34C2238AFE910032DB8A /* title_v2.wav */,
 				E89EADF0237B98E000F941E6 /* title1.wav */,
+				E80A34BE238AFCC10032DB8A /* SeikatsuLogoJingle.wav */,
 			);
 			path = Music;
 			sourceTree = "<group>";
@@ -338,10 +347,12 @@
 				E89EADF9237CAE1F00F941E6 /* GameSceneOnlineNoNotchPortrait.sks in Resources */,
 				E881B6642358EE460041A519 /* singleplayerPadLand.sks in Resources */,
 				E84E2C6423171F1F004EF2DF /* MenuScenePadLand.sks in Resources */,
+				E80A34C1238AFE880032DB8A /* gameplay_v2.wav in Resources */,
 				E80DC656230C69E500D72E53 /* GameSceneOnlinePhoneLand.sks in Resources */,
 				E80DC658230C69F600D72E53 /* GameSceneOnlinePadPortrait.sks in Resources */,
 				E80DC654230B4C9000D72E53 /* GameSceneOnlinePadLand.sks in Resources */,
 				E881B6602358EE1C0041A519 /* singleplayerPhoneLand.sks in Resources */,
+				E80A34BF238AFCC10032DB8A /* SeikatsuLogoJingle.wav in Resources */,
 				E86F2C2522DCBBAE0069AC1A /* Main.storyboard in Resources */,
 				E89EADF3237B98E200F941E6 /* gameplay1.wav in Resources */,
 				E89EADFB237CAE3500F941E6 /* GameSceneOnlineNoNotchLand.sks in Resources */,
@@ -352,6 +363,7 @@
 				E881B6622358EE2D0041A519 /* singleplayerPadPortrait.sks in Resources */,
 				E86F2C2722DCBBB30069AC1A /* Assets.xcassets in Resources */,
 				E86F2C2A22DCBBB30069AC1A /* LaunchScreen.storyboard in Resources */,
+				E80A34C3238AFE910032DB8A /* title_v2.wav in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -583,7 +595,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = Seikatsu/Seikatsu.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 5;
+				CURRENT_PROJECT_VERSION = 6;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = 85HTDRNFLR;
 				INFOPLIST_FILE = Seikatsu/Info.plist;
@@ -606,7 +618,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = Seikatsu/Seikatsu.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 5;
+				CURRENT_PROJECT_VERSION = 6;
 				DEVELOPMENT_TEAM = 85HTDRNFLR;
 				INFOPLIST_FILE = Seikatsu/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (

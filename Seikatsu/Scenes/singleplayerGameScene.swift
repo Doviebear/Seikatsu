@@ -706,7 +706,7 @@ import GameplayKit
                 
                 
                 self.view?.presentScene(scene)
-                
+                scene.playIntro()
                 
                 self.view?.ignoresSiblingOrder = true
                 self.view?.showsFPS = true

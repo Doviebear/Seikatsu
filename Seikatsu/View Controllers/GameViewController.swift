@@ -80,9 +80,10 @@ class GameViewController: UIViewController, UITextFieldDelegate {
             if let fileName = getFileName() {
                 if let scene = MenuScene(fileNamed: fileName) {
                     scene.scaleMode = .aspectFill
-                    
+                    scene.playIntroLogo = true
                     
                     view.presentScene(scene)
+                    scene.playIntro()
             
                     
                     view.ignoresSiblingOrder = true

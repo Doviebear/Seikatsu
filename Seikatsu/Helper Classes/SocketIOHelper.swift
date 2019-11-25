@@ -495,4 +495,6 @@ extension Notification.Name {
     static let serverTimeout = Notification.Name(rawValue: "serverTimeout")
     static let removedFromQueue = Notification.Name(rawValue: "removedFromQueue")
     static let playSoloGameAgain = Notification.Name(rawValue: "playSoloGameAgain")
+    static let muteAllMusic = Notification.Name(rawValue: "muteAll")
+    static let unmuteAllMusic = Notification.Name(rawValue: "unmuteAll")
 }

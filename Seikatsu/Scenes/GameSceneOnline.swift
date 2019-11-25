@@ -56,7 +56,7 @@ import GameplayKit
     var centerHexagon: SKSpriteNode!
     var playerNum: Int!
     var sksPlayerTokenNodes = [SKSpriteNode]()
-    var yourTurnIndicator: SKSpriteNode!
+    
     
     var hamburgerButton: SKSpriteNode!
     
@@ -65,6 +65,10 @@ import GameplayKit
     var howToPlayButton: SKSpriteNode!
     var settingsButton: SKSpriteNode!
     var resumeButton: SKSpriteNode!
+    
+    var settingsContainer: SKSpriteNode!
+    var muteButton: SKSpriteNode!
+    var isMutedSprite: SKSpriteNode!
     
     var checkmark: SKSpriteNode!
     var cross: SKSpriteNode!
@@ -76,6 +80,10 @@ import GameplayKit
     var endGameContainer: SKSpriteNode!
     var finalScoreLabel: SKLabelNode!
     var winnerLabel: SKLabelNode!
+    
+    var backgroundMusic: SKAudioNode!
+    var tilesBackground: SKSpriteNode!
+    var gameBoard: SKSpriteNode!
     
     var playerRowsArray: [[[Location]]]!
     //Player One: Pink
@@ -242,11 +250,6 @@ import GameplayKit
                 return
             }
         }
-        if model.playerTurn == playerNum {
-            yourTurnIndicator.isHidden = false
-        } else {
-            yourTurnIndicator.isHidden = true
-        }
         
         /*
         for (index,scoreToken) in scoreTokens.enumerated() {
@@ -276,7 +279,7 @@ import GameplayKit
             }
         }
         
-        self.yourTurnIndicator = self.childNode(withName: "yourTurnIndicator") as? SKSpriteNode
+       
         self.hamburgerButton = self.childNode(withName: "hamburgerButton") as? SKSpriteNode
         
         self.menuContainer = self.childNode(withName: "menuContainer") as? SKSpriteNode
@@ -297,6 +300,11 @@ import GameplayKit
         self.finalScoreLabel = endGameContainer.childNode(withName: "finalScoreLabel") as? SKLabelNode
         self.playAgainButton = endGameContainer.childNode(withName: "playAgainButton") as? SKSpriteNode
         self.mainMenuButton = endGameContainer.childNode(withName: "endGameContainer") as? SKSpriteNode
+        self.settingsContainer = self.childNode(withName: "settingsContainer") as? SKSpriteNode
+        self.muteButton = settingsContainer.childNode(withName: "muteButton") as? SKSpriteNode
+        self.isMutedSprite = muteButton.childNode(withName: "isMutedSprite") as? SKSpriteNode
+        self.tilesBackground = self.childNode(withName: "tilesBackground") as? SKSpriteNode
+        self.gameBoard = self.childNode(withName: "gameBoard") as? SKSpriteNode
         
         if let yourScoreToken = scoreBoard.childNode(withName: "scoreToken\(playerNum!)") as? SKLabelNode {
             yourScoreToken.text = "You"
@@ -331,6 +339,9 @@ import GameplayKit
         NotificationCenter.default.addObserver(self, selector: #selector(loadGameModel(_:)), name: .roundEnd, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(playerDisconnected(_:)), name: .playerDisconnected, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(playerDisconnected(_:)), name: .disconnectedFromServer, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(muteMusic(_:)), name: .muteAllMusic, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(unmuteMusic(_:)), name: .unmuteAllMusic, object: nil)
+        
         self.centerHexagon = self.childNode(withName: "//centerHexagon") as? SKSpriteNode
         print("Screen Width: \(JKGame.rect.width)")
         print("Screen Height: \(JKGame.rect.height)")
@@ -419,6 +430,7 @@ import GameplayKit
             rowScores.append(arrayOfScores)
         }
         
+        /*
         if let musicURL = Bundle.main.url(forResource: "gameplay1", withExtension: "wav") {
                     let bg = SKAudioNode(url: musicURL)
                     addChild(bg)
@@ -428,7 +440,7 @@ import GameplayKit
                     print("Couldn't find music")
                 }
         
-        
+        */
         touchBufferNode = SKSpriteNode(color:SKColor(red:0.0,green:0.0,blue:0.0,alpha:0.5),size:self.size)
         touchBufferNode.position = CGPoint(x: self.size.width/2, y:  self.size.height/2)
         touchBufferNode.zPosition = 100
@@ -494,7 +506,16 @@ import GameplayKit
                         menuContainer.isHidden = true
                         return
                     }
+                } else if node.name == "muteButton" || node.name == "isMutedSprite" {
+                    if isMutedSprite.isHidden == true {
+                        NotificationCenter.default.post(name: .muteAllMusic, object: nil)
+                        isMutedSprite.isHidden = false
+                    } else {
+                        NotificationCenter.default.post(name: .unmuteAllMusic, object: nil)
+                        isMutedSprite.isHidden = true
+                    }
                 }
+                
                 
                 guard menuContainer.isHidden == true else {
                     return
@@ -591,34 +612,24 @@ import GameplayKit
     func tokenSpaceTouched(node: SKNode, phase: Int){
         if phase == 1 {
             if let nodeToPlace = selectedToken {
-                gameplayPhase = 2
+               
                 guard let tokenSpaceNode = node as? TokenSpace else {
                     return
                 }
                 nodeToPlace.tokenData.Location = tokenSpaceNode.Location
-                selectedTokenOldPosistion = selectedToken?.position
-                phaseThreeGraphics(nodeToPlace: nodeToPlace, tokenSpace: tokenSpaceNode)
-                selectedTokenSpace = tokenSpaceNode
+                for tokenNode in tokensInPlay {
+                    if nodeToPlace.isAdjacent(tokenNode2: tokenNode) {
+                        selectedTokenOldPosistion = selectedToken?.position
+                        phaseThreeGraphics(nodeToPlace: nodeToPlace, tokenSpace: tokenSpaceNode)
+                        selectedTokenSpace = tokenSpaceNode
+                        gameplayPhase = 2
+                        return
+                    }
+                }
+                nodeToPlace.tokenData.Location = nil
+                return
                 
                 
-                /*
-                selectedTokenOldPosistion = selectedToken?.position
-                nodeToPlace.position = node.position
-                let tokenSpaceNode = node as! TokenSpace
-                
-                
-                nodeToPlace.tokenData.Location = tokenSpaceNode.Location
-                addScoreFromPlacing(tokenNodeToCheck: nodeToPlace)
-                tokensInPlay.append(nodeToPlace)
-                model.TokensInPlay.append(nodeToPlace.tokenData)
-                nodeToPlace.tokenData.player = nil
-                nodeToPlace.xScale = 1.0
-                nodeToPlace.yScale = 1.0
-                nodeToPlace.zPosition = 20
-                nodeToPlace.sprite?.size = CGSize(width: centerHexagon.size.height/8, height: centerHexagon.size.height/8)
-                removeTokenSpace(at: tokenSpaceNode.Location)
-                nextTurn()
-                 */
             } else {
                 print("Error: Selected Token Not Found")
             }
@@ -739,7 +750,7 @@ import GameplayKit
                 
                 
                 self.view?.presentScene(scene)
-                
+                scene.playIntro()
                 
                 self.view?.ignoresSiblingOrder = true
                 self.view?.showsFPS = true
@@ -1218,6 +1229,18 @@ import GameplayKit
     
     
     
+    @objc func muteMusic(_ notification: Notification) {
+        let mute = SKAction.changeVolume(to: 0.0, duration: 0.1)
+        backgroundMusic.run(mute)
+        isMutedSprite.isHidden = true
+    }
+    
+    @objc func unmuteMusic(_ notification: Notification) {
+        let unmute = SKAction.changeVolume(to: 1.0, duration: 0.0)
+        backgroundMusic.run(unmute)
+        isMutedSprite.isHidden = false
+        
+    }
     
     func getPositionOfTokenSpace(at location: Location) -> CGPoint? {
         for tokenSpaceToCheck in tokenSpacesInPlay {
@@ -1241,210 +1264,75 @@ import GameplayKit
     
     
     func switchToLandscape() {
-        /*
+        
         if UIDevice.current.userInterfaceIdiom == .phone {
-            self.size = CGSize(width: 2436, height: 1125)
-            //Things to change: Hexagon
-            centerHexagon.position = CGPoint(x: 568 ,y: 562.5)
-            //Player tokens
-            for (index,playerToken) in playerTokenNodesInPlay.enumerated() {
-                let x: Int
-                if index == 0 {
-                    x = 1334
-                } else {
-                    x = 1800
+            let testModel = GameModel()
+            if let sceneWithPositions = GameSceneOnline(fileNamed: "GameSceneOnlinePhoneLand", gameModel: testModel, player: 1) {
+                self.size = CGSize(width: 2436, height: 1125)
+                //Things to change: Hexagon
+                centerHexagon.position = sceneWithPositions.centerHexagon.position
+                //Player tokens
+                
+                
+                for (index,playerToken) in playerTokenNodesInPlay.enumerated() {
+                    
+                    playerToken.position = sceneWithPositions.sksPlayerTokenNodes[index].position
+                    sksPlayerTokenNodes[index].position = sceneWithPositions.sksPlayerTokenNodes[index].position
                 }
-                playerToken.position = CGPoint(x: x, y: 208)
-                sksPlayerTokenNodes[index].position = CGPoint(x: x, y: 208)
+                
+                //Score Bar, Labels, and Markers
+                tilesBackground.position = sceneWithPositions.tilesBackground.position
+                scoreBoard.position = sceneWithPositions.scoreBoard.position
+                gameBoard.position = sceneWithPositions.gameBoard.position
+                
+                hamburgerButton.position = sceneWithPositions.hamburgerButton.position
+                
+                endGameContainer.position = sceneWithPositions.endGameContainer.position
+                settingsContainer.position = sceneWithPositions.settingsContainer.position
+                
+                
+                
+                
+                //scoreBar.position = CGPoint(x: 1800, y: 888)
+                
+                
             }
             
-            //Score Bar, Labels, and Markers
-            //scoreBar.position = CGPoint(x: 1800, y: 888)
-            
-            localPlayerOneScoreLabel.position = CGPoint(x: 1500, y: 808)
-            localPlayerTwoScoreLabel.position = CGPoint(x: 1800, y: 808)
-            localPlayerThreeScoreLabel.position = CGPoint(x: 2100, y: 808)
-            
-            for (index,scoreToken) in scoreBars.enumerated() {
-                let x: Int
-                if index == 0 {
-                    x = 1500
-                } else if index == 1 {
-                    x = 1800
-                } else {
-                    x = 2100
-                }
-                scoreToken.position = CGPoint(x: x, y: 888)
-            }
-            
-            //background
-            ///Dont have one yet
-            
-            //Nodes Inside Hexagon, this is haaaaaaaard. Fine. Ill do it.
-            for tokenSpace in tokenSpacesInPlay {
-                let newPosition = makeNewPosistionForToken(at: tokenSpace.Location)
-                tokenSpace.position = newPosition
-            }
-            for tokenNode in tokensInPlay {
-                let newPosition = makeNewPosistionForToken(at: tokenNode.tokenData.Location!)
-                tokenNode.position = newPosition
-            }
             
         } else if UIDevice.current.userInterfaceIdiom == .pad {
-            //Ipad landscape setup
-            self.size = CGSize(width: 2048, height: 1536)
-            //Things to change: Hexagon
-            centerHexagon.position = CGPoint(x: 650 ,y: 768)
-            //Player tokens
-            for (index,playerToken) in playerTokenNodesInPlay.enumerated() {
-                let x: Int
-                if index == 0 {
-                    x = 1344
-                } else {
-                    x = 1800
-                }
-                playerToken.position = CGPoint(x: x, y: 208)
-                sksPlayerTokenNodes[index].position = CGPoint(x: x, y: 208)
-            }
             
-            //Score Bar, Labels, and Markers
-            //scoreBar.position = CGPoint(x: 1525, y: 1300)
-            
-            localPlayerOneScoreLabel.position = CGPoint(x: 1220, y: 1220)
-            localPlayerTwoScoreLabel.position = CGPoint(x: 1520, y: 1220)
-            localPlayerThreeScoreLabel.position = CGPoint(x: 1820, y: 1220)
-            
-            for (index,scoreToken) in scoreBars.enumerated() {
-                let x: Int
-                if index == 0 {
-                    x = 1220
-                } else if index == 1 {
-                    x = 1520
-                } else {
-                    x = 1820
-                }
-                scoreToken.position = CGPoint(x: x, y: 1300)
-            }
-            
-            //background
-            ///Dont have one yet
-            
-            
-            //Nodes Inside Hexagon, this is haaaaaaaard. Fine. Ill do it.
-            for tokenSpace in tokenSpacesInPlay {
-                let newPosition = makeNewPosistionForToken(at: tokenSpace.Location)
-                tokenSpace.position = newPosition
-            }
-            for tokenNode in tokensInPlay {
-                let newPosition = makeNewPosistionForToken(at: tokenNode.tokenData.Location!)
-                tokenNode.position = newPosition
-            }
         }
-        */
     }
     
     func switchToPortrait() {
-        /*
+        
         if UIDevice.current.userInterfaceIdiom == .phone {
-            self.size = CGSize(width: 1125, height: 2436)
-            
-            //Things to change: Hexagon
-            centerHexagon.position = CGPoint(x: 562.5, y: 1568)
-            //Player tokens
-            for (index,playerToken) in playerTokenNodesInPlay.enumerated() {
-                let x: Double
-                if index == 0 {
-                    x = 320
-                } else {
-                    x = 827.5
+            let testModel = GameModel()
+            if let sceneWithPositions = GameSceneOnline(fileNamed: "GameSceneOnlinePhonePortrait", gameModel: testModel, player: 1) {
+                self.size = CGSize(width: 1125, height: 2436)
+                
+                //Things to change: Hexagon
+                centerHexagon.position = sceneWithPositions.centerHexagon.position
+                //Player tokens
+                for (index,playerToken) in playerTokenNodesInPlay.enumerated() {
+                    
+                    playerToken.position = sceneWithPositions.sksPlayerTokenNodes[index].position
+                    sksPlayerTokenNodes[index].position = sceneWithPositions.sksPlayerTokenNodes[index].position
                 }
-                playerToken.position = CGPoint(x: x, y: 772.5)
-                sksPlayerTokenNodes[index].position = CGPoint(x: x, y: 772.5)
-            }
-            //Score Bar, Labels, and Markers
-            //scoreBar.position = CGPoint(x: 575, y: 325)
-            
-            localPlayerOneScoreLabel.position = CGPoint(x: 275, y: 245)
-            localPlayerTwoScoreLabel.position = CGPoint(x: 575, y: 245)
-            localPlayerThreeScoreLabel.position = CGPoint(x: 875, y: 245)
-            
-            for (index,scoreToken) in scoreBars.enumerated() {
-                let x: Int
-                if index == 0 {
-                    x = 275
-                } else if index == 1 {
-                    x = 575
-                } else {
-                    x = 875
-                }
-                scoreToken.position = CGPoint(x: x, y: 325)
-            }
-            
-            //background
-            ///Dont have one yet
-            
-            
-            //Nodes Inside Hexagon, this is haaaaaaaard. Fine. Ill do it.
-            for tokenSpace in tokenSpacesInPlay {
-                let newPosition = makeNewPosistionForToken(at: tokenSpace.Location)
-                tokenSpace.position = newPosition
-            }
-            for tokenNode in tokensInPlay {
-                let newPosition = makeNewPosistionForToken(at: tokenNode.tokenData.Location!)
-                tokenNode.position = newPosition
+                //Score Bar, Labels, and Markers
+                tilesBackground.position = sceneWithPositions.tilesBackground.position
+                scoreBoard.position = sceneWithPositions.scoreBoard.position
+                gameBoard.position = sceneWithPositions.gameBoard.position
+                
+                hamburgerButton.position = sceneWithPositions.hamburgerButton.position
+                
+                endGameContainer.position = sceneWithPositions.endGameContainer.position
+                settingsContainer.position = sceneWithPositions.settingsContainer.position
             }
         } else if UIDevice.current.userInterfaceIdiom == .pad {
-            self.size = CGSize(width: 1536, height: 2048)
             
-            //Things to change: Hexagon
-            centerHexagon.position = CGPoint(x: 768, y: 1334)
-            //Player tokens
-            for (index,playerToken) in playerTokenNodesInPlay.enumerated() {
-                let x: Double
-                if index == 0 {
-                    x = 318
-                } else {
-                    x = 1218
-                }
-                playerToken.position = CGPoint(x: x, y: 520)
-                 sksPlayerTokenNodes[index].position = CGPoint(x: x, y: 520)
-            }
-            //Score Bar, Labels, and Markers
-            //scoreBar.position = CGPoint(x: 768, y: 120)
-            
-            localPlayerOneScoreLabel.position = CGPoint(x: 468, y: 40)
-            localPlayerTwoScoreLabel.position = CGPoint(x: 768, y: 40)
-            localPlayerThreeScoreLabel.position = CGPoint(x: 1068, y: 40)
-            
-            for (index,scoreToken) in scoreBars.enumerated() {
-                let x: Int
-                if index == 0 {
-                    x = 468
-                } else if index == 1 {
-                    x = 768
-                } else {
-                    x = 1068
-                }
-                scoreToken.position = CGPoint(x: x, y: 120)
-            }
-            
-            //background
-            
-            
-            ///Dont have one yet
-            
-            
-            //Nodes Inside Hexagon, this is haaaaaaaard. Fine. Ill do it.
-            for tokenSpace in tokenSpacesInPlay {
-                let newPosition = makeNewPosistionForToken(at: tokenSpace.Location)
-                tokenSpace.position = newPosition
-            }
-            for tokenNode in tokensInPlay {
-                let newPosition = makeNewPosistionForToken(at: tokenNode.tokenData.Location!)
-                tokenNode.position = newPosition
-            }
         }
- */
+        
     }
     
     
