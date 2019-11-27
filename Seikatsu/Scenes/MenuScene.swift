@@ -88,13 +88,19 @@ Matt Loomis and Isaac Shalev
 Game Design Manager:
 Daryl Andrews
 Art Direction:
-Jerry Bennington, Kyle Merkley, and Sam Barlin
+Jerry Bennington, Kyle Merkley, Sam Barlin, and Adam Nussdorfer
 Artwork:
-Peter Wocken, Lucas Mendonca, and Sam Barlin
+Peter Wocken, Lucas Mendonca, Sam Barlin, and Adam Nussdorfer
 Graphic Designer:
 Peter Wocken Design
 Editing:
 Jerry Bennington, Spencer Reeve, Kyle Merkley, and Dustin Schwartz
+"""
+    var creditsText2 = """
+App Designer:
+Dovie Shalev
+Producer:
+Kuty Shalev
 Product Development:
 Jerry Bennington and Daryl Andrews
 Product Management:
@@ -149,7 +155,7 @@ Shauna Monteforte
         creditsContainer = self.childNode(withName: "creditsContainer") as? SKSpriteNode
         creditsTitle = creditsContainer.childNode(withName: "creditsTitle") as? SKLabelNode
         creditsBody1 = creditsContainer.childNode(withName: "creditsBody1") as? SKLabelNode
-        creditsBody2 = creditsContainer.childNode(withName: "creditsBody1") as? SKLabelNode
+        creditsBody2 = creditsContainer.childNode(withName: "creditsBody2") as? SKLabelNode
         
         
         //print("status is: \(SocketIOHelper.helper.socket.status)")
@@ -224,6 +230,10 @@ Shauna Monteforte
         creditsBody1.text = nil
         creditsBody1.attributedText = parseCreditsBody(creditsBody: creditsText)
         creditsBody1.preferredMaxLayoutWidth = creditsContainer.size.width/2 - 50
+        
+        creditsBody2.text = nil
+        creditsBody2.attributedText = parseCreditsBody(creditsBody: creditsText2)
+        creditsBody2.preferredMaxLayoutWidth = creditsContainer.size.width/2 - 50
         
     }
     
@@ -640,6 +650,9 @@ Shauna Monteforte
             if let sceneWithPositions = MenuScene(fileNamed: "MenuScenePhonePortrait") {
                 self.size = CGSize(width: 1125, height: 2436 )
                 
+                touchBufferNode.position = CGPoint(x: self.size.width/2, y:  self.size.height/2)
+                touchBufferNode.size = self.size
+                
                 title.position = sceneWithPositions.title.position
                 title.xScale = sceneWithPositions.title.xScale
                 title.yScale = sceneWithPositions.title.yScale
@@ -678,8 +691,12 @@ Shauna Monteforte
                 createOrJoinMenu.position = sceneWithPositions.createOrJoinMenu.position
                 gameCodeMenu.position = sceneWithPositions.gameCodeMenu.position
                 gameLobbyContainer.position = sceneWithPositions.gameLobbyContainer.position
+                settingsContainer.position = sceneWithPositions.settingsContainer.position
                 
                 textFieldPlaceholder.position = sceneWithPositions.textFieldPlaceholder.position
+                
+                creditsButton.position = sceneWithPositions.creditsButton.position
+                creditsContainer.position = sceneWithPositions.creditsContainer.position
                 
                 
                 
@@ -708,6 +725,9 @@ Shauna Monteforte
             if let sceneWithPositions = MenuScene(fileNamed: "MenuScenePhoneLand") {
                 self.size = CGSize(width: 2436, height: 1125 )
                 
+                touchBufferNode.position = CGPoint(x: self.size.width/2, y:  self.size.height/2)
+                touchBufferNode.size = self.size
+                
                 title.position = sceneWithPositions.title.position
                 title.xScale = sceneWithPositions.title.xScale
                 title.yScale = sceneWithPositions.title.yScale
@@ -724,21 +744,21 @@ Shauna Monteforte
                 background.size = sceneWithPositions.background.size
                 
                 screenArt.texture = sceneWithPositions.screenArt.texture
-
-
+                
+                
                 screenArt.xScale = sceneWithPositions.screenArt.xScale
-               
+                
                 screenArt.yScale = sceneWithPositions.screenArt.yScale
                 screenArt.size = sceneWithPositions.screenArt.size
                 screenArt.position = sceneWithPositions.screenArt.position
                 
                 
                 /*
-                print("Land: Art width: \(screenArt.size.width), Art Height: \(screenArt.size.height)")
+                 print("Land: Art width: \(screenArt.size.width), Art Height: \(screenArt.size.height)")
                  print("Land: Art xScale: \(screenArt.xScale)")
-                print("Land: Art yScale: \(screenArt.yScale)")
-                print("Land: Art X: \(screenArt.position.x), Art Y: \(screenArt.position.y)")
-                */
+                 print("Land: Art yScale: \(screenArt.yScale)")
+                 print("Land: Art X: \(screenArt.position.x), Art Y: \(screenArt.position.y)")
+                 */
                 
                 
                 playMenu.position = sceneWithPositions.playMenu.position
@@ -746,8 +766,12 @@ Shauna Monteforte
                 createOrJoinMenu.position = sceneWithPositions.createOrJoinMenu.position
                 gameCodeMenu.position = sceneWithPositions.gameCodeMenu.position
                 gameLobbyContainer.position = sceneWithPositions.gameLobbyContainer.position
+                settingsContainer.position = sceneWithPositions.settingsContainer.position
                 
                 textFieldPlaceholder.position = sceneWithPositions.textFieldPlaceholder.position
+                
+                creditsButton.position = sceneWithPositions.creditsButton.position
+                creditsContainer.position = sceneWithPositions.creditsContainer.position
                 
                 
                 
@@ -755,69 +779,75 @@ Shauna Monteforte
             } else {
                 print("Couldn't get Scene For Transition")
             }
-                        
+            
         } else if UIDevice.current.userInterfaceIdiom == .pad {
             if let sceneWithPositions = MenuScene(fileNamed: "MenuScenePadLand") {
                 self.size = CGSize(width: 2048 , height: 1536 )
-                             
-                             title.position = sceneWithPositions.title.position
-                             title.xScale = sceneWithPositions.title.xScale
-                             title.yScale = sceneWithPositions.title.yScale
-                             
-                             playButton.position = sceneWithPositions.playButton.position
-                             howToPlayButton.position = sceneWithPositions.howToPlayButton.position
-                             settingsButton.position = sceneWithPositions.settingsButton.position
-                             
-                             searchingForGameSprite.position = sceneWithPositions.searchingForGameSprite.position
-                             stopSearchingForGameSprite.position = sceneWithPositions.stopSearchingForGameSprite.position
-                             notConnectedToServerSprite.position = sceneWithPositions.notConnectedToServerSprite.position
-                             
-                             background.position = sceneWithPositions.background.position
-                             background.size = sceneWithPositions.background.size
-                             
-                             screenArt.texture = sceneWithPositions.screenArt.texture
-
-
-                             screenArt.xScale = sceneWithPositions.screenArt.xScale
-                            
-                             screenArt.yScale = sceneWithPositions.screenArt.yScale
-                             screenArt.size = sceneWithPositions.screenArt.size
-                             screenArt.position = sceneWithPositions.screenArt.position
-                             
-                             
-                             /*
-                             print("Land: Art width: \(screenArt.size.width), Art Height: \(screenArt.size.height)")
-                              print("Land: Art xScale: \(screenArt.xScale)")
-                             print("Land: Art yScale: \(screenArt.yScale)")
-                             print("Land: Art X: \(screenArt.position.x), Art Y: \(screenArt.position.y)")
-                             */
-                             
-                             
-                             playMenu.position = sceneWithPositions.playMenu.position
-                             difficultyMenu.position = sceneWithPositions.difficultyMenu.position
-                             createOrJoinMenu.position = sceneWithPositions.createOrJoinMenu.position
-                             gameCodeMenu.position = sceneWithPositions.gameCodeMenu.position
-                             gameLobbyContainer.position = sceneWithPositions.gameLobbyContainer.position
-                             
-                             textFieldPlaceholder.position = sceneWithPositions.textFieldPlaceholder.position
-                             
-                             
-                             
+                
+                touchBufferNode.position = CGPoint(x: self.size.width/2, y:  self.size.height/2)
+                touchBufferNode.size = self.size
+                title.position = sceneWithPositions.title.position
+                title.xScale = sceneWithPositions.title.xScale
+                title.yScale = sceneWithPositions.title.yScale
+                
+                playButton.position = sceneWithPositions.playButton.position
+                howToPlayButton.position = sceneWithPositions.howToPlayButton.position
+                settingsButton.position = sceneWithPositions.settingsButton.position
+                
+                searchingForGameSprite.position = sceneWithPositions.searchingForGameSprite.position
+                stopSearchingForGameSprite.position = sceneWithPositions.stopSearchingForGameSprite.position
+                notConnectedToServerSprite.position = sceneWithPositions.notConnectedToServerSprite.position
+                
+                background.position = sceneWithPositions.background.position
+                background.size = sceneWithPositions.background.size
+                
+                screenArt.texture = sceneWithPositions.screenArt.texture
+                
+                
+                screenArt.xScale = sceneWithPositions.screenArt.xScale
+                
+                screenArt.yScale = sceneWithPositions.screenArt.yScale
+                screenArt.size = sceneWithPositions.screenArt.size
+                screenArt.position = sceneWithPositions.screenArt.position
+                
+                
+                /*
+                 print("Land: Art width: \(screenArt.size.width), Art Height: \(screenArt.size.height)")
+                 print("Land: Art xScale: \(screenArt.xScale)")
+                 print("Land: Art yScale: \(screenArt.yScale)")
+                 print("Land: Art X: \(screenArt.position.x), Art Y: \(screenArt.position.y)")
+                 */
+                
+                
+                playMenu.position = sceneWithPositions.playMenu.position
+                difficultyMenu.position = sceneWithPositions.difficultyMenu.position
+                createOrJoinMenu.position = sceneWithPositions.createOrJoinMenu.position
+                gameCodeMenu.position = sceneWithPositions.gameCodeMenu.position
+                gameLobbyContainer.position = sceneWithPositions.gameLobbyContainer.position
+                settingsContainer.position = sceneWithPositions.settingsContainer.position
+                
+                textFieldPlaceholder.position = sceneWithPositions.textFieldPlaceholder.position
+                
+                creditsButton.position = sceneWithPositions.creditsButton.position
+                creditsContainer.position = sceneWithPositions.creditsContainer.position
+                
+                
+                
             } else {
-             print("Couldn't get Scene For Transition")
+                print("Couldn't get Scene For Transition")
             }
             
-        
+            
         }
         
     }
     
     func adjustGraphics(){
         if !(UIDevice.current.hasTopNotch && UIDevice.current.userInterfaceIdiom == .phone) {
-            notConnectedToServerSprite.position.y -= 170
-            searchingForGameSprite.position.y += 170
-            stopSearchingForGameSprite.position.y += 170
-            creditsButton.position.y += 170
+            notConnectedToServerSprite.position.y -= 200
+            searchingForGameSprite.position.y += 200
+            stopSearchingForGameSprite.position.y += 200
+            creditsButton.position.y += 200
             print("adjusted Graphics for Non-Notch deviced ")
         }
         print("Adjusted no Graphics")
