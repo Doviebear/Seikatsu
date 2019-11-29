@@ -92,6 +92,10 @@ import GameplayKit
     var difficulty: String!
     var playerRowsArray: [[[Location]]]!
     
+    var settingsContainer: SKSpriteNode!
+    var muteButton: SKSpriteNode!
+    var isMutedSprite: SKSpriteNode!
+    
     //Player One: Pink
     //Player Two: Blue
     //Player Three: Green
@@ -193,6 +197,10 @@ import GameplayKit
         self.hamburgerButton = self.childNode(withName: "hamburgerButton") as? SKSpriteNode
         self.gameBoard = self.childNode(withName: "gameBoard") as? SKSpriteNode
         self.tilesBackground = self.childNode(withName: "tilesBackground") as? SKSpriteNode
+        
+        self.settingsContainer = self.childNode(withName: "settingsContainer") as? SKSpriteNode
+        self.muteButton = settingsContainer.childNode(withName: "muteButton") as? SKSpriteNode
+        self.isMutedSprite = muteButton.childNode(withName: "isMutedSprite") as? SKSpriteNode
         
         self.menuContainer = self.childNode(withName: "menuContainer") as? SKSpriteNode
         self.resumeButton = menuContainer.childNode(withName: "resumeButton") as? SKSpriteNode
@@ -375,7 +383,7 @@ import GameplayKit
                 } else if node.name == "settingsButton" {
                     settingsButton.texture = SKTexture(imageNamed: "settingsButtonPressed")
                 } else if node.name == "quitButton" {
-//                    quitButton.texture = SKTexture(imageNamed: "quitButtonPressed")
+                    quitButton.texture = SKTexture(imageNamed: "quitButtonPressed")
                 } else if node.name == "howToPlayButton" {
                     howToPlayButton.texture = SKTexture(imageNamed: "howToPlayButtonPressed")
                 } else if node.name == "resumeButton" {
@@ -383,7 +391,7 @@ import GameplayKit
                 } else if node.name == "playAgainButton" {
                     playAgainButton.texture = SKTexture(imageNamed: "playAgainButtonPressed")
                 } else if node.name == "mainMenuButton" {
-//                    mainMenuButton.texture = SKTexture(imageNamed: "mainMenuButtonPressed")
+                    mainMenuButton.texture = SKTexture(imageNamed: "mainMenuButtonPressed")
                 }
             }
         }
@@ -413,6 +421,10 @@ import GameplayKit
             let nodesArray = self.nodes(at: location)
             for node in nodesArray {
                 
+                if node.name == "touchBufferNode" {
+                    closeAllContainers()
+                    
+                }
                 
                 
                 if menuContainer.isHidden == false {
@@ -420,6 +432,7 @@ import GameplayKit
                         print("Settings button Pressed")
                         settingsButton.texture = SKTexture(imageNamed: "settingsButton")
                         menuContainer.isHidden = true
+                        settingsContainer.isHidden = false
                         return
                     } else if node.name == "quitButton" {
                         //quitButton.texture = SKTexture(imageNamed: "quitButton")
@@ -435,10 +448,15 @@ import GameplayKit
                     } else if node.name == "resumeButton" {
                         print("Resume button Pressed")
                         resumeButton.texture = SKTexture(imageNamed: "resumeButton")
-                        menuContainer.isHidden = true
+                        closeAllContainers()
                         return
                     }
+                } else if settingsContainer.isHidden == false {
+                    
+                    
                 }
+                
+                
                 
                 guard menuContainer.isHidden == true else {
                     return
@@ -446,7 +464,8 @@ import GameplayKit
                 
                 if node.name == "hamburgerButton" {
                     hamburgerButton.texture = SKTexture(imageNamed: "hamburgerButton")
-                    bringUpMenu()
+                    menuContainer.isHidden = false
+                    touchBufferNode.isHidden = false
                     return
                 }
                 
@@ -695,9 +714,7 @@ import GameplayKit
         
     }
     
-    func bringUpMenu() {
-        menuContainer.isHidden = false
-    }
+    
     
     func backToMainMenuScene() {
         if let fileName = getFileName() {
@@ -721,6 +738,12 @@ import GameplayKit
             print("Couldn't get File Name for Menu Scene")
         }
         return
+    }
+    
+    func closeAllContainers() {
+        touchBufferNode.isHidden = true
+        settingsContainer.isHidden = true
+        menuContainer.isHidden = true
     }
     
     func getFileName() -> String? {
@@ -1228,213 +1251,76 @@ import GameplayKit
             effectNodesInPlay.append(effectNode)
     }
     
-    
-    func switchToLandscape() {
-        /*
-        if UIDevice.current.userInterfaceIdiom == .phone {
-            self.size = CGSize(width: 2436, height: 1125)
-            //Things to change: Hexagon
-            centerHexagon.position = CGPoint(x: 568 ,y: 562.5)
-            //Player tokens
-            for (index,playerToken) in playerTokenNodesInPlay.enumerated() {
-                let x: Int
-                if index == 0 {
-                    x = 1334
+    func changeOrientation(to orientation: String){
+        let fileName:String
+        if orientation == "Landscape" {
+            if UIDevice.current.userInterfaceIdiom == .phone {
+                if UIDevice.current.hasTopNotch {
+                    self.size = CGSize(width: 2436, height: 1125 )
+                    fileName = "singleplayerPhoneLand"
                 } else {
-                    x = 1800
+                    self.size = CGSize(width: 1920, height: 1080 )
+                    fileName = "singleplayerNoNotchLand"
                 }
-                playerToken.position = CGPoint(x: x, y: 208)
-                sksPlayerTokenNodes[index].position = CGPoint(x: x, y: 208)
+                
+                
+            } else {
+                //Its an Ipad
+                self.size = CGSize(width: 2048 , height: 1536 )
+                fileName = "singleplayerPadLand"
             }
-            
-            //Score Bar, Labels, and Markers
-            //scoreBar.position = CGPoint(x: 1800, y: 888)
-            
-            localPlayerOneScoreLabel.position = CGPoint(x: 1500, y: 808)
-            localPlayerTwoScoreLabel.position = CGPoint(x: 1800, y: 808)
-            localPlayerThreeScoreLabel.position = CGPoint(x: 2100, y: 808)
-            
-            for (index,scoreToken) in scoreBars.enumerated() {
-                let x: Int
-                if index == 0 {
-                    x = 1500
-                } else if index == 1 {
-                    x = 1800
+        } else if orientation == "Portrait" {
+            if UIDevice.current.userInterfaceIdiom == .phone {
+                if UIDevice.current.hasTopNotch {
+                   self.size = CGSize(width: 1125, height: 2436 )
+                    fileName = "singleplayerPhonePortrait"
                 } else {
-                    x = 2100
+                    self.size = CGSize(width: 1080, height: 1920 )
+                    fileName = "singleplayerNoNotchPortrait"
                 }
-                scoreToken.position = CGPoint(x: x, y: 888)
+                
+            } else {
+                //Its an Ipad
+                self.size = CGSize(width: 1536 , height: 2048 )
+                fileName = "singleplayerPadPortrait"
             }
-            
-            //background
-            ///Dont have one yet
-            
-            //Nodes Inside Hexagon, this is haaaaaaaard. Fine. Ill do it.
-            for tokenSpace in tokenSpacesInPlay {
-                let newPosition = makeNewPosistionForToken(at: tokenSpace.Location)
-                tokenSpace.position = newPosition
-            }
-            for tokenNode in tokensInPlay {
-                let newPosition = makeNewPosistionForToken(at: tokenNode.tokenData.Location!)
-                tokenNode.position = newPosition
-            }
-            
-        } else if UIDevice.current.userInterfaceIdiom == .pad {
-            //Ipad landscape setup
-            self.size = CGSize(width: 2048, height: 1536)
-            //Things to change: Hexagon
-            centerHexagon.position = CGPoint(x: 650 ,y: 768)
-            //Player tokens
-            for (index,playerToken) in playerTokenNodesInPlay.enumerated() {
-                let x: Int
-                if index == 0 {
-                    x = 1344
-                } else {
-                    x = 1800
-                }
-                playerToken.position = CGPoint(x: x, y: 208)
-                sksPlayerTokenNodes[index].position = CGPoint(x: x, y: 208)
-            }
-            
-            //Score Bar, Labels, and Markers
-            //scoreBar.position = CGPoint(x: 1525, y: 1300)
-            
-            localPlayerOneScoreLabel.position = CGPoint(x: 1220, y: 1220)
-            localPlayerTwoScoreLabel.position = CGPoint(x: 1520, y: 1220)
-            localPlayerThreeScoreLabel.position = CGPoint(x: 1820, y: 1220)
-            
-            for (index,scoreToken) in scoreBars.enumerated() {
-                let x: Int
-                if index == 0 {
-                    x = 1220
-                } else if index == 1 {
-                    x = 1520
-                } else {
-                    x = 1820
-                }
-                scoreToken.position = CGPoint(x: x, y: 1300)
-            }
-            
-            //background
-            ///Dont have one yet
-            
-            
-            //Nodes Inside Hexagon, this is haaaaaaaard. Fine. Ill do it.
-            for tokenSpace in tokenSpacesInPlay {
-                let newPosition = makeNewPosistionForToken(at: tokenSpace.Location)
-                tokenSpace.position = newPosition
-            }
-            for tokenNode in tokensInPlay {
-                let newPosition = makeNewPosistionForToken(at: tokenNode.tokenData.Location!)
-                tokenNode.position = newPosition
-            }
+        } else {
+            print("Invalid input for scene orientation change")
+            return
         }
-        */
+        
+        let testModel = GameModel()
+        if let sceneWithPositions = GameSceneOnline(fileNamed: fileName, gameModel: testModel, player: 1) {
+            
+            touchBufferNode.position = CGPoint(x: self.size.width/2, y:  self.size.height/2)
+            touchBufferNode.size = self.size
+            //Things to change: Hexagon
+            centerHexagon.position = sceneWithPositions.centerHexagon.position
+            //Player tokens
+            
+            
+            for (index,playerToken) in playerTokenNodesInPlay.enumerated() {
+                
+                playerToken.position = sceneWithPositions.sksPlayerTokenNodes[index].position
+                sksPlayerTokenNodes[index].position = sceneWithPositions.sksPlayerTokenNodes[index].position
+            }
+            
+            //Score Bar, Labels, and Markers
+            tilesBackground.position = sceneWithPositions.tilesBackground.position
+            scoreBoard.position = sceneWithPositions.scoreBoard.position
+            gameBoard.position = sceneWithPositions.gameBoard.position
+            
+            hamburgerButton.position = sceneWithPositions.hamburgerButton.position
+            
+            endGameContainer.position = sceneWithPositions.endGameContainer.position
+            settingsContainer.position = sceneWithPositions.settingsContainer.position
+            
+            
+        }
+        
     }
     
-    func switchToPortrait() {
-        /*
-        if UIDevice.current.userInterfaceIdiom == .phone {
-            self.size = CGSize(width: 1125, height: 2436)
-            
-            //Things to change: Hexagon
-            centerHexagon.position = CGPoint(x: 562.5, y: 1568)
-            //Player tokens
-            for (index,playerToken) in playerTokenNodesInPlay.enumerated() {
-                let x: Double
-                if index == 0 {
-                    x = 320
-                } else {
-                    x = 827.5
-                }
-                playerToken.position = CGPoint(x: x, y: 772.5)
-                sksPlayerTokenNodes[index].position = CGPoint(x: x, y: 772.5)
-            }
-            //Score Bar, Labels, and Markers
-            //scoreBar.position = CGPoint(x: 575, y: 325)
-            
-            localPlayerOneScoreLabel.position = CGPoint(x: 275, y: 245)
-            localPlayerTwoScoreLabel.position = CGPoint(x: 575, y: 245)
-            localPlayerThreeScoreLabel.position = CGPoint(x: 875, y: 245)
-            
-            for (index,scoreToken) in scoreBars.enumerated() {
-                let x: Int
-                if index == 0 {
-                    x = 275
-                } else if index == 1 {
-                    x = 575
-                } else {
-                    x = 875
-                }
-                scoreToken.position = CGPoint(x: x, y: 325)
-            }
-            
-            //background
-            ///Dont have one yet
-            
-            
-            //Nodes Inside Hexagon, this is haaaaaaaard. Fine. Ill do it.
-            for tokenSpace in tokenSpacesInPlay {
-                let newPosition = makeNewPosistionForToken(at: tokenSpace.Location)
-                tokenSpace.position = newPosition
-            }
-            for tokenNode in tokensInPlay {
-                let newPosition = makeNewPosistionForToken(at: tokenNode.tokenData.Location!)
-                tokenNode.position = newPosition
-            }
-        } else if UIDevice.current.userInterfaceIdiom == .pad {
-            self.size = CGSize(width: 1536, height: 2048)
-            
-            //Things to change: Hexagon
-            centerHexagon.position = CGPoint(x: 768, y: 1334)
-            //Player tokens
-            for (index,playerToken) in playerTokenNodesInPlay.enumerated() {
-                let x: Double
-                if index == 0 {
-                    x = 318
-                } else {
-                    x = 1218
-                }
-                playerToken.position = CGPoint(x: x, y: 520)
-                 sksPlayerTokenNodes[index].position = CGPoint(x: x, y: 520)
-            }
-            //Score Bar, Labels, and Markers
-            //scoreBar.position = CGPoint(x: 768, y: 120)
-            
-            localPlayerOneScoreLabel.position = CGPoint(x: 468, y: 40)
-            localPlayerTwoScoreLabel.position = CGPoint(x: 768, y: 40)
-            localPlayerThreeScoreLabel.position = CGPoint(x: 1068, y: 40)
-            
-            for (index,scoreToken) in scoreBars.enumerated() {
-                let x: Int
-                if index == 0 {
-                    x = 468
-                } else if index == 1 {
-                    x = 768
-                } else {
-                    x = 1068
-                }
-                scoreToken.position = CGPoint(x: x, y: 120)
-            }
-            
-            //background
-            
-            
-            ///Dont have one yet
-            
-            
-            //Nodes Inside Hexagon, this is haaaaaaaard. Fine. Ill do it.
-            for tokenSpace in tokenSpacesInPlay {
-                let newPosition = makeNewPosistionForToken(at: tokenSpace.Location)
-                tokenSpace.position = newPosition
-            }
-            for tokenNode in tokensInPlay {
-                let newPosition = makeNewPosistionForToken(at: tokenNode.tokenData.Location!)
-                tokenNode.position = newPosition
-            }
-        }
- */
-    }
+    
     
     
     func makeNewPosistionForToken(at location: Location) -> CGPoint {

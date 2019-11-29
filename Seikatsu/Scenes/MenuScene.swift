@@ -178,9 +178,6 @@ Shauna Monteforte
          NotificationCenter.default.addObserver(self, selector: #selector(gameNameTaken(_:)), name: .gameNameTaken, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(updateFriendRoom(_:)), name: .updateFriendRoom, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(removedFromQueue(_:)), name: .removedFromQueue, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(muteMusic(_:)), name: .muteAllMusic, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(unmuteMusic(_:)), name: .unmuteAllMusic, object: nil)
-       
         
         createGameButton = createOrJoinMenu.childNode(withName: "createGameButton") as? SKSpriteNode
         
@@ -211,6 +208,7 @@ Shauna Monteforte
         loadingSprite.run(repeatAction, withKey: "spinningAnimation")
         */
         adjustGraphics()
+        print("SceneDidLoadFinished")
         
         
         ///Adding Music
@@ -290,6 +288,12 @@ Shauna Monteforte
                     self.addChild(bg)
                     self.backgroundMusic = bg
                     print("Found music")
+                    if (self.view!.window!.rootViewController as! GameViewController).defaults.bool(forKey: "musicMuted") {
+                        
+                        let mute = SKAction.changeVolume(to: 0.0, duration: 0.1)
+                        self.backgroundMusic.run(mute)
+                        //self.isMutedSprite.isHidden = true
+                    }
                 } else {
                     print("Couldn't find music")
                 }
@@ -300,6 +304,12 @@ Shauna Monteforte
                 let bg = SKAudioNode(url: musicURL)
                 self.addChild(bg)
                 self.backgroundMusic = bg
+                if (self.view!.window!.rootViewController as! GameViewController).defaults.bool(forKey: "musicMuted") {
+                    
+                    let mute = SKAction.changeVolume(to: 0.0, duration: 0.1)
+                    self.backgroundMusic.run(mute)
+                    //self.isMutedSprite.isHidden = true
+                }
                 print("Found music")
             } else {
                 print("Couldn't find music")
@@ -404,9 +414,14 @@ Shauna Monteforte
                     if isMutedSprite.isHidden == true {
                         NotificationCenter.default.post(name: .muteAllMusic, object: nil)
                         isMutedSprite.isHidden = false
+                         let mute = SKAction.changeVolume(to: 0.0, duration: 0.1)
+                        backgroundMusic.run(mute)
+                    
                     } else {
                         NotificationCenter.default.post(name: .unmuteAllMusic, object: nil)
                         isMutedSprite.isHidden = true
+                        let unmute = SKAction.changeVolume(to: 1.0, duration: 0.0)
+                        backgroundMusic.run(unmute)
                     }
                     
                 } else if node.name == "creditsButton" {
@@ -504,7 +519,9 @@ Shauna Monteforte
                     }
                      */
                 } else if node.name == "stopSearchingForGameSprite" {
+                    print("Clicked stop searching for game")
                     stopSearchingForGame()
+                    
                 }
                 
             }
@@ -602,20 +619,11 @@ Shauna Monteforte
         
     }
     
-    @objc func muteMusic(_ notification: Notification) {
-        let mute = SKAction.changeVolume(to: 0.0, duration: 0.1)
-        backgroundMusic.run(mute)
-        isMutedSprite.isHidden = true
-    }
     
-    @objc func unmuteMusic(_ notification: Notification) {
-        let unmute = SKAction.changeVolume(to: 1.0, duration: 0.0)
-        backgroundMusic.run(unmute)
-        isMutedSprite.isHidden = false
-        
-    }
     
    
+    
+    
     
     @objc func updateFriendRoom(_ notification: Notification) {
         guard let numInRoom = notification.object as? Int else {
@@ -640,217 +648,107 @@ Shauna Monteforte
          notConnectedToServerSprite.run(SKAction.moveBy(x: -(notConnectedToServerSprite.size.width), y: 0, duration: 0.3))
         }
         currentlyConnected = false
+        resetScene()
         SocketIOHelper.helper.manager.reconnect()
     }
     
-    func switchToPortrait() {
-        
-        if UIDevice.current.userInterfaceIdiom == .phone {
-            
-            if let sceneWithPositions = MenuScene(fileNamed: "MenuScenePhonePortrait") {
+    func changeOrientation(to orientation: String){
+        let fileName:String
+        if orientation == "Landscape" {
+            if UIDevice.current.userInterfaceIdiom == .phone {
+                self.size = CGSize(width: 2436, height: 1125 )
+                fileName = "MenuScenePhoneLand"
+            } else {
+                //Its an Ipad
+                self.size = CGSize(width: 2048 , height: 1536 )
+                fileName = "MenuScenePadLand"
+            }
+        } else if orientation == "Portrait" {
+            if UIDevice.current.userInterfaceIdiom == .phone {
                 self.size = CGSize(width: 1125, height: 2436 )
                 
-                touchBufferNode.position = CGPoint(x: self.size.width/2, y:  self.size.height/2)
-                touchBufferNode.size = self.size
-                
-                title.position = sceneWithPositions.title.position
-                title.xScale = sceneWithPositions.title.xScale
-                title.yScale = sceneWithPositions.title.yScale
-                
-                playButton.position = sceneWithPositions.playButton.position
-                howToPlayButton.position = sceneWithPositions.howToPlayButton.position
-                settingsButton.position = sceneWithPositions.settingsButton.position
-                
-                searchingForGameSprite.position = sceneWithPositions.searchingForGameSprite.position
-                stopSearchingForGameSprite.position = sceneWithPositions.stopSearchingForGameSprite.position
-                notConnectedToServerSprite.position = sceneWithPositions.notConnectedToServerSprite.position
-                
-                background.position = sceneWithPositions.background.position
-                background.size = sceneWithPositions.background.size
-                
-                screenArt.texture = sceneWithPositions.screenArt.texture
-                
-               
-                screenArt.xScale = sceneWithPositions.screenArt.xScale
-                
-                screenArt.yScale = sceneWithPositions.screenArt.yScale
-                
-                screenArt.size = sceneWithPositions.screenArt.size
-                screenArt.position = sceneWithPositions.screenArt.position
-               
-                
-                /*
-                 print("Portrait: Art width: \(screenArt.size.width), Art Height: \(screenArt.size.height)")
-                print("Portrait: Art xScale: \(screenArt.xScale)")
-                print("Portrait: Art yScale: \(screenArt.yScale)")
-                 print("Portrait: Art X: \(screenArt.position.x), Art Y: \(screenArt.position.y)")
-                 */
-                
-                playMenu.position = sceneWithPositions.playMenu.position
-                difficultyMenu.position = sceneWithPositions.difficultyMenu.position
-                createOrJoinMenu.position = sceneWithPositions.createOrJoinMenu.position
-                gameCodeMenu.position = sceneWithPositions.gameCodeMenu.position
-                gameLobbyContainer.position = sceneWithPositions.gameLobbyContainer.position
-                settingsContainer.position = sceneWithPositions.settingsContainer.position
-                
-                textFieldPlaceholder.position = sceneWithPositions.textFieldPlaceholder.position
-                
-                creditsButton.position = sceneWithPositions.creditsButton.position
-                creditsContainer.position = sceneWithPositions.creditsContainer.position
-                
-                
-                
-                
+                fileName = "MenuScenePhonePortrait"
             } else {
-                print("Couldn't get Scene For Transition")
+                //Its an Ipad
+                self.size = CGSize(width: 1536 , height: 2048 )
+                fileName = "MenuScenePadPortrait"
+            }
+        } else {
+            print("Invalid input for scene orientation change")
+            return
+        }
+        
+        if let sceneWithPositions = MenuScene(fileNamed: fileName) {
+            touchBufferNode.position = CGPoint(x: self.size.width/2, y:  self.size.height/2)
+            touchBufferNode.size = self.size
+            
+            title.position = sceneWithPositions.title.position
+            title.xScale = sceneWithPositions.title.xScale
+            title.yScale = sceneWithPositions.title.yScale
+            
+            playButton.position = sceneWithPositions.playButton.position
+            howToPlayButton.position = sceneWithPositions.howToPlayButton.position
+            settingsButton.position = sceneWithPositions.settingsButton.position
+            
+            searchingForGameSprite.position = sceneWithPositions.searchingForGameSprite.position
+            stopSearchingForGameSprite.position = sceneWithPositions.stopSearchingForGameSprite.position
+            notConnectedToServerSprite.position = sceneWithPositions.notConnectedToServerSprite.position
+            if searchingForMatch {
+                searchingForGameSprite.run(SKAction.moveBy(x: -(searchingForGameSprite.size.width), y: 0, duration: 0.3))
+                stopSearchingForGameSprite.run(SKAction.moveBy(x: -(searchingForGameSprite.size.width + 20), y: 0, duration: 0.3))
             }
             
             
+            background.position = sceneWithPositions.background.position
+            background.size = sceneWithPositions.background.size
+            
+            screenArt.texture = sceneWithPositions.screenArt.texture
             
             
+            screenArt.xScale = sceneWithPositions.screenArt.xScale
             
-          
+            screenArt.yScale = sceneWithPositions.screenArt.yScale
             
-        } else if UIDevice.current.userInterfaceIdiom == .pad {
+            screenArt.size = sceneWithPositions.screenArt.size
+            screenArt.position = sceneWithPositions.screenArt.position
             
-      
+            playMenu.position = sceneWithPositions.playMenu.position
+            difficultyMenu.position = sceneWithPositions.difficultyMenu.position
+            createOrJoinMenu.position = sceneWithPositions.createOrJoinMenu.position
+            gameCodeMenu.position = sceneWithPositions.gameCodeMenu.position
+            gameLobbyContainer.position = sceneWithPositions.gameLobbyContainer.position
+            settingsContainer.position = sceneWithPositions.settingsContainer.position
             
+            textFieldPlaceholder.position = sceneWithPositions.textFieldPlaceholder.position
+            
+            creditsButton.position = sceneWithPositions.creditsButton.position
+            creditsContainer.position = sceneWithPositions.creditsContainer.position
+            
+            //adjustGraphics()
+        } else {
+            print("Couldn't get scene with name \(fileName) for orientation change")
         }
+        
         
     }
     
-    func switchToLandscape() {
-        
-        if UIDevice.current.userInterfaceIdiom == .phone {
-            if let sceneWithPositions = MenuScene(fileNamed: "MenuScenePhoneLand") {
-                self.size = CGSize(width: 2436, height: 1125 )
-                
-                touchBufferNode.position = CGPoint(x: self.size.width/2, y:  self.size.height/2)
-                touchBufferNode.size = self.size
-                
-                title.position = sceneWithPositions.title.position
-                title.xScale = sceneWithPositions.title.xScale
-                title.yScale = sceneWithPositions.title.yScale
-                
-                playButton.position = sceneWithPositions.playButton.position
-                howToPlayButton.position = sceneWithPositions.howToPlayButton.position
-                settingsButton.position = sceneWithPositions.settingsButton.position
-                
-                searchingForGameSprite.position = sceneWithPositions.searchingForGameSprite.position
-                stopSearchingForGameSprite.position = sceneWithPositions.stopSearchingForGameSprite.position
-                notConnectedToServerSprite.position = sceneWithPositions.notConnectedToServerSprite.position
-                
-                background.position = sceneWithPositions.background.position
-                background.size = sceneWithPositions.background.size
-                
-                screenArt.texture = sceneWithPositions.screenArt.texture
-                
-                
-                screenArt.xScale = sceneWithPositions.screenArt.xScale
-                
-                screenArt.yScale = sceneWithPositions.screenArt.yScale
-                screenArt.size = sceneWithPositions.screenArt.size
-                screenArt.position = sceneWithPositions.screenArt.position
-                
-                
-                /*
-                 print("Land: Art width: \(screenArt.size.width), Art Height: \(screenArt.size.height)")
-                 print("Land: Art xScale: \(screenArt.xScale)")
-                 print("Land: Art yScale: \(screenArt.yScale)")
-                 print("Land: Art X: \(screenArt.position.x), Art Y: \(screenArt.position.y)")
-                 */
-                
-                
-                playMenu.position = sceneWithPositions.playMenu.position
-                difficultyMenu.position = sceneWithPositions.difficultyMenu.position
-                createOrJoinMenu.position = sceneWithPositions.createOrJoinMenu.position
-                gameCodeMenu.position = sceneWithPositions.gameCodeMenu.position
-                gameLobbyContainer.position = sceneWithPositions.gameLobbyContainer.position
-                settingsContainer.position = sceneWithPositions.settingsContainer.position
-                
-                textFieldPlaceholder.position = sceneWithPositions.textFieldPlaceholder.position
-                
-                creditsButton.position = sceneWithPositions.creditsButton.position
-                creditsContainer.position = sceneWithPositions.creditsContainer.position
-                
-                
-                
-                
-            } else {
-                print("Couldn't get Scene For Transition")
-            }
-            
-        } else if UIDevice.current.userInterfaceIdiom == .pad {
-            if let sceneWithPositions = MenuScene(fileNamed: "MenuScenePadLand") {
-                self.size = CGSize(width: 2048 , height: 1536 )
-                
-                touchBufferNode.position = CGPoint(x: self.size.width/2, y:  self.size.height/2)
-                touchBufferNode.size = self.size
-                title.position = sceneWithPositions.title.position
-                title.xScale = sceneWithPositions.title.xScale
-                title.yScale = sceneWithPositions.title.yScale
-                
-                playButton.position = sceneWithPositions.playButton.position
-                howToPlayButton.position = sceneWithPositions.howToPlayButton.position
-                settingsButton.position = sceneWithPositions.settingsButton.position
-                
-                searchingForGameSprite.position = sceneWithPositions.searchingForGameSprite.position
-                stopSearchingForGameSprite.position = sceneWithPositions.stopSearchingForGameSprite.position
-                notConnectedToServerSprite.position = sceneWithPositions.notConnectedToServerSprite.position
-                
-                background.position = sceneWithPositions.background.position
-                background.size = sceneWithPositions.background.size
-                
-                screenArt.texture = sceneWithPositions.screenArt.texture
-                
-                
-                screenArt.xScale = sceneWithPositions.screenArt.xScale
-                
-                screenArt.yScale = sceneWithPositions.screenArt.yScale
-                screenArt.size = sceneWithPositions.screenArt.size
-                screenArt.position = sceneWithPositions.screenArt.position
-                
-                
-                /*
-                 print("Land: Art width: \(screenArt.size.width), Art Height: \(screenArt.size.height)")
-                 print("Land: Art xScale: \(screenArt.xScale)")
-                 print("Land: Art yScale: \(screenArt.yScale)")
-                 print("Land: Art X: \(screenArt.position.x), Art Y: \(screenArt.position.y)")
-                 */
-                
-                
-                playMenu.position = sceneWithPositions.playMenu.position
-                difficultyMenu.position = sceneWithPositions.difficultyMenu.position
-                createOrJoinMenu.position = sceneWithPositions.createOrJoinMenu.position
-                gameCodeMenu.position = sceneWithPositions.gameCodeMenu.position
-                gameLobbyContainer.position = sceneWithPositions.gameLobbyContainer.position
-                settingsContainer.position = sceneWithPositions.settingsContainer.position
-                
-                textFieldPlaceholder.position = sceneWithPositions.textFieldPlaceholder.position
-                
-                creditsButton.position = sceneWithPositions.creditsButton.position
-                creditsContainer.position = sceneWithPositions.creditsContainer.position
-                
-                
-                
-            } else {
-                print("Couldn't get Scene For Transition")
-            }
-            
-            
-        }
-        
-    }
     
     func adjustGraphics(){
-        if !(UIDevice.current.hasTopNotch && UIDevice.current.userInterfaceIdiom == .phone) {
+        if !(UIDevice.current.hasTopNotch) && UIDevice.current.userInterfaceIdiom == .phone && scene?.size.width ?? CGFloat(3000) <= CGFloat(2000) {
             notConnectedToServerSprite.position.y -= 200
             searchingForGameSprite.position.y += 200
             stopSearchingForGameSprite.position.y += 200
             creditsButton.position.y += 200
-            print("adjusted Graphics for Non-Notch deviced ")
+            print("adjusted Graphics for Non-Notch deviced: Portrait ")
+        } else if !(UIDevice.current.hasTopNotch) && UIDevice.current.userInterfaceIdiom == .phone && scene?.size.width ?? CGFloat(3000) >= CGFloat(2000)  {
+            notConnectedToServerSprite.position.x -= 236
+            searchingForGameSprite.position.x -= 236
+            stopSearchingForGameSprite.position.x -= 236
+            
+            print("adjusted Graphics for Non-Notch deviced: Landscape ")
+        } else {
+            print("Adjusted no Graphics")
         }
-        print("Adjusted no Graphics")
     }
    
     

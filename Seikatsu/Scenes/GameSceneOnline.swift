@@ -339,8 +339,6 @@ import GameplayKit
         NotificationCenter.default.addObserver(self, selector: #selector(loadGameModel(_:)), name: .roundEnd, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(playerDisconnected(_:)), name: .playerDisconnected, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(playerDisconnected(_:)), name: .disconnectedFromServer, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(muteMusic(_:)), name: .muteAllMusic, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(unmuteMusic(_:)), name: .unmuteAllMusic, object: nil)
         
         self.centerHexagon = self.childNode(withName: "//centerHexagon") as? SKSpriteNode
         print("Screen Width: \(JKGame.rect.width)")
@@ -432,15 +430,21 @@ import GameplayKit
         
         /*
         if let musicURL = Bundle.main.url(forResource: "gameplay1", withExtension: "wav") {
-                    let bg = SKAudioNode(url: musicURL)
-                    addChild(bg)
-        //            backgroundMusic = bg
-                    print("Found music")
-                } else {
-                    print("Couldn't find music")
-                }
-        
+            let bg = SKAudioNode(url: musicURL)
+            addChild(bg)
+            backgroundMusic = bg
+            print("Found music")
+            if (self.view!.window!.rootViewController as! GameViewController).defaults.bool(forKey: "musicMuted") {
+                
+                let mute = SKAction.changeVolume(to: 0.0, duration: 0.1)
+                self.backgroundMusic.run(mute)
+                //self.isMutedSprite.isHidden = true
+            }
+        } else {
+            print("Couldn't find music")
+        }
         */
+        
         touchBufferNode = SKSpriteNode(color:SKColor(red:0.0,green:0.0,blue:0.0,alpha:0.5),size:self.size)
         touchBufferNode.position = CGPoint(x: self.size.width/2, y:  self.size.height/2)
         touchBufferNode.zPosition = 100
@@ -481,6 +485,10 @@ import GameplayKit
             let nodesArray = self.nodes(at: location)
             for node in nodesArray {
                 
+                if node.name == "touchBufferNode" {
+                    closeAllContainers()
+                    return
+                }
                 
                 
                 if menuContainer.isHidden == false {
@@ -488,6 +496,7 @@ import GameplayKit
                         print("Settings button Pressed")
                         settingsButton.texture = SKTexture(imageNamed: "settingsButton")
                         menuContainer.isHidden = true
+                        settingsContainer.isHidden = false
                         return
                     } else if node.name == "quitButton" {
                         //quitButton.texture = SKTexture(imageNamed: "quitButton")
@@ -503,16 +512,18 @@ import GameplayKit
                     } else if node.name == "resumeButton" {
                         print("Resume button Pressed")
                         resumeButton.texture = SKTexture(imageNamed: "resumeButton")
-                        menuContainer.isHidden = true
+                        closeAllContainers()
                         return
                     }
                 } else if node.name == "muteButton" || node.name == "isMutedSprite" {
                     if isMutedSprite.isHidden == true {
                         NotificationCenter.default.post(name: .muteAllMusic, object: nil)
                         isMutedSprite.isHidden = false
+                        muteMusic()
                     } else {
                         NotificationCenter.default.post(name: .unmuteAllMusic, object: nil)
                         isMutedSprite.isHidden = true
+                        unmuteMusic()
                     }
                 }
                 
@@ -523,7 +534,8 @@ import GameplayKit
                 
                 if node.name == "hamburgerButton" && gameplayPhase != 10 {
                     hamburgerButton.texture = SKTexture(imageNamed: "hamburgerButton")
-                    bringUpMenu()
+                    menuContainer.isHidden = false
+                    touchBufferNode.isHidden = false
                     return
                 }
                 
@@ -739,9 +751,7 @@ import GameplayKit
         SocketIOHelper.helper.endRound(model: self.model)
     }
     
-    func bringUpMenu() {
-        menuContainer.isHidden = false
-    }
+    
     
     func backToMainMenuScene() {
         if let fileName = getFileName() {
@@ -942,7 +952,11 @@ import GameplayKit
     
     
     
-    
+    func closeAllContainers() {
+        menuContainer.isHidden = true
+        settingsContainer.isHidden = true
+        touchBufferNode.isHidden = true
+    }
     
     
     
@@ -1211,6 +1225,7 @@ import GameplayKit
             winnerLabel.text = "You Disconnected"
         }
         winnerLabel.fontName = "MyriadPro-Black"
+        winnerLabel.fontSize = 96
         
         finalScoreLabel.fontName = "MyriadPro-Black"
         finalScoreLabel.text = "Tie"
@@ -1229,13 +1244,13 @@ import GameplayKit
     
     
     
-    @objc func muteMusic(_ notification: Notification) {
+    func muteMusic() {
         let mute = SKAction.changeVolume(to: 0.0, duration: 0.1)
         backgroundMusic.run(mute)
         isMutedSprite.isHidden = true
     }
     
-    @objc func unmuteMusic(_ notification: Notification) {
+    func unmuteMusic() {
         let unmute = SKAction.changeVolume(to: 1.0, duration: 0.0)
         backgroundMusic.run(unmute)
         isMutedSprite.isHidden = false
@@ -1263,77 +1278,80 @@ import GameplayKit
     }
     
     
-    func switchToLandscape() {
-        
-        if UIDevice.current.userInterfaceIdiom == .phone {
-            let testModel = GameModel()
-            if let sceneWithPositions = GameSceneOnline(fileNamed: "GameSceneOnlinePhoneLand", gameModel: testModel, player: 1) {
-                self.size = CGSize(width: 2436, height: 1125)
-                //Things to change: Hexagon
-                centerHexagon.position = sceneWithPositions.centerHexagon.position
-                //Player tokens
-                
-                
-                for (index,playerToken) in playerTokenNodesInPlay.enumerated() {
-                    
-                    playerToken.position = sceneWithPositions.sksPlayerTokenNodes[index].position
-                    sksPlayerTokenNodes[index].position = sceneWithPositions.sksPlayerTokenNodes[index].position
+    
+    func changeOrientation(to orientation: String){
+        let fileName:String
+        if orientation == "Landscape" {
+            if UIDevice.current.userInterfaceIdiom == .phone {
+                if UIDevice.current.hasTopNotch {
+                    self.size = CGSize(width: 2436, height: 1125 )
+                    fileName = "GameSceneOnlinePhoneLand"
+                } else {
+                    self.size = CGSize(width: 1920, height: 1080 )
+                    fileName = "GameSceneOnlineNoNotchLand"
                 }
                 
-                //Score Bar, Labels, and Markers
-                tilesBackground.position = sceneWithPositions.tilesBackground.position
-                scoreBoard.position = sceneWithPositions.scoreBoard.position
-                gameBoard.position = sceneWithPositions.gameBoard.position
                 
-                hamburgerButton.position = sceneWithPositions.hamburgerButton.position
+            } else {
+                //Its an Ipad
+                self.size = CGSize(width: 2048 , height: 1536 )
+                fileName = "GameSceneOnlinePadLand"
+            }
+        } else if orientation == "Portrait" {
+            if UIDevice.current.userInterfaceIdiom == .phone {
+                if UIDevice.current.hasTopNotch {
+                   self.size = CGSize(width: 1125, height: 2436 )
+                    fileName = "GameSceneOnlinePhonePortrait"
+                } else {
+                    self.size = CGSize(width: 1080, height: 1920 )
+                    fileName = "GameSceneOnlineNoNotchPortrait"
+                }
                 
-                endGameContainer.position = sceneWithPositions.endGameContainer.position
-                settingsContainer.position = sceneWithPositions.settingsContainer.position
+            } else {
+                //Its an Ipad
+                self.size = CGSize(width: 1536 , height: 2048 )
+                fileName = "GameSceneOnlinePadPortrait"
+            }
+        } else {
+            print("Invalid input for scene orientation change")
+            return
+        }
+        
+        let testModel = GameModel()
+        if let sceneWithPositions = GameSceneOnline(fileNamed: fileName, gameModel: testModel, player: 1) {
+            
+            touchBufferNode.position = CGPoint(x: self.size.width/2, y:  self.size.height/2)
+            touchBufferNode.size = self.size
+            
+            //Things to change: Hexagon
+            centerHexagon.position = sceneWithPositions.centerHexagon.position
+            //Player tokens
+            
+            
+            for (index,playerToken) in playerTokenNodesInPlay.enumerated() {
                 
-                
-                
-                
-                //scoreBar.position = CGPoint(x: 1800, y: 888)
-                
-                
+                playerToken.position = sceneWithPositions.sksPlayerTokenNodes[index].position
+                sksPlayerTokenNodes[index].position = sceneWithPositions.sksPlayerTokenNodes[index].position
             }
             
+            //Score Bar, Labels, and Markers
+            tilesBackground.position = sceneWithPositions.tilesBackground.position
+            scoreBoard.position = sceneWithPositions.scoreBoard.position
+            gameBoard.position = sceneWithPositions.gameBoard.position
             
-        } else if UIDevice.current.userInterfaceIdiom == .pad {
+            hamburgerButton.position = sceneWithPositions.hamburgerButton.position
+            
+            endGameContainer.position = sceneWithPositions.endGameContainer.position
+            settingsContainer.position = sceneWithPositions.settingsContainer.position
+            
             
         }
+        
     }
     
-    func switchToPortrait() {
-        
-        if UIDevice.current.userInterfaceIdiom == .phone {
-            let testModel = GameModel()
-            if let sceneWithPositions = GameSceneOnline(fileNamed: "GameSceneOnlinePhonePortrait", gameModel: testModel, player: 1) {
-                self.size = CGSize(width: 1125, height: 2436)
-                
-                //Things to change: Hexagon
-                centerHexagon.position = sceneWithPositions.centerHexagon.position
-                //Player tokens
-                for (index,playerToken) in playerTokenNodesInPlay.enumerated() {
-                    
-                    playerToken.position = sceneWithPositions.sksPlayerTokenNodes[index].position
-                    sksPlayerTokenNodes[index].position = sceneWithPositions.sksPlayerTokenNodes[index].position
-                }
-                //Score Bar, Labels, and Markers
-                tilesBackground.position = sceneWithPositions.tilesBackground.position
-                scoreBoard.position = sceneWithPositions.scoreBoard.position
-                gameBoard.position = sceneWithPositions.gameBoard.position
-                
-                hamburgerButton.position = sceneWithPositions.hamburgerButton.position
-                
-                endGameContainer.position = sceneWithPositions.endGameContainer.position
-                settingsContainer.position = sceneWithPositions.settingsContainer.position
-            }
-        } else if UIDevice.current.userInterfaceIdiom == .pad {
-            
-        }
-        
-    }
+    
+    
+    
     
     
     func makeNewPosistionForToken(at location: Location) -> CGPoint {

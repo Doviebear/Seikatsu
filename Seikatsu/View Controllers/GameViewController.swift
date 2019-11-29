@@ -18,6 +18,7 @@ class GameViewController: UIViewController, UITextFieldDelegate {
     var currentScene: SKScene? = nil
     var playWithFriendsTextField : UITextField!
     var joiningOrCreatingGame: String!
+    var defaults = UserDefaults.standard
     
     
     override func viewDidLoad() {
@@ -36,8 +37,11 @@ class GameViewController: UIViewController, UITextFieldDelegate {
          NotificationCenter.default.addObserver(self, selector: #selector(hideTextField(_:)), name: .hideTextField, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(gameNameTaken(_:)), name: .gameNameTaken, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(checkGameCode(_:)), name: .checkGameCode, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(muteMusic(_:)), name: .muteAllMusic, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(unmuteMusic(_:)), name: .unmuteAllMusic, object: nil)
         
         
+
         
        
         /*
@@ -126,17 +130,17 @@ class GameViewController: UIViewController, UITextFieldDelegate {
         if let scene = self.currentScene as? GameSceneOnline {
             if UIDevice.current.orientation.isLandscape {
                 print("GameSceneOnline is now in Landscape")
-                scene.switchToLandscape()
+                scene.changeOrientation(to: "Landscape")
             } else if UIDevice.current.orientation.isPortrait {
                 print("GameSceneOnline is now in Portrait")
-                scene.switchToPortrait()
+                scene.changeOrientation(to: "Portrait")
             }
         } else if let scene = self.currentScene as? MenuScene {
             if UIDevice.current.orientation.isLandscape {
-                scene.switchToLandscape()
+                scene.changeOrientation(to: "Landscape")
                 print("MenuScene is now in Landscape")
             } else if UIDevice.current.orientation.isPortrait {
-                scene.switchToPortrait()
+                scene.changeOrientation(to: "Portrait")
                 print("MenuSceen is now in Portrait")
             }
         } else {
@@ -218,6 +222,14 @@ class GameViewController: UIViewController, UITextFieldDelegate {
  */
         textField.resignFirstResponder()
         return true
+    }
+    
+    
+    @objc func muteMusic(_ notification: Notification){
+        defaults.set(true, forKey: "musicMuted")
+    }
+    @objc func unmuteMusic(_ notification: Notification){
+        defaults.set(false, forKey: "musicMuted")
     }
     
     func getFileName() -> String? {

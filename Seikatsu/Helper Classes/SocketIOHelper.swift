@@ -419,30 +419,42 @@ class SocketIOHelper {
             }
         } else if ( UIDevice.current.userInterfaceIdiom == .phone) {
             if UIDevice.current.orientation.isLandscape {
-                if let _ = GameSceneOnline(fileNamed:  baseSKSName + "PhoneLand"){
-                    // this if statement would NOT be true if the Phone file did not exist
-                    fullSKSNameToLoad = baseSKSName + "PhoneLand"
+                if UIDevice.current.hasTopNotch {
+                    if let _ = GameSceneOnline(fileNamed:  baseSKSName + "PhoneLand"){
+                        // this if statement would NOT be true if the Phone file did not exist
+                        fullSKSNameToLoad = baseSKSName + "PhoneLand"
+                    } else {
+                        return nil
+                    }
                 } else {
-                    return nil
+                    if let _ = GameSceneOnline(fileNamed:  baseSKSName + "NoNotchLand"){
+                        // this if statement would NOT be true if the Phone file did not exist
+                        fullSKSNameToLoad = baseSKSName + "NoNotchLand"
+                    } else {
+                        return nil
+                    }
+                    
                 }
-            } else if UIDevice.current.orientation.isPortrait {
-                if let _ = GameSceneOnline(fileNamed:  baseSKSName + "PhonePortrait"){
-                    // this if statement would NOT be true if the Phone file did not exist
-                    fullSKSNameToLoad = baseSKSName + "PhonePortrait"
+                
+            } else if UIDevice.current.orientation.isPortrait || UIDevice.current.orientation.isFlat {
+                if UIDevice.current.hasTopNotch {
+                    if let _ = GameSceneOnline(fileNamed:  baseSKSName + "PhonePortrait"){
+                        // this if statement would NOT be true if the Phone file did not exist
+                        fullSKSNameToLoad = baseSKSName + "PhonePortrait"
+                    } else {
+                        return nil
+                    }
                 } else {
-                    return nil
-                }
-            } else if UIDevice.current.orientation.isFlat {
-                if let _ = GameSceneOnline(fileNamed:  baseSKSName + "PhonePortrait"){
-                    // this if statement would NOT be true if the Phone file did not exist
-                    fullSKSNameToLoad = baseSKSName + "PhonePortrait"
-                } else {
-                    return nil
+                    if let _ = GameSceneOnline(fileNamed:  baseSKSName + "NoNotchPortrait"){
+                        // this if statement would NOT be true if the Phone file did not exist
+                        fullSKSNameToLoad = baseSKSName + "NoNotchPortrait"
+                    } else {
+                        return nil
+                    }
                 }
             } else {
-                 fullSKSNameToLoad = baseSKSName + "PhonePortrait"
+                return nil
             }
-            //worry about TV later
         } else {
             return nil
         }
