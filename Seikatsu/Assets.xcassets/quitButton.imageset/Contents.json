@@ -2,7 +2,7 @@
   "images" : [
     {
       "idiom" : "universal",
-      "filename" : "Quit.png",
+      "filename" : "quitGameButton.png",
       "scale" : "1x"
     },
     {

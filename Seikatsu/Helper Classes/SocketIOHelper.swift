@@ -383,6 +383,16 @@ class SocketIOHelper {
         //then the string returned is Level1TV
         let baseSKSName = "GameSceneOnline"
         var fullSKSNameToLoad:String
+        
+        print("Device is: \(UIDevice.current.userInterfaceIdiom)")
+        print("Device oreintation Portrait: \(UIDevice.current.orientation.isPortrait)")
+        print("Device oreintation Landscape: \(UIDevice.current.orientation.isLandscape)")
+        print("Device oreintation Flat: \(UIDevice.current.orientation.isFlat)")
+        print("Device oreintation isValid: \(UIDevice.current.orientation.isValidInterfaceOrientation)")
+        print("Device hasTopNotch: \(UIDevice.current.hasTopNotch)")
+        
+        
+        
         if ( UIDevice.current.userInterfaceIdiom == .pad) {
             if UIDevice.current.orientation.isLandscape {
                 if let _ = GameSceneOnline(fileNamed:  baseSKSName + "PadLand"){
@@ -437,6 +447,7 @@ class SocketIOHelper {
                 }
                 
             } else if UIDevice.current.orientation.isPortrait || UIDevice.current.orientation.isFlat {
+                
                 if UIDevice.current.hasTopNotch {
                     if let _ = GameSceneOnline(fileNamed:  baseSKSName + "PhonePortrait"){
                         // this if statement would NOT be true if the Phone file did not exist
@@ -453,7 +464,12 @@ class SocketIOHelper {
                     }
                 }
             } else {
-                return nil
+               if let _ = GameSceneOnline(fileNamed:  baseSKSName + "PhonePortrait"){
+                    // this if statement would NOT be true if the Phone file did not exist
+                    fullSKSNameToLoad = baseSKSName + "PhonePortrait"
+                } else {
+                    return nil
+                }
             }
         } else {
             return nil
@@ -509,4 +525,6 @@ extension Notification.Name {
     static let playSoloGameAgain = Notification.Name(rawValue: "playSoloGameAgain")
     static let muteAllMusic = Notification.Name(rawValue: "muteAll")
     static let unmuteAllMusic = Notification.Name(rawValue: "unmuteAll")
+    static let changePositionOfTextField = Notification.Name(rawValue: "changePositionOfTextField")
+    static let changeCurrentScene = Notification.Name(rawValue: "changeCurrentScene")
 }

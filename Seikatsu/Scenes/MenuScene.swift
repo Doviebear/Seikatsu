@@ -89,13 +89,11 @@ Matt Loomis and Isaac Shalev
 Game Design Manager:
 Daryl Andrews
 Art Direction:
-Jerry Bennington, Kyle Merkley, Sam Barlin, and Adam Nussdorfer
+Jerry Bennington, Kyle Merkley, Sam Barlin, Adam Nussdorfer, Ryan Jones, Spencer Reeve
 Artwork:
-Peter Wocken, Lucas Mendonca, Sam Barlin, and Adam Nussdorfer
+Neytirix, Peter Wocken, Lucas Mendonca, Sam Barlin, Adam Nussdorfer
 Graphic Designer:
-Peter Wocken Design
-Editing:
-Jerry Bennington, Spencer Reeve, Kyle Merkley, and Dustin Schwartz
+Peter Wocken Design, Julian Tunni
 """
     var creditsText2 = """
 App Designer:
@@ -103,9 +101,11 @@ Dovie Shalev
 Producer:
 Kuty Shalev
 Product Development:
-Jerry Bennington and Daryl Andrews
+Jerry Bennington, Daryl Andrews, Ryan Jones, Spencer Reeves
 Product Management:
 Shauna Monteforte
+Editing:
+Jerry Bennington, Spencer Reeve, Kyle Merkley, Dustin Schwartz, Ryan Jones
 """
     
     override func sceneDidLoad() {
@@ -216,18 +216,7 @@ Shauna Monteforte
         
         ///Adding Music
         
-        /*
         
-        if let musicURL = Bundle.main.url(forResource: "title1", withExtension: "wav") {
-            let bg = SKAudioNode(url: musicURL)
-            addChild(bg)
-//            backgroundMusic = bg
-            print("Found music")
-        } else {
-            print("Couldn't find music")
-        }
-         
-         */
         creditsBody1.text = nil
         creditsBody1.attributedText = parseCreditsBody(creditsBody: creditsText)
         creditsBody1.preferredMaxLayoutWidth = creditsContainer.size.width/2 - 50
@@ -421,9 +410,16 @@ Shauna Monteforte
                     createPlayButtonPopup()
                     return
                 } else if node.name == "howToPlayButton" {
-                 
-                   
                     howToPlayButton.texture = SKTexture(imageNamed: "howToPlayButton")
+                    if let youtubeURL = URL(string: "youtube://01nTfTLFThA&"),
+                        UIApplication.shared.canOpenURL(youtubeURL) {
+                        // redirect to app
+                        UIApplication.shared.open(youtubeURL, options: [:], completionHandler: nil)
+                    } else if let youtubeURL = URL(string: "https://www.youtube.com/watch?v=01nTfTLFThA&") {
+                        // redirect through safari
+                        UIApplication.shared.open(youtubeURL, options: [:], completionHandler: nil)
+                    }
+                    
                    return
                 } else if node.name == "settingsButton" {
                     settingsButton.texture = SKTexture(imageNamed: "settingsButton")
@@ -556,7 +552,7 @@ Shauna Monteforte
             let gameModel = GameModel()
             if let scene = singleplayerGameScene(fileNamed: fileName, gameModel: gameModel, difficulty: difficulty ) {
                 scene.scaleMode = .aspectFill
-                
+                NotificationCenter.default.post(name: .changeCurrentScene, object: scene)
                 
                 self.view?.presentScene(scene, transition: transition)
             } else {
@@ -747,6 +743,11 @@ Shauna Monteforte
             cornerLogo.position = sceneWithPositions.cornerLogo.position
             
             //adjustGraphics()
+            /*
+            let posistionOfTextField = CGPoint(x: textFieldPlaceholder.position.x, y: textFieldPlaceholder.position.y)
+            let convertedPosistion = view?.convert(posistionOfTextField, from: self)
+            NotificationCenter.default.post(name: .changePositionOfTextField, object: convertedPosistion )
+             */
         } else {
             print("Couldn't get scene with name \(fileName) for orientation change")
         }
@@ -879,6 +880,7 @@ Shauna Monteforte
     }
     
     @objc func playSoloGameAgain(_ notification: Notification){
+        touchBufferNode.isHidden = false
         difficultyMenu.isHidden = false
         playMenu.isHidden = true
     }
@@ -927,7 +929,7 @@ extension SKScene {
 extension UIDevice {
     var hasTopNotch: Bool {
         if #available(iOS 11.0,  *) {
-            return UIApplication.shared.delegate?.window??.safeAreaInsets.top ?? 0 > 20
+            return UIApplication.shared.delegate?.window??.safeAreaInsets.bottom ?? 0 > 20
         }
 
         return false

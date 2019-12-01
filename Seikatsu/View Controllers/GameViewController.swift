@@ -38,8 +38,9 @@ class GameViewController: UIViewController, UITextFieldDelegate {
         NotificationCenter.default.addObserver(self, selector: #selector(checkGameCode(_:)), name: .checkGameCode, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(muteMusic(_:)), name: .muteAllMusic, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(unmuteMusic(_:)), name: .unmuteAllMusic, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(changePositionOfTextField(_:)), name: .changePositionOfTextField, object: nil)
         
-        
+        NotificationCenter.default.addObserver(self, selector: #selector(changeCurrentScene(_:)), name: .changeCurrentScene, object: nil)
 
         
        
@@ -149,6 +150,22 @@ class GameViewController: UIViewController, UITextFieldDelegate {
         
     }
     
+    @objc func changePositionOfTextField(_ notification: Notification){
+        guard let position = notification.object as? CGPoint else {
+            return
+        }
+        if !(playWithFriendsTextField.isHidden) {
+            var frame = self.playWithFriendsTextField.frame
+            frame.origin.x = position.x - 75
+            frame.origin.y = position.y
+            frame.size = CGSize(width : 150, height: 25)
+            playWithFriendsTextField.frame = frame
+            print("changed Position of Textfield")
+        }
+        
+        
+    }
+    
     @objc func showTextField(_ notification: Notification){
         
         guard let ArrayOfStuff = notification.object as? [Any] else {
@@ -178,6 +195,13 @@ class GameViewController: UIViewController, UITextFieldDelegate {
         
         playWithFriendsTextField.isHidden = false
         print("text Field Shown")
+    }
+    
+    @objc func changeCurrentScene(_ notification: Notification){
+        guard let scene = notification.object as? SKScene else {
+            return
+        }
+        self.currentScene = scene
     }
     
     @objc func hideTextField(_ notification: Notification) {

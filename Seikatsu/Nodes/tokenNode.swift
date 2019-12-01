@@ -149,6 +149,27 @@ class tokenNode: SKNode {
         }
     }
     
+    func setPosition(in hexagon: SKSpriteNode){
+        let differenceBetweenCol = hexagon.size.width/8
+        let inColDifference = hexagon.size.height/8
+        let top = hexagon.position.y + hexagon.size.height/2
+        //let bottom = hexagon.position.y - hexagon.size.height/2
+        //let left = hexagon.position.x - hexagon.size.width/2
+        let right = hexagon.position.x + hexagon.size.width/2
+        if let Location = tokenData.Location {
+            if Location.col % 2 == 0 {
+                let x = Int(right) - (Location.col * Int(differenceBetweenCol))
+                let y = Int(top) - (Location.posistioningNumInCol * Int(inColDifference))
+                self.position = CGPoint(x: x, y: y)
+            } else {
+                let x = Int(right) - (Location.col * Int(differenceBetweenCol))
+                let y = Int(top) - (Location.posistioningNumInCol * Int(inColDifference)) - TokenSize/2
+                self.position = CGPoint(x: x, y: y)
+            }
+        }
+        
+    }
+    
     
 }
 

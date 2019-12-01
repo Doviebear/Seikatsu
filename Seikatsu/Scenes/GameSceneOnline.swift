@@ -479,7 +479,7 @@ import GameplayKit
                 } else if node.name == "settingsButton" {
                     settingsButton.texture = SKTexture(imageNamed: "settingsButtonPressed")
                 } else if node.name == "quitButton" {
-//                    quitButton.texture = SKTexture(imageNamed: "quitButtonPressed")
+                    quitButton.texture = SKTexture(imageNamed: "quitGameButtonPressed")
                 } else if node.name == "howToPlayButton" {
                     howToPlayButton.texture = SKTexture(imageNamed: "howToPlayButtonPressed")
                 } else if node.name == "resumeButton" {
@@ -521,8 +521,17 @@ import GameplayKit
                         return
                     } else if node.name == "howToPlayButton" {
                         print("HowToPlay button Pressed")
+                        if let youtubeURL = URL(string: "youtube://01nTfTLFThA&"),
+                            UIApplication.shared.canOpenURL(youtubeURL) {
+                            // redirect to app
+                            UIApplication.shared.open(youtubeURL, options: [:], completionHandler: nil)
+                        } else if let youtubeURL = URL(string: "https://www.youtube.com/watch?v=01nTfTLFThA&") {
+                            // redirect through safari
+                            UIApplication.shared.open(youtubeURL, options: [:], completionHandler: nil)
+                        }
+                        
                         howToPlayButton.texture = SKTexture(imageNamed: "howToPlayButton")
-                         menuContainer.isHidden = true
+                        menuContainer.isHidden = true
                         return
                     } else if node.name == "resumeButton" {
                         print("Resume button Pressed")
@@ -534,9 +543,11 @@ import GameplayKit
                     if isMutedSprite.isHidden == true {
                         NotificationCenter.default.post(name: .muteAllMusic, object: nil)
                         muteMusic()
+                        return
                     } else {
                         NotificationCenter.default.post(name: .unmuteAllMusic, object: nil)
                         unmuteMusic()
+                        return
                     }
                 }
                 
@@ -770,7 +781,7 @@ import GameplayKit
         if let fileName = getFileName() {
             if let scene = MenuScene(fileNamed: fileName) {
                 scene.scaleMode = .aspectFill
-                
+                NotificationCenter.default.post(name: .changeCurrentScene, object: scene)
                 
                 self.view?.presentScene(scene)
                 scene.playIntro()
@@ -1336,18 +1347,34 @@ import GameplayKit
             touchBufferNode.position = CGPoint(x: self.size.width/2, y:  self.size.height/2)
             touchBufferNode.size = self.size
             
-            //Things to change: Hexagon
+            //Hexagon
             centerHexagon.position = sceneWithPositions.centerHexagon.position
+            //Token space
+            for tokenSpace in tokenSpacesInPlay {
+                tokenSpace.setPosition(in: centerHexagon)
+            }
+            
             //Player tokens
+            
+            for tokenNode in tokensInPlay {
+                tokenNode.setPosition(in: centerHexagon)
+            }
             
             
             for (index,playerToken) in playerTokenNodesInPlay.enumerated() {
                 
                 playerToken.position = sceneWithPositions.sksPlayerTokenNodes[index].position
                 sksPlayerTokenNodes[index].position = sceneWithPositions.sksPlayerTokenNodes[index].position
+                if effectNodesInPlay.count == 2 {
+                    effectNodesInPlay[index].position = sceneWithPositions.sksPlayerTokenNodes[index].position
+                }
+                
+               
             }
             
+            
             //Score Bar, Labels, and Markers
+            tilesBackground.zRotation = sceneWithPositions.tilesBackground.zRotation
             tilesBackground.position = sceneWithPositions.tilesBackground.position
             scoreBoard.position = sceneWithPositions.scoreBoard.position
             gameBoard.position = sceneWithPositions.gameBoard.position

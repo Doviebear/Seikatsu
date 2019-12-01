@@ -95,6 +95,7 @@ import GameplayKit
     var settingsContainer: SKSpriteNode!
     var muteButton: SKSpriteNode!
     var isMutedSprite: SKSpriteNode!
+    var backgroundMusic: SKAudioNode!
     
     //Player One: Pink
     //Player Two: Blue
@@ -371,6 +372,30 @@ import GameplayKit
         addChild(touchBufferNode)
         
         
+        
+        if let musicURL = Bundle.main.url(forResource: "gameplay1", withExtension: "wav") {
+            self.backgroundMusic = SKAudioNode(url: musicURL)
+            //                    self.backgroundMusic = bg
+            if UserDefaultsHelper.helper.getDefaultBool(key: "musicMuted") {
+                
+                let mute = SKAction.changeVolume(to: 0.0, duration: 0.0)
+                self.backgroundMusic.run(mute)
+                //self.isMutedSprite.isHidden = true
+                if let sprite = self.isMutedSprite {
+                    sprite.isHidden = false
+                } else {
+                 print("Couldn't get isMutedSprite")
+                }
+            }
+            
+            self.addChild(self.backgroundMusic)
+            
+            print("Found Music")
+        } else {
+            print("Couldn't find music")
+        }
+        
+        
          print("Function SceneDidLoad Ended")
     }
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -383,7 +408,7 @@ import GameplayKit
                 } else if node.name == "settingsButton" {
                     settingsButton.texture = SKTexture(imageNamed: "settingsButtonPressed")
                 } else if node.name == "quitButton" {
-                    quitButton.texture = SKTexture(imageNamed: "quitButtonPressed")
+                    quitButton.texture = SKTexture(imageNamed: "quitGameButtonPressed")
                 } else if node.name == "howToPlayButton" {
                     howToPlayButton.texture = SKTexture(imageNamed: "howToPlayButtonPressed")
                 } else if node.name == "resumeButton" {
@@ -442,8 +467,17 @@ import GameplayKit
                         return
                     } else if node.name == "howToPlayButton" {
                         print("HowToPlay button Pressed")
+                        if let youtubeURL = URL(string: "youtube://01nTfTLFThA&"),
+                            UIApplication.shared.canOpenURL(youtubeURL) {
+                            // redirect to app
+                            UIApplication.shared.open(youtubeURL, options: [:], completionHandler: nil)
+                        } else if let youtubeURL = URL(string: "https://www.youtube.com/watch?v=01nTfTLFThA&") {
+                            // redirect through safari
+                            UIApplication.shared.open(youtubeURL, options: [:], completionHandler: nil)
+                        }
+                        
                         howToPlayButton.texture = SKTexture(imageNamed: "howToPlayButton")
-                         menuContainer.isHidden = true
+                        menuContainer.isHidden = true
                         return
                     } else if node.name == "resumeButton" {
                         print("Resume button Pressed")
@@ -452,11 +486,21 @@ import GameplayKit
                         return
                     }
                 } else if settingsContainer.isHidden == false {
-                    
-                    
+                    if node.name == "muteButton" || node.name == "isMutedSprite" {
+                        if isMutedSprite.isHidden == true {
+                            NotificationCenter.default.post(name: .muteAllMusic, object: nil)
+                            muteMusic()
+                            return
+                        } else {
+                            NotificationCenter.default.post(name: .unmuteAllMusic, object: nil)
+                            unmuteMusic()
+                            return
+                        }
+                        
+                    }
                 }
-                
-                
+                    
+                    
                 
                 guard menuContainer.isHidden == true else {
                     return
@@ -720,7 +764,7 @@ import GameplayKit
         if let fileName = getFileName() {
             if let scene = MenuScene(fileNamed: fileName) {
                 scene.scaleMode = .aspectFill
-                
+                NotificationCenter.default.post(name: .changeCurrentScene, object: scene)
                 
                 self.view?.presentScene(scene)
                 scene.playIntro()
@@ -1133,6 +1177,19 @@ import GameplayKit
         
     }
     
+    func muteMusic() {
+           let mute = SKAction.changeVolume(to: 0.0, duration: 0.1)
+           backgroundMusic.run(mute)
+           isMutedSprite.isHidden = false
+       }
+       
+       func unmuteMusic() {
+           let unmute = SKAction.changeVolume(to: 1.0, duration: 0.0)
+           backgroundMusic.run(unmute)
+           isMutedSprite.isHidden = true
+           
+       }
+    
     /*
     func endOfRoundScoring() {
         print("Started end of round scoring")
@@ -1292,20 +1349,37 @@ import GameplayKit
         let testModel = GameModel()
         if let sceneWithPositions = GameSceneOnline(fileNamed: fileName, gameModel: testModel, player: 1) {
             
-            touchBufferNode.position = CGPoint(x: self.size.width/2, y:  self.size.height/2)
+           touchBufferNode.position = CGPoint(x: self.size.width/2, y:  self.size.height/2)
             touchBufferNode.size = self.size
-            //Things to change: Hexagon
+            
+            //Hexagon
             centerHexagon.position = sceneWithPositions.centerHexagon.position
+            //Token space
+            for tokenSpace in tokenSpacesInPlay {
+                tokenSpace.setPosition(in: centerHexagon)
+            }
+            
             //Player tokens
+            
+            for tokenNode in tokensInPlay {
+                tokenNode.setPosition(in: centerHexagon)
+            }
             
             
             for (index,playerToken) in playerTokenNodesInPlay.enumerated() {
                 
                 playerToken.position = sceneWithPositions.sksPlayerTokenNodes[index].position
                 sksPlayerTokenNodes[index].position = sceneWithPositions.sksPlayerTokenNodes[index].position
+                if effectNodesInPlay.count == 2 {
+                    effectNodesInPlay[index].position = sceneWithPositions.sksPlayerTokenNodes[index].position
+                }
+                
+               
             }
             
+            
             //Score Bar, Labels, and Markers
+            tilesBackground.zRotation = sceneWithPositions.tilesBackground.zRotation
             tilesBackground.position = sceneWithPositions.tilesBackground.position
             scoreBoard.position = sceneWithPositions.scoreBoard.position
             gameBoard.position = sceneWithPositions.gameBoard.position
@@ -1314,6 +1388,7 @@ import GameplayKit
             
             endGameContainer.position = sceneWithPositions.endGameContainer.position
             settingsContainer.position = sceneWithPositions.settingsContainer.position
+            
             
             
         }
