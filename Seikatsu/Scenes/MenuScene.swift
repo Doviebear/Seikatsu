@@ -19,7 +19,7 @@ class MenuScene: SKScene {
     var settingsButton: SKSpriteNode!
     var background: SKSpriteNode!
     var screenArt: SKSpriteNode!
-    var IDWLogo: SKSpriteNode!
+    var splashscreenArt: SKSpriteNode!
     
     var searchingForGameSprite: SKSpriteNode!
     var notConnectedToServerSprite: SKSpriteNode!
@@ -75,6 +75,7 @@ class MenuScene: SKScene {
     var backgroundMusic: SKAudioNode!
     
     var playIntroLogo = false
+    var cornerLogo: SKSpriteNode!
     
     var creditsButton: SKSpriteNode!
     var creditsContainer: SKSpriteNode!
@@ -125,7 +126,7 @@ Shauna Monteforte
         notConnectedToServerSprite = self.childNode(withName: "notConnectedToServer") as? SKSpriteNode
         background = self.childNode(withName: "background") as? SKSpriteNode
         screenArt = self.childNode(withName: "screenArt") as? SKSpriteNode
-        IDWLogo = self.childNode(withName: "IDWLogo") as? SKSpriteNode
+        splashscreenArt = self.childNode(withName: "splashscreenArt") as? SKSpriteNode
         
         playMenu = self.childNode(withName: "playMenu") as? SKSpriteNode
         playOnlineButton = playMenu.childNode(withName: "playOnlineButton") as? SKSpriteNode
@@ -156,6 +157,8 @@ Shauna Monteforte
         creditsTitle = creditsContainer.childNode(withName: "creditsTitle") as? SKLabelNode
         creditsBody1 = creditsContainer.childNode(withName: "creditsBody1") as? SKLabelNode
         creditsBody2 = creditsContainer.childNode(withName: "creditsBody2") as? SKLabelNode
+        
+        cornerLogo = self.childNode(withName: "cornerLogo") as? SKSpriteNode
         
         
         //print("status is: \(SocketIOHelper.helper.socket.status)")
@@ -259,9 +262,9 @@ Shauna Monteforte
     
     func playIntro() {
         if playIntroLogo {
-            IDWLogo.isHidden = false
+            splashscreenArt.isHidden = false
             background.zPosition = 100
-            IDWLogo.alpha = 0.0
+            splashscreenArt.alpha = 0.0
             let fadeIn = SKAction.fadeIn(withDuration: 1.0)
             let soundBite = SKAction.run(
             {
@@ -279,21 +282,30 @@ Shauna Monteforte
             let fadeOut = SKAction.fadeOut(withDuration: 1.0)
             let sequence = SKAction.sequence([fadeIn,soundBite,wait,fadeOut])
             
-            IDWLogo.run(sequence) {
+            splashscreenArt.run(sequence) {
                 self.background.zPosition = -10
-                self.IDWLogo.isHidden = true
+                self.splashscreenArt.isHidden = true
                 
                 if let musicURL = Bundle.main.url(forResource: "title_v2", withExtension: "wav") {
-                    let bg = SKAudioNode(url: musicURL)
-                    self.addChild(bg)
-                    self.backgroundMusic = bg
-                    print("Found music")
-                    if (self.view!.window!.rootViewController as! GameViewController).defaults.bool(forKey: "musicMuted") {
+                    self.backgroundMusic = SKAudioNode(url: musicURL)
+                    //                    self.backgroundMusic = bg
+                    if UserDefaultsHelper.helper.getDefaultBool(key: "musicMuted") {
                         
-                        let mute = SKAction.changeVolume(to: 0.0, duration: 0.1)
+                        let mute = SKAction.changeVolume(to: 0.0, duration: 0.0)
                         self.backgroundMusic.run(mute)
                         //self.isMutedSprite.isHidden = true
+                        if let sprite = self.isMutedSprite {
+                            sprite.isHidden = false
+                        } else {
+                         print("Couldn't get isMutedSprite")
+                        }
                     }
+                    
+                    self.addChild(self.backgroundMusic)
+                    
+                    
+                    print("Found music")
+                    
                 } else {
                     print("Couldn't find music")
                 }
@@ -301,15 +313,23 @@ Shauna Monteforte
             playIntroLogo = false
         } else {
             if let musicURL = Bundle.main.url(forResource: "title_v2", withExtension: "wav") {
-                let bg = SKAudioNode(url: musicURL)
-                self.addChild(bg)
-                self.backgroundMusic = bg
-                if (self.view!.window!.rootViewController as! GameViewController).defaults.bool(forKey: "musicMuted") {
+                self.backgroundMusic = SKAudioNode(url: musicURL)
+                //                    self.backgroundMusic = bg
+                if UserDefaultsHelper.helper.getDefaultBool(key: "musicMuted") {
                     
-                    let mute = SKAction.changeVolume(to: 0.0, duration: 0.1)
+                    let mute = SKAction.changeVolume(to: 0.0, duration: 0.0)
                     self.backgroundMusic.run(mute)
                     //self.isMutedSprite.isHidden = true
+                    if let sprite = self.isMutedSprite {
+                        sprite.isHidden = false
+                    } else {
+                     print("Couldn't get isMutedSprite")
+                    }
                 }
+                
+                self.addChild(self.backgroundMusic)
+                
+                
                 print("Found music")
             } else {
                 print("Couldn't find music")
@@ -723,6 +743,8 @@ Shauna Monteforte
             
             creditsButton.position = sceneWithPositions.creditsButton.position
             creditsContainer.position = sceneWithPositions.creditsContainer.position
+            
+            cornerLogo.position = sceneWithPositions.cornerLogo.position
             
             //adjustGraphics()
         } else {

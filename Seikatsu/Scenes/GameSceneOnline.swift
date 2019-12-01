@@ -310,6 +310,14 @@ import GameplayKit
             yourScoreToken.text = "You"
         }
         
+        if UserDefaultsHelper.helper.getDefaultBool(key: "musicMuted") {
+            if let sprite = self.isMutedSprite {
+                sprite.isHidden = false
+            } else {
+             print("Couldn't get isMutedSprite")
+            }
+        }
+        
         
         
         
@@ -428,22 +436,29 @@ import GameplayKit
             rowScores.append(arrayOfScores)
         }
         
-        /*
+        
         if let musicURL = Bundle.main.url(forResource: "gameplay1", withExtension: "wav") {
-            let bg = SKAudioNode(url: musicURL)
-            addChild(bg)
-            backgroundMusic = bg
-            print("Found music")
-            if (self.view!.window!.rootViewController as! GameViewController).defaults.bool(forKey: "musicMuted") {
+            self.backgroundMusic = SKAudioNode(url: musicURL)
+            //                    self.backgroundMusic = bg
+            if UserDefaultsHelper.helper.getDefaultBool(key: "musicMuted") {
                 
-                let mute = SKAction.changeVolume(to: 0.0, duration: 0.1)
+                let mute = SKAction.changeVolume(to: 0.0, duration: 0.0)
                 self.backgroundMusic.run(mute)
                 //self.isMutedSprite.isHidden = true
+                if let sprite = self.isMutedSprite {
+                    sprite.isHidden = false
+                } else {
+                 print("Couldn't get isMutedSprite")
+                }
             }
+            
+            self.addChild(self.backgroundMusic)
+            
+            print("Found Music")
         } else {
             print("Couldn't find music")
         }
-        */
+        
         
         touchBufferNode = SKSpriteNode(color:SKColor(red:0.0,green:0.0,blue:0.0,alpha:0.5),size:self.size)
         touchBufferNode.position = CGPoint(x: self.size.width/2, y:  self.size.height/2)
@@ -518,11 +533,9 @@ import GameplayKit
                 } else if node.name == "muteButton" || node.name == "isMutedSprite" {
                     if isMutedSprite.isHidden == true {
                         NotificationCenter.default.post(name: .muteAllMusic, object: nil)
-                        isMutedSprite.isHidden = false
                         muteMusic()
                     } else {
                         NotificationCenter.default.post(name: .unmuteAllMusic, object: nil)
-                        isMutedSprite.isHidden = true
                         unmuteMusic()
                     }
                 }
@@ -1247,13 +1260,13 @@ import GameplayKit
     func muteMusic() {
         let mute = SKAction.changeVolume(to: 0.0, duration: 0.1)
         backgroundMusic.run(mute)
-        isMutedSprite.isHidden = true
+        isMutedSprite.isHidden = false
     }
     
     func unmuteMusic() {
         let unmute = SKAction.changeVolume(to: 1.0, duration: 0.0)
         backgroundMusic.run(unmute)
-        isMutedSprite.isHidden = false
+        isMutedSprite.isHidden = true
         
     }
     

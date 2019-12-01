@@ -18,7 +18,6 @@ class GameViewController: UIViewController, UITextFieldDelegate {
     var currentScene: SKScene? = nil
     var playWithFriendsTextField : UITextField!
     var joiningOrCreatingGame: String!
-    var defaults = UserDefaults.standard
     
     
     override func viewDidLoad() {
@@ -226,10 +225,10 @@ class GameViewController: UIViewController, UITextFieldDelegate {
     
     
     @objc func muteMusic(_ notification: Notification){
-        defaults.set(true, forKey: "musicMuted")
+        UserDefaultsHelper.helper.setDefaultBool(value: true, key: "musicMuted")
     }
     @objc func unmuteMusic(_ notification: Notification){
-        defaults.set(false, forKey: "musicMuted")
+        UserDefaultsHelper.helper.setDefaultBool(value: false, key: "musicMuted")
     }
     
     func getFileName() -> String? {
