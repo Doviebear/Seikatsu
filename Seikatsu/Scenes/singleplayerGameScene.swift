@@ -770,8 +770,6 @@ import GameplayKit
                 scene.playIntro()
                 
                 self.view?.ignoresSiblingOrder = true
-                self.view?.showsFPS = true
-                self.view?.showsNodeCount = true
                 
                 
             } else {
@@ -1347,7 +1345,7 @@ import GameplayKit
         }
         
         let testModel = GameModel()
-        if let sceneWithPositions = GameSceneOnline(fileNamed: fileName, gameModel: testModel, player: 1) {
+        if let sceneWithPositions = singleplayerGameScene(fileNamed: fileName, gameModel: testModel, difficulty: "easy") {
             
            touchBufferNode.position = CGPoint(x: self.size.width/2, y:  self.size.height/2)
             touchBufferNode.size = self.size

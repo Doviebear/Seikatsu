@@ -91,8 +91,6 @@ class GameViewController: UIViewController, UITextFieldDelegate {
             
                     
                     view.ignoresSiblingOrder = true
-                    view.showsFPS = true
-                    view.showsNodeCount = true
                     self.currentScene = scene
                     
                 } else {
@@ -136,6 +134,14 @@ class GameViewController: UIViewController, UITextFieldDelegate {
                 scene.changeOrientation(to: "Portrait")
             }
         } else if let scene = self.currentScene as? MenuScene {
+            if UIDevice.current.orientation.isLandscape {
+                scene.changeOrientation(to: "Landscape")
+                print("MenuScene is now in Landscape")
+            } else if UIDevice.current.orientation.isPortrait {
+                scene.changeOrientation(to: "Portrait")
+                print("MenuSceen is now in Portrait")
+            }
+        } else if let scene = self.currentScene as? singleplayerGameScene {
             if UIDevice.current.orientation.isLandscape {
                 scene.changeOrientation(to: "Landscape")
                 print("MenuScene is now in Landscape")

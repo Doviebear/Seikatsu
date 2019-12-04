@@ -787,8 +787,6 @@ import GameplayKit
                 scene.playIntro()
                 
                 self.view?.ignoresSiblingOrder = true
-                self.view?.showsFPS = true
-                self.view?.showsNodeCount = true
                 
                 
             } else {
